@@ -5642,6 +5642,13 @@ html[dir="rtl"] .header-left-group {
   height: 735px;
   margin: 0 auto;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.arc-folding-stage.is-grabbing {
+  cursor: grabbing;
 }
 
 .arc-folding-slide {
@@ -5650,11 +5657,12 @@ html[dir="rtl"] .header-left-group {
   left: 50%;
   width: 348px;
   transition:
-    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-    width 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.55s ease;
+    transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+    width 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.78s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: pointer;
-  will-change: transform, width;
+  will-change: transform, width, opacity;
+  backface-visibility: hidden;
 }
 
 .arc-folding-slide.arc-folding-offset-0 {
@@ -5692,12 +5700,47 @@ html[dir="rtl"] .header-left-group {
   opacity: 1;
 }
 
+.arc-folding-slide.arc-folding-offset--3 {
+  width: 287px;
+  transform: translate3d(calc(-50% - 1045px), 64px, 0);
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.arc-folding-slide.arc-folding-offset-3 {
+  width: 287px;
+  transform: translate3d(calc(-50% + 1045px), 64px, 0);
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.arc-folding-slide.arc-folding-offset--4 {
+  width: 287px;
+  transform: translate3d(calc(-50% - 1350px), 64px, 0);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: none !important;
+}
+
+.arc-folding-slide.arc-folding-offset-4,
+.arc-folding-slide.arc-folding-offset-5 {
+  width: 287px;
+  transform: translate3d(calc(-50% + 1350px), 64px, 0);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: none !important;
+}
+
 .arc-folding-card-media {
   width: 100%;
   height: 522px;
   overflow: hidden;
   background: #e9e4dc;
-  transition: height 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: height 1.05s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .arc-folding-slide.arc-folding-offset-0 .arc-folding-card-media {
@@ -5710,7 +5753,12 @@ html[dir="rtl"] .header-left-group {
 }
 
 .arc-folding-slide.arc-folding-offset--2 .arc-folding-card-media,
-.arc-folding-slide.arc-folding-offset-2 .arc-folding-card-media {
+.arc-folding-slide.arc-folding-offset-2 .arc-folding-card-media,
+.arc-folding-slide.arc-folding-offset--3 .arc-folding-card-media,
+.arc-folding-slide.arc-folding-offset-3 .arc-folding-card-media,
+.arc-folding-slide.arc-folding-offset--4 .arc-folding-card-media,
+.arc-folding-slide.arc-folding-offset-4 .arc-folding-card-media,
+.arc-folding-slide.arc-folding-offset-5 .arc-folding-card-media {
   height: 432px;
 }
 
@@ -6708,28 +6756,28 @@ html[dir="rtl"] .arc-folding-arrow svg {
 /* Silky Folding, Peeking & Split Carousels Across All Pages */
 .arc-folding-slide {
   transition:
-    transform 0.88s var(--ease-luxury),
-    width 0.88s var(--ease-luxury),
-    opacity 0.68s var(--ease-luxury);
+    transform 1.05s var(--ease-silk),
+    width 1.05s var(--ease-silk),
+    opacity 0.78s var(--ease-silk);
   backface-visibility: hidden;
 }
 
 .arc-folding-card-media {
-  transition: height 0.88s var(--ease-luxury);
+  transition: height 1.05s var(--ease-silk);
 }
 
 .arc-folding-card-desc {
   transition:
-    opacity 0.62s var(--ease-luxury),
-    transform 0.62s var(--ease-luxury);
+    opacity 0.75s var(--ease-silk),
+    transform 0.75s var(--ease-silk);
 }
 
 .arc-folding-progress-bar,
 .ac-folding-scrollbar-drag,
 .as-immersive-ink-bar {
   transition:
-    inset-inline-start 0.68s var(--ease-luxury),
-    width 0.68s var(--ease-luxury);
+    inset-inline-start 0.85s var(--ease-silk),
+    width 0.85s var(--ease-silk);
 }
 
 .ac-folding-slide {

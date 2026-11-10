@@ -3691,21 +3691,26 @@ export default function Home() {
   };
 
   const movePrivilegeCarousel = (direction: number) => {
-    const total = roomPrivilegesCarouselData[language].length;
-    setActivePrivilegeSlide((curr) => (curr + direction + total) % total);
+    const ringTotal = roomPrivilegesCarouselData[language].length * 2;
+    setActivePrivilegeSlide((curr) => (curr + direction + ringTotal) % ringTotal);
   };
 
   const getPrivilegesCarouselWindow = () => {
     const items = roomPrivilegesCarouselData[language];
     const total = items.length;
-    const offsets = [-2, -1, 0, 1, 2];
-    return offsets.map((offset) => {
-      const idx = (activePrivilegeSlide + offset + total) % total;
+    const ringTotal = total * 2; // 10-slot virtual ring keeps DOM order 100% static so CSS transitions never cancel
+    const activeRing = ((activePrivilegeSlide % ringTotal) + ringTotal) % ringTotal;
+
+    return Array.from({ length: ringTotal }, (_, slotIdx) => {
+      const realIdx = slotIdx % total;
+      let diff = (slotIdx - activeRing + ringTotal) % ringTotal;
+      if (diff > total) diff -= ringTotal; // diff in [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
       return {
-        item: items[idx],
-        index: idx,
-        offset,
-        isCenter: offset === 0,
+        slotKey: `priv-slot-${slotIdx}`,
+        item: items[realIdx],
+        index: realIdx,
+        offset: diff,
+        isCenter: diff === 0,
       };
     });
   };
@@ -3931,30 +3936,38 @@ export default function Home() {
       let lastDx = 0;
       let moved = false;
       let stepped = false;
+      let lastStepTime = 0;
 
       el.classList.add("is-grabbing");
-      el.style.transition = "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)";
+      el.style.transition = "transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)";
       delete el.dataset.dragged;
 
       const onMouseMove = (ev: MouseEvent) => {
         const dx = ev.clientX - startX;
         lastDx = dx;
-        if (Math.abs(dx) > 5) {
+        if (Math.abs(dx) > 6) {
           moved = true;
           el.dataset.dragged = "true";
         }
         if (!moved) return;
 
-        const dragFollow = Math.max(-96, Math.min(96, dx * 0.36));
-        el.style.transform = `translate3d(${dragFollow.toFixed(1)}px, 0, 0)`;
+        if (!stepped) {
+          const dragFollow = Math.max(-22, Math.min(22, dx * 0.12));
+          el.style.transform = `translate3d(${dragFollow.toFixed(1)}px, 0, 0)`;
+        }
 
-        if (Math.abs(dx) >= 74) {
+        const now = performance.now();
+        const threshold = stepped ? 240 : 110;
+        const cooldownPassed = !stepped || now - lastStepTime >= 950;
+
+        if (Math.abs(dx) >= threshold && cooldownPassed) {
           const dir: 1 | -1 = dx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
           onStep(dir);
           stepped = true;
+          lastStepTime = now;
           startX = ev.clientX;
           lastDx = 0;
-          el.style.transition = "transform 0.68s cubic-bezier(0.16, 1, 0.3, 1)";
+          el.style.transition = "transform 0.95s cubic-bezier(0.22, 1, 0.36, 1)";
           el.style.transform = "translate3d(0px, 0, 0)";
         }
       };
@@ -3963,16 +3976,16 @@ export default function Home() {
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
         el.classList.remove("is-grabbing");
-        if (!stepped && Math.abs(lastDx) >= 26) {
+        if (!stepped && Math.abs(lastDx) >= 42) {
           const dir: 1 | -1 = lastDx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
           onStep(dir);
         }
-        el.style.transition = "transform 0.68s cubic-bezier(0.16, 1, 0.3, 1)";
+        el.style.transition = "transform 0.95s cubic-bezier(0.22, 1, 0.36, 1)";
         el.style.transform = "translate3d(0px, 0, 0)";
         if (moved) {
           window.setTimeout(() => {
             delete el.dataset.dragged;
-          }, 70);
+          }, 90);
         }
       };
 
@@ -7264,16 +7277,20 @@ export default function Home() {
                   className="arc-folding-stage js-draggable-carousel"
                   {...createCarouselDragProps(movePrivilegeCarousel)}
                 >
-                  {privWindow.map(({ item, index, offset, isCenter }) => (
+                  {privWindow.map(({ slotKey, item, offset, isCenter }) => (
                     <div
-                      key={item.id}
+                      key={slotKey}
                       className={`arc-folding-slide arc-folding-offset-${offset} ${
                         isCenter ? "is-center" : ""
-                      }`}
-                      onClick={() => setActivePrivilegeSlide(index)}
+                      } ${Math.abs(offset) >= 3 ? "is-offstage" : ""}`}
+                      onClick={() => {
+                        if (offset !== 0 && Math.abs(offset) <= 2) {
+                          movePrivilegeCarousel(offset);
+                        }
+                      }}
                     >
                       <div className="arc-folding-card-media">
-                        <img src={item.image} alt={item.title} />
+                        <img src={item.image} alt={item.title} draggable={false} />
                       </div>
                       <div className="arc-folding-card-caption">
                         <h3 className="arc-folding-card-title">{item.title}</h3>
@@ -7289,7 +7306,10 @@ export default function Home() {
                       className="arc-folding-progress-bar"
                       style={{
                         width: `${100 / privTotal}%`,
-                        insetInlineStart: `${(activePrivilegeSlide * 100) / privTotal}%`,
+                        insetInlineStart: `${
+                          (((activePrivilegeSlide % privTotal) + privTotal) % privTotal) *
+                          (100 / privTotal)
+                        }%`,
                       }}
                     />
                   </div>
@@ -7574,16 +7594,20 @@ export default function Home() {
                   className="arc-folding-stage js-draggable-carousel"
                   {...createCarouselDragProps(movePrivilegeCarousel)}
                 >
-                  {privWindow.map(({ item, index, offset, isCenter }) => (
+                  {privWindow.map(({ slotKey, item, offset, isCenter }) => (
                     <div
-                      key={item.id}
+                      key={slotKey}
                       className={`arc-folding-slide arc-folding-offset-${offset} ${
                         isCenter ? "is-center" : ""
-                      }`}
-                      onClick={() => setActivePrivilegeSlide(index)}
+                      } ${Math.abs(offset) >= 3 ? "is-offstage" : ""}`}
+                      onClick={() => {
+                        if (offset !== 0 && Math.abs(offset) <= 2) {
+                          movePrivilegeCarousel(offset);
+                        }
+                      }}
                     >
                       <div className="arc-folding-card-media">
-                        <img src={item.image} alt={item.title} />
+                        <img src={item.image} alt={item.title} draggable={false} />
                       </div>
                       <div className="arc-folding-card-caption">
                         <h3 className="arc-folding-card-title">{item.title}</h3>
@@ -7599,7 +7623,10 @@ export default function Home() {
                       className="arc-folding-progress-bar"
                       style={{
                         width: `${100 / privTotal}%`,
-                        insetInlineStart: `${(activePrivilegeSlide * 100) / privTotal}%`,
+                        insetInlineStart: `${
+                          (((activePrivilegeSlide % privTotal) + privTotal) % privTotal) *
+                          (100 / privTotal)
+                        }%`,
                       }}
                     />
                   </div>
