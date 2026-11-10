@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import https from "node:https";
 import path from "node:path";
 import zlib from "node:zlib";
 import { execFile } from "node:child_process";
@@ -146,31 +147,88 @@ console.log(`Created ZIP buffer: ${(zipBuffer.length / 1048576).toFixed(2)} MB`)
 
 // 4. Create & upload deployment to AWS Amplify
 console.log(`Creating AWS Amplify deployment on app ${appId} (branch: ${BRANCH_NAME})...`);
-const deployInfo = await runAws([
-  "amplify",
-  "create-deployment",
-  "--app-id",
-  appId,
-  "--branch-name",
-  BRANCH_NAME,
-]);
+let deployInfo;
+try {
+  deployInfo = await runAws([
+    "amplify",
+    "create-deployment",
+    "--app-id",
+    appId,
+    "--branch-name",
+    BRANCH_NAME,
+  ]);
+} catch (err) {
+  const msg = String(err?.stderr || err?.message || "");
+  const match = msg.match(/job\(deployment\)\s+(\d+)\s+was not finished/i);
+  if (match) {
+    const staleJobId = match[1];
+    console.log(`Stopping unfinished Amplify job ${staleJobId}...`);
+    await runAws([
+      "amplify",
+      "stop-job",
+      "--app-id",
+      appId,
+      "--branch-name",
+      BRANCH_NAME,
+      "--job-id",
+      staleJobId,
+    ]);
+    deployInfo = await runAws([
+      "amplify",
+      "create-deployment",
+      "--app-id",
+      appId,
+      "--branch-name",
+      BRANCH_NAME,
+    ]);
+  } else {
+    throw err;
+  }
+}
 
 const { jobId, zipUploadUrl } = deployInfo;
 console.log(`Uploading ZIP to Amplify S3 presigned URL (jobId: ${jobId})...`);
 
-const uploadRes = await fetch(zipUploadUrl, {
-  method: "PUT",
-  headers: {
-    "Content-Type": "application/zip",
-    "Content-Length": String(zipBuffer.length),
-  },
-  body: zipBuffer,
-});
+await new Promise((resolve, reject) => {
+  const req = https.request(
+    zipUploadUrl,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/zip",
+        "Content-Length": String(zipBuffer.length),
+      },
+    },
+    (res) => {
+      let body = "";
+      res.on("data", (d) => (body += d));
+      res.on("end", () => {
+        if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+          resolve();
+        } else {
+          reject(new Error(`Upload failed (${res.statusCode}): ${body}`));
+        }
+      });
+    }
+  );
+  req.on("error", reject);
 
-if (!uploadRes.ok) {
-  const errText = await uploadRes.text();
-  throw new Error(`Upload failed (${uploadRes.status}): ${errText}`);
-}
+  const CHUNK_SIZE = 256 * 1024;
+  let offset = 0;
+  function writeNext() {
+    while (offset < zipBuffer.length) {
+      const end = Math.min(offset + CHUNK_SIZE, zipBuffer.length);
+      const chunk = zipBuffer.subarray(offset, end);
+      offset = end;
+      if (!req.write(chunk)) {
+        req.once("drain", writeNext);
+        return;
+      }
+    }
+    req.end();
+  }
+  writeNext();
+});
 console.log("Upload complete. Starting Amplify deployment...");
 
 await runAws([
