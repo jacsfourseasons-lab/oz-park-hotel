@@ -9,7 +9,8 @@ export type RoomSlug =
   | "twin-junior-suite"
   | "superior-suite"
   | "deluxe-suite"
-  | "royal-suite";
+  | "royal-suite"
+  | (string & {});
 
 export type AmenityIconName =
   | "size"

@@ -7873,292 +7873,24 @@ a,
 }
 
 /* ============================================================================
-   OZ PARK HOTEL — ROOMS & PRICING ADMIN DASHBOARD (#admin)
-   Luxury Coastal Navy (#0B1D3A / #162B4C), Warm Gold (#C5A567 / #A8894D), Sand (#F8F6F1)
+   OZ PARK HOTEL — MINIMALIST LUXURY ROOMS & PRICING ADMIN PORTAL (#admin)
    ============================================================================ */
 
-/* 1. Admin Login Screen */
-.oz-admin-login-screen {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
-  overflow: hidden;
-  font-family: var(--font-sans);
-}
-
-.oz-admin-login-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.oz-admin-login-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.04);
-  filter: saturate(0.95);
-}
-
-.oz-admin-login-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(8, 22, 46, 0.88) 0%,
-    rgba(16, 39, 74, 0.82) 50%,
-    rgba(8, 22, 46, 0.9) 100%
-  );
-  backdrop-filter: blur(8px);
-}
-
-.oz-admin-login-card {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 460px;
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid rgba(197, 165, 103, 0.38);
-  box-shadow: 0 32px 80px rgba(0, 12, 32, 0.45);
-  padding: 44px 40px 36px;
-  animation: luxuryModalCardIn 0.65s var(--ease-luxury) both;
-}
-
-.oz-admin-login-brand {
-  text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid #ebe5d9;
-}
-
-.oz-admin-overline {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2.4px;
-  color: #a8894d;
-  margin-bottom: 8px;
-}
-
+/* Exact OZ PARK Wordmark Logo (Centered Circular "OZ" Emblem + "PARK") */
 .oz-admin-wordmark {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: 3px;
-  color: #162b4c;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-.oz-admin-wordmark span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1.5px solid #a8894d;
-  font-size: 16px;
-  letter-spacing: 1px;
-  color: #162b4c;
-}
-
-.oz-admin-subtitle {
-  margin: 10px 0 0;
-  font-size: 13.5px;
-  color: #526077;
-  font-weight: 400;
-}
-
-.oz-admin-login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.oz-admin-login-error {
-  background: #fef2f2;
-  border-inline-start: 3px solid #dc2626;
-  color: #b91c1c;
-  padding: 10px 14px;
-  font-size: 12.5px;
-  line-height: 1.45;
-}
-
-.oz-admin-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.oz-admin-field label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  color: #1e293b;
-}
-
-.oz-admin-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.oz-admin-field input,
-.oz-admin-field textarea {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #0f172a;
-  font-family: var(--font-sans);
-  font-size: 13.5px;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.oz-admin-field input:focus,
-.oz-admin-field textarea:focus {
-  border-color: #162b4c;
-  box-shadow: 0 0 0 3px rgba(22, 43, 76, 0.08);
-  outline: none;
-}
-
-.oz-admin-eye-btn {
-  position: absolute;
-  inset-inline-end: 10px;
+  gap: 11px;
   background: transparent;
   border: 0;
-  color: #0057b7;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 4px 6px;
-}
-
-.oz-admin-login-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12.5px;
-  color: #475569;
-}
-
-.oz-admin-checkbox-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.oz-admin-login-submit {
-  height: 46px;
-  background: #162b4c;
-  color: #ffffff;
-  border: 1px solid #162b4c;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  cursor: pointer;
-  margin-top: 4px;
-}
-
-.oz-admin-login-submit:hover {
-  background: #a8894d;
-  border-color: #a8894d;
-}
-
-.oz-admin-login-footer {
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid #ebe5d9;
-  text-align: center;
-}
-
-.oz-admin-back-link {
-  background: transparent;
-  border: 0;
-  color: #162b4c;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.oz-admin-back-link:hover {
-  color: #a8894d;
-  text-decoration: underline;
-}
-
-/* 2. Authenticated Admin Dashboard Shell */
-.oz-admin-dashboard {
-  min-height: 100vh;
-  background: #f4f2ec;
-  color: #1e293b;
-  font-family: var(--font-sans);
-  padding-bottom: 72px;
-  animation: luxuryPageFadeIn 0.55s var(--ease-luxury) both;
-}
-
-.oz-admin-toast {
-  position: fixed;
-  bottom: 28px;
-  inset-inline-end: 28px;
-  z-index: 2200;
-  background: #0f2442;
-  color: #ffffff;
-  border: 1px solid #c5a567;
-  box-shadow: 0 18px 42px rgba(0, 18, 44, 0.28);
-  padding: 14px 22px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13.5px;
-  font-weight: 500;
-  animation: luxuryModalCardIn 0.38s var(--ease-luxury) both;
-}
-
-.oz-admin-toast-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.22);
-}
-
-/* Top Admin Bar */
-.oz-admin-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 950;
-  background: #0f2442;
-  color: #ffffff;
-  border-bottom: 1px solid rgba(197, 165, 103, 0.28);
-  padding: 14px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.oz-admin-logo-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  background: transparent;
-  border: 0;
-  color: #ffffff;
-  text-align: start;
-  cursor: pointer;
   padding: 0;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: var(--font-display);
+  text-decoration: none;
 }
 
-.oz-admin-logo-circle {
+.oz-admin-wordmark-emblem {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -8167,1004 +7899,1122 @@ a,
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 15px;
-  letter-spacing: 1px;
-  color: #ffffff;
-}
-
-.oz-admin-logo-btn strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 16px;
-  letter-spacing: 2px;
+  font-size: 13.5px;
   font-weight: 400;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  color: inherit;
+  flex-shrink: 0;
+  padding-inline-start: 0.12em;
 }
 
-.oz-admin-logo-btn span {
-  display: block;
-  font-size: 11.5px;
-  color: #c5a567;
-  letter-spacing: 0.5px;
-}
-
-.oz-admin-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.oz-admin-top-btn {
-  height: 38px;
-  padding: 0 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid transparent;
-}
-
-.oz-admin-top-btn.is-outline {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
-}
-
-.oz-admin-top-btn.is-outline:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: #c5a567;
-}
-
-.oz-admin-top-btn.is-gold {
-  background: #a8894d;
-  border-color: #a8894d;
-  color: #ffffff;
-}
-
-.oz-admin-top-btn.is-gold:hover {
-  background: #bd9c5d;
-}
-
-.oz-admin-top-btn.is-logout {
-  background: transparent;
-  border-color: rgba(248, 113, 113, 0.45);
-  color: #fca5a5;
-}
-
-.oz-admin-top-btn.is-logout:hover {
-  background: rgba(239, 68, 68, 0.18);
-  color: #ffffff;
-}
-
-/* KPI Strip */
-.oz-admin-kpi-strip {
-  max-width: 1440px;
-  margin: 24px auto 0;
-  padding: 0 32px;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.oz-admin-kpi-card {
-  background: #ffffff;
-  border: 1px solid #e4decb;
-  padding: 18px 20px;
-  box-shadow: 0 4px 16px rgba(15, 36, 66, 0.04);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.oz-admin-kpi-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: #a8894d;
-}
-
-.oz-admin-kpi-value {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 400;
-  color: #0f2442;
-}
-
-.oz-admin-kpi-sub {
-  font-size: 11.5px;
-  color: #64748b;
-}
-
-.oz-admin-kpi-inline-input {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f2442;
-}
-
-.oz-admin-kpi-inline-input input {
-  width: 82px;
-  height: 32px;
-  padding: 0 8px;
-  border: 1px solid #cbd5e1;
-  font-size: 15px;
-  font-weight: 700;
-  color: #0057b7;
-  text-align: center;
-}
-
-/* Main 2-Column Workspace */
-.oz-admin-workspace {
-  max-width: 1440px;
-  margin: 24px auto 0;
-  padding: 0 32px;
-  display: grid;
-  grid-template-columns: 330px minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-}
-
-/* Left Room Selector Sidebar */
-.oz-admin-sidebar {
-  background: #ffffff;
-  border: 1px solid #e4decb;
-  box-shadow: 0 6px 20px rgba(15, 36, 66, 0.05);
-  position: sticky;
-  top: 84px;
-}
-
-.oz-admin-sidebar-header {
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid #ebe5d9;
-}
-
-.oz-admin-sidebar-header h2 {
-  margin: 0 0 12px;
+.oz-admin-wordmark-text {
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 400;
+  letter-spacing: 0.28em;
+  line-height: 1;
+  color: inherit;
+}
+
+.oz-admin-wordmark--login {
+  color: #0f2442;
+  margin-bottom: 24px;
+}
+
+.oz-admin-wordmark--login .oz-admin-wordmark-emblem {
+  width: 46px;
+  height: 46px;
+  font-size: 15px;
+  border-color: #a8894d;
   color: #0f2442;
 }
 
-.oz-admin-cat-pills {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-
-.oz-admin-cat-pill {
-  height: 30px;
-  border: 1px solid #d8d0be;
-  background: #faf8f3;
-  color: #334155;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.oz-admin-cat-pill.is-active {
-  background: #0f2442;
-  border-color: #0f2442;
-  color: #ffffff;
-}
-
-.oz-admin-room-list {
-  display: flex;
-  flex-direction: column;
-  max-height: 560px;
-  overflow-y: auto;
-}
-
-.oz-admin-room-item {
-  display: grid;
-  grid-template-columns: 82px minmax(0, 1fr);
-  gap: 12px;
-  padding: 14px 16px;
-  border: 0;
-  border-bottom: 1px solid #f1ece1;
-  background: #ffffff;
-  text-align: start;
-  cursor: pointer;
-  align-items: center;
-}
-
-.oz-admin-room-item:hover {
-  background: #faf8f3;
-}
-
-.oz-admin-room-item.is-selected {
-  background: #f0f5fc;
-  border-inline-start: 4px solid #0057b7;
-}
-
-.oz-admin-room-item-thumb {
-  position: relative;
-  width: 82px;
-  height: 60px;
-  overflow: hidden;
-  background: #e2e8f0;
-}
-
-.oz-admin-room-item-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.oz-admin-status-dot {
-  position: absolute;
-  top: 5px;
-  inset-inline-end: 5px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1.5px solid #ffffff;
-}
-
-.oz-admin-status-dot.is-online {
-  background: #16a34a;
-}
-
-.oz-admin-status-dot.is-offline {
-  background: #dc2626;
-}
-
-.oz-admin-room-item-cat {
-  display: block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #a8894d;
-}
-
-.oz-admin-room-item-info h3 {
-  margin: 2px 0;
-  font-size: 14px;
-  font-weight: 700;
+.oz-admin-wordmark--login .oz-admin-wordmark-text {
+  font-size: 21px;
   color: #0f2442;
 }
 
-.oz-admin-room-item-ar {
-  margin: 0 0 4px;
-  font-size: 12px;
-  color: #64748b;
-}
-
-.oz-admin-room-item-meta {
+/* 1. Minimalist Luxury Login Screen */
+.oz-admin-login-shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #17325b 0%, #0b192e 100%);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-size: 11.5px;
-  color: #475569;
+  justify-content: center;
+  padding: 32px 20px;
+  font-family: var(--font-sans);
 }
 
-.oz-admin-room-item-meta strong {
-  color: #0057b7;
-}
-
-.oz-admin-sidebar-footer {
-  padding: 14px 16px;
-  border-top: 1px solid #ebe5d9;
-}
-
-.oz-admin-reset-all-btn {
+.oz-admin-login-card {
   width: 100%;
-  height: 36px;
-  background: #fff8f6;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.oz-admin-reset-all-btn:hover {
-  background: #fee2e2;
-}
-
-/* Right Main Editor Panel */
-.oz-admin-room-banner {
+  max-width: 430px;
   background: #ffffff;
-  border: 1px solid #e4decb;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
+  border: 1px solid rgba(197, 165, 103, 0.35);
+  border-radius: 8px;
+  box-shadow: 0 28px 70px rgba(0, 10, 26, 0.42);
+  padding: 44px 38px 36px;
+  text-align: center;
+  animation: luxuryModalCardIn 0.55s var(--ease-luxury) both;
 }
 
-.oz-admin-room-banner-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.oz-admin-banner-thumb {
-  width: 104px;
-  height: 72px;
-  object-fit: cover;
-  border: 1px solid #d8d0be;
-}
-
-.oz-admin-banner-cat {
-  display: block;
+.oz-admin-login-eyebrow {
+  margin: 0 0 6px;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.4px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
   color: #a8894d;
-  margin-bottom: 4px;
 }
 
-.oz-admin-room-banner-left h2 {
-  margin: 0 0 4px;
+.oz-admin-login-title {
+  margin: 0 0 8px;
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 400;
   color: #0f2442;
 }
 
-.oz-admin-sep {
-  color: #cbd5e1;
-  margin: 0 6px;
+.oz-admin-login-subtitle {
+  margin: 0 0 28px;
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.5;
 }
 
-.oz-admin-room-banner-left p {
-  margin: 0;
-  font-size: 13px;
+.oz-admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: start;
+}
+
+.oz-admin-pass-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.oz-admin-pass-row input {
+  padding-inline-end: 60px;
+}
+
+.oz-admin-pass-toggle {
+  position: absolute;
+  inset-inline-end: 10px;
+  background: transparent;
+  border: 0;
+  color: #0f2442;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.oz-admin-login-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
   color: #475569;
 }
 
-.oz-admin-room-banner-right {
+.oz-admin-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.oz-admin-login-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+
+.oz-admin-login-submit {
+  width: 100%;
+  height: 44px;
+  margin-top: 4px;
+  justify-content: center;
+}
+
+.oz-admin-back-site-link {
+  margin-top: 22px;
+  background: transparent;
+  border: 0;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.oz-admin-back-site-link:hover {
+  color: #0f2442;
+  text-decoration: underline;
+}
+
+/* 2. Minimalist Authenticated Shell */
+.oz-admin-shell {
+  min-height: 100vh;
+  background: #f8f7f4;
+  color: #0f172a;
+  font-family: var(--font-sans);
+  padding-bottom: 80px;
+}
+
+/* Toast Notification */
+.oz-admin-toast {
+  position: fixed;
+  bottom: 24px;
+  inset-inline-end: 24px;
+  z-index: 2500;
+  background: #0f2442;
+  color: #ffffff;
+  border: 1px solid rgba(197, 165, 103, 0.45);
+  border-radius: 6px;
+  box-shadow: 0 14px 34px rgba(15, 36, 66, 0.24);
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 500;
+  animation: luxuryModalCardIn 0.35s var(--ease-luxury) both;
 }
 
-.oz-admin-avail-toggle {
-  height: 38px;
-  padding: 0 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  border: 1px solid;
-}
-
-.oz-admin-avail-toggle.is-available {
-  background: #f0fdf4;
-  border-color: #86efac;
-  color: #15803d;
-}
-
-.oz-admin-avail-toggle.is-soldout {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #b91c1c;
-}
-
-.oz-admin-avail-indicator {
+.oz-admin-toast-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: currentColor;
+  background: #22c55e;
 }
 
-.oz-admin-reset-room-btn {
-  height: 38px;
+/* Minimalist Top Bar */
+.oz-admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #0f2442;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(197, 165, 103, 0.22);
+}
+
+.oz-admin-topbar-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.oz-admin-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.oz-admin-topbar-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.oz-admin-topbar-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #cbd5e1;
+  letter-spacing: 0.3px;
+}
+
+.oz-admin-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Buttons */
+.oz-admin-primary-btn {
+  height: 40px;
+  padding: 0 20px;
+  background: #0f2442;
+  color: #ffffff;
+  border: 1px solid #0f2442;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.oz-admin-primary-btn:hover {
+  background: #a8894d;
+  border-color: #a8894d;
+}
+
+.oz-admin-secondary-btn {
+  height: 36px;
   padding: 0 14px;
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  color: #475569;
+  background: #0f2442;
+  color: #ffffff;
+  border: 1px solid #0f2442;
+  border-radius: 6px;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.oz-admin-reset-room-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
+.oz-admin-secondary-btn:hover {
+  background: #1e3a66;
 }
 
-/* Editor Tabs */
-.oz-admin-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.oz-admin-tab {
-  height: 48px;
-  background: #ffffff;
-  border: 1px solid #e4decb;
+.oz-admin-ghost-btn {
+  height: 36px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
   color: #334155;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 12px;
+  gap: 6px;
 }
 
-.oz-admin-tab span {
-  font-size: 11px;
-  color: #a8894d;
-  font-weight: 700;
-}
-
-.oz-admin-tab.is-active {
-  background: #0f2442;
+.oz-admin-ghost-btn:hover {
   border-color: #0f2442;
+  color: #0f2442;
+  background: #f8fafc;
+}
+
+.oz-admin-topbar .oz-admin-ghost-btn {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.oz-admin-topbar .oz-admin-ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #c5a567;
   color: #ffffff;
 }
 
-.oz-admin-tab.is-active span {
-  color: #c5a567;
+.oz-admin-topbar .oz-admin-ghost-btn--signout {
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fca5a5;
 }
 
-.oz-admin-tab-panel {
-  animation: luxuryPageFadeIn 0.42s var(--ease-luxury) both;
+.oz-admin-topbar .oz-admin-ghost-btn--signout:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #f87171;
+  color: #ffffff;
 }
 
-.oz-admin-panel-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
+/* Main Container */
+.oz-admin-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 36px 28px 0;
 }
 
-.oz-admin-card {
+.oz-admin-header-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e0d5;
+}
+
+.oz-admin-header-title-group h1 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
+  color: #0f2442;
+}
+
+.oz-admin-header-title-group p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.oz-admin-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.oz-admin-inline-setting {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   background: #ffffff;
-  border: 1px solid #e4decb;
-  padding: 24px;
-  box-shadow: 0 4px 18px rgba(15, 36, 66, 0.04);
+  border: 1px solid #ded8ca;
+  border-radius: 6px;
+  padding: 0 12px;
+  height: 40px;
 }
 
-.oz-admin-card-head {
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #f1ece1;
+.oz-admin-inline-setting label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
 }
 
-.oz-admin-card-head-flex {
+.oz-admin-inline-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0f2442;
+}
+
+.oz-admin-inline-input-wrap input {
+  width: 64px;
+  height: 28px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f2442;
+  background: #f8fafc;
+}
+
+/* Filter Toolbar */
+.oz-admin-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  margin: 22px 0 26px;
 }
 
-.oz-admin-card-head h3 {
-  margin: 0 0 4px;
+.oz-admin-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.oz-admin-pill {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #ded8ca;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.oz-admin-pill:hover {
+  border-color: #0f2442;
+  color: #0f2442;
+}
+
+.oz-admin-pill.is-active {
+  background: #0f2442;
+  border-color: #0f2442;
+  color: #ffffff;
+}
+
+.oz-admin-reset-link {
+  background: transparent;
+  border: 0;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.oz-admin-reset-link:hover {
+  color: #b91c1c;
+}
+
+/* Minimalist 3-Column Visual Room Cards Grid */
+.oz-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.oz-admin-card {
+  background: #ffffff;
+  border: 1px solid #e5e0d5;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.oz-admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(15, 36, 66, 0.07);
+}
+
+.oz-admin-card.is-unavailable {
+  opacity: 0.72;
+}
+
+.oz-admin-card-media {
+  position: relative;
+  height: 204px;
+  background: #e2e8f0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.oz-admin-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.oz-admin-card-media:hover img {
+  transform: scale(1.03);
+}
+
+.oz-admin-card-cat {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  background: rgba(15, 36, 66, 0.84);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.oz-admin-status-pill {
+  position: absolute;
+  top: 12px;
+  inset-inline-end: 12px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.oz-admin-status-pill.is-live {
+  background: rgba(255, 255, 255, 0.95);
+  color: #15803d;
+}
+
+.oz-admin-status-pill.is-hidden {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.oz-admin-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.oz-admin-photo-count {
+  position: absolute;
+  bottom: 10px;
+  inset-inline-end: 12px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.oz-admin-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.oz-admin-card-titles {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.oz-admin-card-titles h3 {
+  margin: 0;
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 400;
   color: #0f2442;
 }
 
-.oz-admin-card-head p {
-  margin: 0;
+.oz-admin-card-ar {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.oz-admin-card-specs {
+  margin: 0 0 16px;
   font-size: 12.5px;
   color: #64748b;
 }
 
-/* Pricing Controls */
-.oz-admin-price-control-box {
+/* Inline Price Box on Card */
+.oz-admin-price-box {
+  background: #f8f7f4;
+  border: 1px solid #e5e0d5;
+  border-radius: 6px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  background: #f8fafc;
-  border: 1px solid #dbe4f0;
-  padding: 18px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 16px;
+  margin-top: auto;
 }
 
-.oz-admin-price-step-btn {
-  height: 42px;
-  padding: 0 16px;
-  background: #ffffff;
-  border: 1px solid #0057b7;
-  color: #0057b7;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.oz-admin-price-step-btn:hover {
-  background: #0057b7;
-  color: #ffffff;
-}
-
-.oz-admin-price-big-input {
+.oz-admin-price-box-left {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
-.oz-admin-price-big-input span {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #64748b;
-}
-
-.oz-admin-price-big-input input {
-  width: 140px;
-  height: 48px;
-  border: 2px solid #0057b7;
-  text-align: center;
-  font-size: 24px;
-  font-weight: 700;
+.oz-admin-price-label {
+  font-size: 12px;
+  font-weight: 600;
   color: #0f2442;
-  background: #ffffff;
 }
 
-.oz-admin-price-big-input small {
+.oz-admin-price-sub {
   font-size: 11px;
   color: #64748b;
 }
 
-.oz-admin-rate-preview-table {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.oz-admin-rate-preview-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  background: #faf8f3;
-  border: 1px solid #ebe5d9;
-  font-size: 13px;
-}
-
-.oz-admin-rate-preview-row.is-highlight {
-  background: #eef5ff;
-  border-color: #bfd7f6;
-  color: #004799;
-}
-
-/* Quick All-Rooms Price List */
-.oz-admin-all-prices-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.oz-admin-quick-price-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border: 1px solid #ebe5d9;
-  background: #ffffff;
-  cursor: pointer;
-}
-
-.oz-admin-quick-price-row.is-active {
-  background: #f0f6ff;
-  border-color: #0057b7;
-}
-
-.oz-admin-quick-price-name strong {
-  display: block;
-  font-size: 13.5px;
-  color: #0f2442;
-}
-
-.oz-admin-quick-price-name span {
-  font-size: 11.5px;
-  color: #64748b;
-}
-
-.oz-admin-quick-price-input {
+.oz-admin-price-input-group {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
-  color: #0057b7;
+  color: #a8894d;
 }
 
-.oz-admin-quick-price-input input {
-  width: 88px;
+.oz-admin-price-input-group input {
+  width: 82px;
   height: 34px;
   border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #ffffff;
   text-align: center;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #0f2442;
 }
 
-/* Language Toggle Bar in Details Tab */
-.oz-admin-lang-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #ffffff;
-  border: 1px solid #e4decb;
-  padding: 12px 18px;
-  margin-bottom: 18px;
-  font-size: 13px;
-  font-weight: 600;
+.oz-admin-price-input-group input:focus {
+  border-color: #0f2442;
+  outline: none;
 }
 
-.oz-admin-lang-pills {
-  display: flex;
+.oz-admin-card-actions {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   gap: 8px;
 }
 
-.oz-admin-lang-pills button {
-  height: 32px;
+.oz-admin-edit-btn {
+  height: 36px;
   padding: 0 14px;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.oz-admin-lang-pills button.is-active {
   background: #0f2442;
-  border-color: #0f2442;
   color: #ffffff;
-}
-
-.oz-admin-lang-columns.is-two-cols {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.oz-admin-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.oz-admin-field.is-full {
-  grid-column: 1 / -1;
-}
-
-/* Image Manager Styles */
-.oz-admin-featured-img-box {
-  width: 100%;
-  height: 230px;
-  overflow: hidden;
-  background: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  margin-bottom: 14px;
-}
-
-.oz-admin-featured-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.oz-admin-img-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.oz-admin-btn-primary {
-  height: 38px;
-  padding: 0 16px;
-  background: #0057b7;
-  color: #ffffff;
-  border: 0;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.oz-admin-btn-primary:hover {
-  background: #00428f;
-}
-
-.oz-admin-btn-secondary {
-  height: 38px;
-  padding: 0 16px;
-  background: #ffffff;
-  color: #0f2442;
   border: 1px solid #0f2442;
+  border-radius: 5px;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.oz-admin-btn-secondary:hover {
-  background: #0f2442;
-  color: #ffffff;
+.oz-admin-edit-btn:hover {
+  background: #a8894d;
+  border-color: #a8894d;
 }
 
-.oz-admin-collage-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.oz-admin-collage-slot {
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  padding: 8px;
-}
-
-.oz-admin-collage-thumb {
-  position: relative;
-  height: 120px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.oz-admin-collage-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.oz-admin-slot-badge {
-  position: absolute;
-  top: 6px;
-  inset-inline-start: 6px;
-  background: rgba(15, 36, 66, 0.84);
-  color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 2px 7px;
-}
-
-.oz-admin-slot-btns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.oz-admin-slot-btns button {
-  height: 28px;
-  font-size: 11px;
-  font-weight: 600;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #0f2442;
-  cursor: pointer;
-}
-
-.oz-admin-slot-btns button:hover {
-  background: #0057b7;
-  border-color: #0057b7;
-  color: #ffffff;
-}
-
-.oz-admin-url-add-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.oz-admin-url-add-bar input {
-  flex: 1;
-  height: 38px;
+.oz-admin-preview-icon-btn {
+  height: 36px;
   padding: 0 12px;
-  border: 1px solid #cbd5e1;
-  font-size: 13px;
-}
-
-.oz-admin-url-add-bar button {
-  height: 38px;
-  padding: 0 18px;
-  background: #0f2442;
-  color: #ffffff;
-  border: 0;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.oz-admin-gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.oz-admin-gallery-item {
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  padding: 8px;
-}
-
-.oz-admin-gallery-thumb {
-  position: relative;
-  height: 136px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.oz-admin-gallery-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.oz-admin-gallery-controls {
-  display: grid;
-  grid-template-columns: 30px 1fr 30px 30px;
-  gap: 4px;
-}
-
-.oz-admin-gallery-controls button {
-  height: 28px;
-  border: 1px solid #cbd5e1;
   background: #ffffff;
-  color: #1e293b;
-  font-size: 11px;
-  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
 }
 
-.oz-admin-gallery-controls button:hover:not(:disabled) {
-  background: #0057b7;
-  border-color: #0057b7;
-  color: #ffffff;
+.oz-admin-preview-icon-btn:hover {
+  border-color: #0f2442;
+  color: #0f2442;
 }
 
-.oz-admin-gallery-controls button.is-danger:hover:not(:disabled) {
-  background: #dc2626;
-  border-color: #dc2626;
-  color: #ffffff;
+.oz-admin-delete-icon-btn {
+  height: 36px;
+  padding: 0 12px;
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  border-radius: 5px;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-.oz-admin-gallery-controls button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.oz-admin-delete-icon-btn:hover {
+  background: #fef2f2;
+  border-color: #f87171;
 }
 
-/* Hotel Media Library Modal */
+/* ============================================================================
+   3. SLIDE-OVER / MODAL ROOM EDITOR & ADD ROOM SHEET
+   ============================================================================ */
 .oz-admin-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 2100;
-  background: rgba(8, 22, 46, 0.72);
-  backdrop-filter: blur(5px);
+  z-index: 2000;
+  background: rgba(11, 25, 46, 0.62);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
 }
 
-.oz-admin-modal-card {
+.oz-admin-drawer {
   width: 100%;
-  max-width: 980px;
-  max-height: 85vh;
+  max-width: 820px;
+  max-height: 90vh;
   background: #ffffff;
-  border: 1px solid #c5a567;
-  padding: 28px;
-  overflow-y: auto;
-  animation: luxuryModalCardIn 0.42s var(--ease-luxury) both;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px rgba(0, 12, 32, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: luxuryModalCardIn 0.35s var(--ease-luxury) both;
 }
 
-.oz-admin-modal-head {
+.oz-admin-drawer-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid #e5e0d5;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #e2e8f0;
+  gap: 16px;
+  background: #faf9f6;
 }
 
-.oz-admin-modal-head h3 {
-  margin: 0 0 4px;
+.oz-admin-drawer-overline {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  color: #a8894d;
+  margin-bottom: 2px;
+}
+
+.oz-admin-drawer-header h2 {
+  margin: 0;
   font-family: var(--font-display);
   font-size: 22px;
+  font-weight: 400;
   color: #0f2442;
 }
 
-.oz-admin-modal-head p {
+.oz-admin-drawer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.oz-admin-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oz-admin-close-btn:hover {
+  border-color: #0f2442;
+  color: #0f2442;
+}
+
+.oz-admin-drawer-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.oz-admin-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #efece4;
+}
+
+.oz-admin-section-block:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.oz-admin-section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.oz-admin-section-heading {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f2442;
+  letter-spacing: 0.2px;
+}
+
+.oz-admin-section-sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
   color: #64748b;
 }
 
-.oz-admin-modal-close {
-  width: 36px;
-  height: 36px;
+.oz-admin-text-link {
+  background: transparent;
+  border: 0;
+  color: #a8894d;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Form Grids inside Drawer */
+.oz-admin-form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.oz-admin-form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.oz-admin-form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.oz-admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.oz-admin-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.oz-admin-field input,
+.oz-admin-field select,
+.oz-admin-field textarea {
+  width: 100%;
+  padding: 9px 12px;
   border: 1px solid #cbd5e1;
+  border-radius: 6px;
   background: #ffffff;
-  font-size: 18px;
+  color: #0f172a;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+}
+
+.oz-admin-field input:focus,
+.oz-admin-field select:focus,
+.oz-admin-field textarea:focus {
+  border-color: #0f2442;
+  outline: none;
+}
+
+/* Photo Grid inside Drawer */
+.oz-admin-photo-upload-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.oz-admin-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.oz-admin-photo-tile {
+  position: relative;
+  height: 124px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
+}
+
+.oz-admin-photo-tile.is-cover {
+  border: 2px solid #a8894d;
+}
+
+.oz-admin-photo-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.oz-admin-cover-badge {
+  position: absolute;
+  top: 6px;
+  inset-inline-start: 6px;
+  background: #0f2442;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.oz-admin-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.58);
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity 0.2s ease;
+}
+
+.oz-admin-photo-tile:hover .oz-admin-photo-overlay {
+  opacity: 1;
+}
+
+.oz-admin-photo-action {
+  background: #ffffff;
+  color: #0f2442;
+  border: 0;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
   cursor: pointer;
 }
 
+.oz-admin-photo-remove {
+  background: #dc2626;
+  color: #ffffff;
+  border: 0;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.oz-admin-drawer-footer {
+  padding: 16px 28px;
+  border-top: 1px solid #e5e0d5;
+  background: #faf9f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.oz-admin-drawer-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.oz-admin-danger-outline-btn {
+  height: 36px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.oz-admin-danger-outline-btn:hover {
+  background: #fef2f2;
+}
+
+.oz-admin-danger-btn {
+  height: 38px;
+  padding: 0 18px;
+  background: #dc2626;
+  border: 1px solid #dc2626;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.oz-admin-danger-btn:hover {
+  background: #b91c1c;
+}
+
+/* Delete Confirmation Dialog */
+.oz-admin-confirm-dialog {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(0, 12, 32, 0.32);
+}
+
+.oz-admin-confirm-dialog h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: #0f2442;
+}
+
+.oz-admin-confirm-dialog p {
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.oz-admin-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Media Library Modal */
+.oz-admin-library-modal {
+  width: 100%;
+  max-width: 880px;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .oz-admin-library-grid {
+  padding: 20px 28px 28px;
+  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .oz-admin-library-item {
   border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 0;
   background: #f8fafc;
-  padding: 6px;
+  height: 124px;
   cursor: pointer;
-  text-align: start;
 }
 
 .oz-admin-library-item:hover {
-  border-color: #0057b7;
-  background: #eef5ff;
+  border-color: #a8894d;
+  box-shadow: 0 0 0 2px #a8894d;
 }
 
 .oz-admin-library-item img {
   width: 100%;
-  height: 120px;
+  height: 100%;
   object-fit: cover;
   display: block;
-  margin-bottom: 6px;
 }
 
-.oz-admin-library-item span {
-  display: block;
-  font-size: 11px;
-  color: #475569;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+@media (max-width: 1040px) {
+  .oz-admin-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .oz-admin-form-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-@media (max-width: 1100px) {
-  .oz-admin-kpi-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .oz-admin-workspace {
+@media (max-width: 680px) {
+  .oz-admin-grid,
+  .oz-admin-form-grid-2,
+  .oz-admin-form-grid-3,
+  .oz-admin-form-grid-4 {
     grid-template-columns: 1fr;
   }
-  .oz-admin-sidebar {
-    position: static;
-  }
-  .oz-admin-tabs {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .oz-admin-panel-grid-2,
-  .oz-admin-lang-columns.is-two-cols {
-    grid-template-columns: 1fr;
-  }
-  .oz-admin-collage-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .oz-admin-gallery-grid,
+  .oz-admin-photos-grid,
   .oz-admin-library-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-@media (max-width: 640px) {
-  .oz-admin-kpi-strip,
-  .oz-admin-tabs,
-  .oz-admin-form-grid,
-  .oz-admin-gallery-grid,
-  .oz-admin-library-grid {
-    grid-template-columns: 1fr;
-  }
-  .oz-admin-topbar,
-  .oz-admin-workspace,
-  .oz-admin-kpi-strip {
+  .oz-admin-topbar-inner,
+  .oz-admin-container {
     padding-inline: 16px;
   }
 }

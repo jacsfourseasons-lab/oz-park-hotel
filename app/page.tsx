@@ -12,6 +12,7 @@ import {
 } from "./roomsData";
 import AdminDashboard, {
   CMS_STORAGE_KEY,
+  getActiveRoomSlugs,
   getInitialCmsState,
   type OzParkRoomsCmsState,
 } from "./AdminDashboard";
@@ -3633,11 +3634,16 @@ export default function Home() {
     setRoomAmenitiesModalOpen(false);
     setRoomGalleryLightboxIndex(null);
     setMenuOpen(false);
-    setActiveRoomSlug(slug);
-    setActiveCategorySlug(specificRoomsData[language][slug].categorySlug);
+    const targetRoom =
+      cmsState.roomsData[language][slug] ||
+      specificRoomsData[language][slug] ||
+      cmsState.roomsData[language][getActiveRoomSlugs(cmsState)[0]];
+    if (!targetRoom) return;
+    setActiveRoomSlug(targetRoom.slug);
+    setActiveCategorySlug(targetRoom.categorySlug);
     setActivePage("room-detail");
     if (typeof window !== "undefined") {
-      window.history.pushState(null, "", `#room-${slug}`);
+      window.history.pushState(null, "", `#room-${targetRoom.slug}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -3649,6 +3655,7 @@ export default function Home() {
     setRoomAmenitiesModalOpen(false);
     setRoomGalleryLightboxIndex(null);
     setMenuOpen(false);
+    const activeSlugs = getActiveRoomSlugs(cmsState);
     if (opts?.roomSlug) {
       setBookingHighlightedRoom(opts.roomSlug);
       setActiveRoomSlug(opts.roomSlug);
@@ -3656,7 +3663,10 @@ export default function Home() {
       setSelectedBookingItem({ roomSlug: opts.roomSlug, ratePlan: "with-breakfast" });
     } else if (opts?.categorySlug) {
       setBookingCategoryFilter(opts.categorySlug);
-      const firstRoomInCat = roomCategoriesPageData.en[opts.categorySlug].roomSlugs[0];
+      const firstRoomInCat =
+        activeSlugs.find((s) => cmsState.roomsData.en[s]?.categorySlug === opts.categorySlug) ||
+        activeSlugs[0] ||
+        "deluxe-room";
       setBookingHighlightedRoom(firstRoomInCat);
       setSelectedBookingItem({ roomSlug: firstRoomInCat, ratePlan: "with-breakfast" });
     } else {
@@ -7136,7 +7146,9 @@ export default function Home() {
         (() => {
           const catData = roomCategoriesPageData[language][activeCategorySlug];
           const roomsMap = cmsState.roomsData[language];
-          const catRooms = catData.roomSlugs.map((slug) => roomsMap[slug]);
+          const catRooms = getActiveRoomSlugs(cmsState)
+            .filter((slug) => roomsMap[slug]?.categorySlug === activeCategorySlug)
+            .map((slug) => roomsMap[slug]);
           const privWindow = getPrivilegesCarouselWindow();
           const privTotal = roomPrivilegesCarouselData[language].length;
           const privAccordions = roomPrivilegesAccordionData[language];
@@ -7406,11 +7418,17 @@ export default function Home() {
         })()
       ) : activePage === "room-detail" ? (
         /* ============================================================================
-           LEVEL 3 — DEDICATED SPECIFIC ROOM DETAIL PAGE (All 7 Rooms & Suites)
+           LEVEL 3 — DEDICATED SPECIFIC ROOM DETAIL PAGE (All Rooms & Suites)
            Modeled 1:1 on https://www.atlantis.com/dubai/atlantis-the-palm/stay/rooms-and-suites/deluxe-rooms/deluxe-king-room
            ============================================================================ */
         (() => {
-          const room = cmsState.roomsData[language][activeRoomSlug];
+          const safeSlug =
+            cmsState.roomsData[language][activeRoomSlug]
+              ? activeRoomSlug
+              : getActiveRoomSlugs(cmsState)[0];
+          const room =
+            cmsState.roomsData[language][safeSlug] ||
+            specificRoomsData[language]["deluxe-room"];
           const parentCat = roomCategoriesPageData[language][room.categorySlug];
           const privWindow = getPrivilegesCarouselWindow();
           const privTotal = roomPrivilegesCarouselData[language].length;
@@ -7893,11 +7911,13 @@ export default function Home() {
           const dynamicBreakfastSar = cmsState.breakfastPriceSar;
           const dynamicDiscountMult = 1 - cmsState.weekdayDiscountPct / 100;
 
-          // Filter & sort the 7 rooms
+          // Filter & sort all active rooms from CMS
           const roomsMap = cmsState.roomsData[language];
-          let filteredRoomSlugs = ALL_BOOKING_ROOM_SLUGS.filter((slug) => {
+          const allCmsSlugs = getActiveRoomSlugs(cmsState);
+          let filteredRoomSlugs = allCmsSlugs.filter((slug) => {
             if (cmsState.roomAvailable[slug] === false) return false;
             const rm = roomsMap[slug];
+            if (!rm) return false;
             if (bookingCategoryFilter !== "all" && rm.categorySlug !== bookingCategoryFilter) {
               return false;
             }
@@ -7914,7 +7934,7 @@ export default function Home() {
           });
 
           if (filteredRoomSlugs.length === 0) {
-            filteredRoomSlugs = ["deluxe-room"];
+            filteredRoomSlugs = [allCmsSlugs[0] || "deluxe-room"];
           }
 
           if (bookingSortBy === "lowest") {
@@ -7936,12 +7956,19 @@ export default function Home() {
           const lowestCalendarTotal =
             Math.min(...Object.values(dynamicBaseRates)) * nightsCount * bookingRoomsCount;
 
-          const activeCartItem = selectedBookingItem ?? {
-            roomSlug: filteredRoomSlugs[0] ?? "deluxe-room",
+          const rawCartItem = selectedBookingItem ?? {
+            roomSlug: filteredRoomSlugs[0] ?? allCmsSlugs[0] ?? "deluxe-room",
             ratePlan: "with-breakfast" as BookingRatePlan,
           };
-          const selectedRoomObj = roomsMap[activeCartItem.roomSlug];
-          const selectedBaseRate = dynamicBaseRates[activeCartItem.roomSlug];
+          const activeCartItem = roomsMap[rawCartItem.roomSlug]
+            ? rawCartItem
+            : {
+                roomSlug: filteredRoomSlugs[0] ?? allCmsSlugs[0] ?? "deluxe-room",
+                ratePlan: rawCartItem.ratePlan,
+              };
+          const selectedRoomObj =
+            roomsMap[activeCartItem.roomSlug] || specificRoomsData[language]["deluxe-room"];
+          const selectedBaseRate = dynamicBaseRates[activeCartItem.roomSlug] ?? 380;
           const isWeekdayDiscountPlan =
             activeCartItem.ratePlan === "weekday-room-only" ||
             activeCartItem.ratePlan === "weekday-with-breakfast";
@@ -9452,7 +9479,11 @@ export default function Home() {
             </h3>
 
             <div className="ard-list-modal-grid">
-              {cmsState.roomsData[language][activeRoomSlug].allAmenities.map((am) => (
+              {(
+                cmsState.roomsData[language][activeRoomSlug] ||
+                cmsState.roomsData[language][getActiveRoomSlugs(cmsState)[0]] ||
+                specificRoomsData[language]["deluxe-room"]
+              ).allAmenities.map((am) => (
                 <div key={am.label} className="ard-list-modal-item">
                   <AtlantisRoomIcon name={am.icon} stroke="#2559a8" size={24} />
                   <span>{am.label}</span>
@@ -9466,7 +9497,10 @@ export default function Home() {
       {/* FULL-SCREEN LIGHTBOX FOR SPECIFIC ROOM PHOTO GALLERY */}
       {roomGalleryLightboxIndex !== null &&
         (() => {
-          const room = cmsState.roomsData[language][activeRoomSlug];
+          const room =
+            cmsState.roomsData[language][activeRoomSlug] ||
+            cmsState.roomsData[language][getActiveRoomSlugs(cmsState)[0]] ||
+            specificRoomsData[language]["deluxe-room"];
           const imgs = room.allGalleryImages;
           const safeIdx = ((roomGalleryLightboxIndex % imgs.length) + imgs.length) % imgs.length;
           return (
