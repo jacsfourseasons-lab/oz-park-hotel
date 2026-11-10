@@ -153,6 +153,15 @@ const indexHtml = `<!DOCTYPE html>
 
 fs.writeFileSync(path.join(outDir, "index.html"), indexHtml, "utf8");
 
+// 4b. Write /admin/index.html redirect so both /admin and /#admin open the Admin Dashboard
+const adminDir = path.join(outDir, "admin");
+fs.mkdirSync(adminDir, { recursive: true });
+fs.writeFileSync(
+  path.join(adminDir, "index.html"),
+  `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>OZ Park Hotel — Admin Portal</title><script>window.location.replace("/#admin");</script></head><body></body></html>`,
+  "utf8"
+);
+
 // 5. Create POSIX-compliant zip file (with "/" forward slashes) for Cloudflare drag-and-drop
 const zipPath = path.join(workspaceRoot, "oz-park-hotel-cloudflare.zip");
 const zipPsScript = `

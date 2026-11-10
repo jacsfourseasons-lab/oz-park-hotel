@@ -10,6 +10,11 @@ import {
   roomPrivilegesCarouselData,
   specificRoomsData,
 } from "./roomsData";
+import AdminDashboard, {
+  CMS_STORAGE_KEY,
+  getInitialCmsState,
+  type OzParkRoomsCmsState,
+} from "./AdminDashboard";
 
 type Language = "ar" | "en";
 type ActivePage =
@@ -24,7 +29,8 @@ type ActivePage =
   | "stay"
   | "room-category"
   | "room-detail"
-  | "booking";
+  | "booking"
+  | "admin";
 
 type BookingRatePlan = "room-only" | "with-breakfast" | "weekday-room-only" | "weekday-with-breakfast";
 
@@ -3026,6 +3032,60 @@ export default function Home() {
   const [bookingGuestPhone, setBookingGuestPhone] = useState<string>("");
   const [bookingSpecialRequests, setBookingSpecialRequests] = useState<string>("");
 
+  // Dynamic CMS state for Rooms, Pricing & Images (editable via #admin Dashboard)
+  const [cmsState, setCmsState] = useState<OzParkRoomsCmsState>(() => getInitialCmsState());
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(CMS_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<OzParkRoomsCmsState>;
+        if (parsed && parsed.roomsData && parsed.baseRatesSar) {
+          setCmsState((prev) => ({
+            ...prev,
+            ...parsed,
+            roomsData: {
+              en: { ...prev.roomsData.en, ...(parsed.roomsData?.en ?? {}) },
+              ar: { ...prev.roomsData.ar, ...(parsed.roomsData?.ar ?? {}) },
+            },
+            baseRatesSar: { ...prev.baseRatesSar, ...(parsed.baseRatesSar ?? {}) },
+            roomAvailable: { ...prev.roomAvailable, ...(parsed.roomAvailable ?? {}) },
+          }));
+        }
+      }
+    } catch {
+      // Ignore malformed storage
+    }
+  }, []);
+
+  const handleUpdateCmsState = (next: OzParkRoomsCmsState) => {
+    setCmsState(next);
+    try {
+      window.localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Storage quota fallback
+    }
+  };
+
+  const handleResetCmsState = () => {
+    const fresh = getInitialCmsState();
+    setCmsState(fresh);
+    try {
+      window.localStorage.removeItem(CMS_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+  };
+
+  const openAdminPage = () => {
+    setMenuOpen(false);
+    setActivePage("admin");
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", "#admin");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const offersRef = useRef<HTMLDivElement>(null);
   const signatureRef = useRef<HTMLElement>(null);
   const cafeVerticalRef = useRef<HTMLElement>(null);
@@ -3058,11 +3118,14 @@ export default function Home() {
   const meetingPackageSlides = meetingPackageSlidesData[language];
   const isRtl = language === "ar";
 
-  // Sync URL hash with dedicated offer, dining, café, meeting room, category, room & booking pages
+  // Sync URL hash with dedicated offer, dining, café, meeting room, category, room, booking & admin pages
   useEffect(() => {
     const syncFromHash = () => {
       const hash = window.location.hash;
-      if (hash === "#wedding-packages") {
+      if (hash === "#admin" || hash === "#dashboard") {
+        setActivePage("admin");
+        window.scrollTo({ top: 0, behavior: "auto" });
+      } else if (hash === "#wedding-packages") {
         setActivePage("wedding");
         window.scrollTo({ top: 0, behavior: "auto" });
       } else if (hash === "#offer-25-off") {
@@ -3992,6 +4055,7 @@ export default function Home() {
   return (
     <main>
       {/* HEADER */}
+      {activePage !== "admin" && (
       <header
         className={`site-header ${
           scrolled ||
@@ -4072,8 +4136,10 @@ export default function Home() {
           </a>
         </div>
       </header>
+      )}
 
       {/* FULL-SCREEN MENU PANEL */}
+      {activePage !== "admin" && (
       <div className={`menu-panel ${menuOpen ? "is-open" : ""}`} aria-hidden={!menuOpen}>
         <nav aria-label={t.openMenu}>
           {t.nav.map(([label, target], index) => (
@@ -4098,6 +4164,7 @@ export default function Home() {
           <a href="mailto:reservations@ozpark.sa">reservations@ozpark.sa</a>
         </div>
       </div>
+      )}
 
       {activePage === "home" ? (
         <>
@@ -7068,7 +7135,7 @@ export default function Home() {
            ============================================================================ */
         (() => {
           const catData = roomCategoriesPageData[language][activeCategorySlug];
-          const roomsMap = specificRoomsData[language];
+          const roomsMap = cmsState.roomsData[language];
           const catRooms = catData.roomSlugs.map((slug) => roomsMap[slug]);
           const privWindow = getPrivilegesCarouselWindow();
           const privTotal = roomPrivilegesCarouselData[language].length;
@@ -7343,7 +7410,7 @@ export default function Home() {
            Modeled 1:1 on https://www.atlantis.com/dubai/atlantis-the-palm/stay/rooms-and-suites/deluxe-rooms/deluxe-king-room
            ============================================================================ */
         (() => {
-          const room = specificRoomsData[language][activeRoomSlug];
+          const room = cmsState.roomsData[language][activeRoomSlug];
           const parentCat = roomCategoriesPageData[language][room.categorySlug];
           const privWindow = getPrivilegesCarouselWindow();
           const privTotal = roomPrivilegesCarouselData[language].length;
@@ -7788,7 +7855,8 @@ export default function Home() {
               const isInRange = iso > bookingCheckIn && iso < bookingCheckOut;
               const dayOfWeek = cellDate.getDay();
               const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
-              const lowestNightly = isWeekend ? 420 : 380;
+              const minRoomRate = Math.min(...Object.values(cmsState.baseRatesSar));
+              const lowestNightly = isWeekend ? minRoomRate + 40 : minRoomRate;
               cells.push({
                 key: iso,
                 day: d,
@@ -7821,9 +7889,14 @@ export default function Home() {
             }
           };
 
+          const dynamicBaseRates = cmsState.baseRatesSar;
+          const dynamicBreakfastSar = cmsState.breakfastPriceSar;
+          const dynamicDiscountMult = 1 - cmsState.weekdayDiscountPct / 100;
+
           // Filter & sort the 7 rooms
-          const roomsMap = specificRoomsData[language];
+          const roomsMap = cmsState.roomsData[language];
           let filteredRoomSlugs = ALL_BOOKING_ROOM_SLUGS.filter((slug) => {
+            if (cmsState.roomAvailable[slug] === false) return false;
             const rm = roomsMap[slug];
             if (bookingCategoryFilter !== "all" && rm.categorySlug !== bookingCategoryFilter) {
               return false;
@@ -7840,13 +7913,17 @@ export default function Home() {
             return true;
           });
 
+          if (filteredRoomSlugs.length === 0) {
+            filteredRoomSlugs = ["deluxe-room"];
+          }
+
           if (bookingSortBy === "lowest") {
             filteredRoomSlugs = [...filteredRoomSlugs].sort(
-              (a, b) => ROOM_BASE_RATES_SAR[a] - ROOM_BASE_RATES_SAR[b]
+              (a, b) => dynamicBaseRates[a] - dynamicBaseRates[b]
             );
           } else if (bookingSortBy === "highest") {
             filteredRoomSlugs = [...filteredRoomSlugs].sort(
-              (a, b) => ROOM_BASE_RATES_SAR[b] - ROOM_BASE_RATES_SAR[a]
+              (a, b) => dynamicBaseRates[b] - dynamicBaseRates[a]
             );
           } else if (bookingHighlightedRoom) {
             filteredRoomSlugs = [
@@ -7855,20 +7932,21 @@ export default function Home() {
             ];
           }
 
-          const breakfastPerNightTotal = BREAKFAST_PRICE_PER_PERSON_SAR * bookingAdults * bookingRoomsCount;
-          const lowestCalendarTotal = 380 * nightsCount * bookingRoomsCount;
+          const breakfastPerNightTotal = dynamicBreakfastSar * bookingAdults * bookingRoomsCount;
+          const lowestCalendarTotal =
+            Math.min(...Object.values(dynamicBaseRates)) * nightsCount * bookingRoomsCount;
 
           const activeCartItem = selectedBookingItem ?? {
             roomSlug: filteredRoomSlugs[0] ?? "deluxe-room",
             ratePlan: "with-breakfast" as BookingRatePlan,
           };
           const selectedRoomObj = roomsMap[activeCartItem.roomSlug];
-          const selectedBaseRate = ROOM_BASE_RATES_SAR[activeCartItem.roomSlug];
+          const selectedBaseRate = dynamicBaseRates[activeCartItem.roomSlug];
           const isWeekdayDiscountPlan =
             activeCartItem.ratePlan === "weekday-room-only" ||
             activeCartItem.ratePlan === "weekday-with-breakfast";
           const effectiveRoomNightly = isWeekdayDiscountPlan
-            ? Math.round(selectedBaseRate * 0.75)
+            ? Math.round(selectedBaseRate * dynamicDiscountMult)
             : selectedBaseRate;
           const includesBreakfast =
             activeCartItem.ratePlan === "with-breakfast" ||
@@ -7888,17 +7966,17 @@ export default function Home() {
           const handleCompleteBookingWhatsApp = () => {
             const planLabelEn =
               activeCartItem.ratePlan === "with-breakfast"
-                ? `With Breakfast (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person)`
+                ? `With Breakfast (+SAR ${dynamicBreakfastSar} per person)`
                 : activeCartItem.ratePlan === "weekday-with-breakfast"
-                ? `Weekday Special (25% Off) With Breakfast (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person)`
+                ? `Weekday Special (${cmsState.weekdayDiscountPct}% Off) With Breakfast (+SAR ${dynamicBreakfastSar} per person)`
                 : activeCartItem.ratePlan === "weekday-room-only"
-                ? "Weekday Special (25% Off) — Room Only"
+                ? `Weekday Special (${cmsState.weekdayDiscountPct}% Off) — Room Only`
                 : "Room Only";
             const planLabelAr =
               activeCartItem.ratePlan === "with-breakfast"
-                ? `شامل الإفطار (+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص)`
+                ? `شامل الإفطار (+${dynamicBreakfastSar} ريال للشخص)`
                 : activeCartItem.ratePlan === "weekday-with-breakfast"
-                ? `عرض أيام الأسبوع شاملة الإفطار (+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص)`
+                ? `عرض أيام الأسبوع شاملة الإفطار (+${dynamicBreakfastSar} ريال للشخص)`
                 : activeCartItem.ratePlan === "weekday-room-only"
                 ? "عرض أيام الأسبوع — غرفة فقط"
                 : "غرفة فقط (بدون إفطار)";
@@ -7914,7 +7992,7 @@ export default function Home() {
                     `• عدد الغرف والضيوف: ${bookingRoomsCount} غرفة، ${bookingAdults} بالغ، ${bookingChildren} طفل`,
                     `• سعر الغرفة: SAR ${roomSubtotal.toLocaleString()}`,
                     includesBreakfast
-                      ? `• الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة): SAR ${breakfastSubtotal.toLocaleString()}`
+                      ? `• الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة): SAR ${breakfastSubtotal.toLocaleString()}`
                       : "• الإفطار: غير مشمول (غرفة فقط)",
                     `• الإجمالي: SAR ${grandTotalSar.toLocaleString()}`,
                     bookingGuestName ? `• اسم الضيف: ${bookingGuestName}` : "",
@@ -7932,7 +8010,7 @@ export default function Home() {
                     `• Guests: ${bookingRoomsCount} ${bookingRoomsCount === 1 ? "Room" : "Rooms"}, ${bookingAdults} ${bookingAdults === 1 ? "Adult" : "Adults"}, ${bookingChildren} ${bookingChildren === 1 ? "Child" : "Children"}`,
                     `• Room Subtotal: SAR ${roomSubtotal.toLocaleString()}`,
                     includesBreakfast
-                      ? `• Breakfast Add-On (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults} person(s) × ${nightsCount} night(s)): SAR ${breakfastSubtotal.toLocaleString()}`
+                      ? `• Breakfast Add-On (SAR ${dynamicBreakfastSar} × ${bookingAdults} person(s) × ${nightsCount} night(s)): SAR ${breakfastSubtotal.toLocaleString()}`
                       : "• Breakfast: Not included (Room Only)",
                     `• Total Stay Price: SAR ${grandTotalSar.toLocaleString()}`,
                     bookingGuestName ? `• Guest Name: ${bookingGuestName}` : "",
@@ -7962,8 +8040,8 @@ export default function Home() {
                     </span>
                     <span className="ab-utility-badge">
                       {language === "ar"
-                        ? `الإفطار الإضافي: ${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص`
-                        : `Breakfast Option: SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person`}
+                        ? `الإفطار الإضافي: ${dynamicBreakfastSar} ريال للشخص`
+                        : `Breakfast Option: SAR ${dynamicBreakfastSar} per person`}
                     </span>
                   </div>
                   <div className="ab-utility-right">
@@ -8431,15 +8509,16 @@ export default function Home() {
                   {/* Vertical Stack of 7 Room Booking Cards */}
                   {filteredRoomSlugs.map((slug) => {
                     const rm = roomsMap[slug];
-                    const baseRate = ROOM_BASE_RATES_SAR[slug];
+                    const baseRate = dynamicBaseRates[slug];
                     const roomOnlyNightly = baseRate * bookingRoomsCount;
                     const withBreakfastNightly =
-                      (baseRate + BREAKFAST_PRICE_PER_PERSON_SAR * bookingAdults) *
+                      (baseRate + dynamicBreakfastSar * bookingAdults) *
                       bookingRoomsCount;
-                    const weekdayRoomOnlyNightly = Math.round(baseRate * 0.75) * bookingRoomsCount;
+                    const weekdayRoomOnlyNightly =
+                      Math.round(baseRate * dynamicDiscountMult) * bookingRoomsCount;
                     const weekdayWithBreakfastNightly =
-                      (Math.round(baseRate * 0.75) +
-                        BREAKFAST_PRICE_PER_PERSON_SAR * bookingAdults) *
+                      (Math.round(baseRate * dynamicDiscountMult) +
+                        dynamicBreakfastSar * bookingAdults) *
                       bookingRoomsCount;
                     const isMoreOpen = Boolean(bookingExpandedRates[slug]);
                     const isHighlighted = bookingHighlightedRoom === slug;
@@ -8602,15 +8681,15 @@ export default function Home() {
                               </h4>
                               <span className="ab-breakfast-pill">
                                 {language === "ar"
-                                  ? `+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص`
-                                  : `+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person`}
+                                  ? `+${dynamicBreakfastSar} ريال للشخص`
+                                  : `+SAR ${dynamicBreakfastSar} per person`}
                               </span>
                             </div>
                             <ul className="ab-rate-bullets">
                               <li>
                                 {language === "ar"
-                                  ? `بوفيه إفطار يومي في مطعم ديوان مدى (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص في الليلة)`
-                                  : `Daily breakfast buffet at Diwan Mada Restaurant (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person / night)`}
+                                  ? `بوفيه إفطار يومي في مطعم ديوان مدى (${dynamicBreakfastSar} ريال للشخص في الليلة)`
+                                  : `Daily breakfast buffet at Diwan Mada Restaurant (SAR ${dynamicBreakfastSar} per person / night)`}
                               </li>
                               <li>
                                 {language === "ar"
@@ -8635,8 +8714,8 @@ export default function Home() {
                               </div>
                               <div className="ab-rate-tax-note">
                                 {language === "ar"
-                                  ? `شامل الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults} شخص)`
-                                  : `Includes breakfast (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults} ${
+                                  ? `شامل الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults} شخص)`
+                                  : `Includes breakfast (SAR ${dynamicBreakfastSar} × ${bookingAdults} ${
                                       bookingAdults === 1 ? "person" : "persons"
                                     })`}
                               </div>
@@ -8667,8 +8746,8 @@ export default function Home() {
                                 <div className="ab-rate-title-wrap">
                                   <h4 className="ab-rate-title">
                                     {language === "ar"
-                                      ? "عرض أيام الأسبوع (خصم 25%) — غرفة فقط"
-                                      : "Weekday Escape (Up to 25% Off) — Room Only"}
+                                      ? `عرض أيام الأسبوع (خصم ${cmsState.weekdayDiscountPct}%) — غرفة فقط`
+                                      : `Weekday Escape (Up to ${cmsState.weekdayDiscountPct}% Off) — Room Only`}
                                   </h4>
                                 </div>
                                 <ul className="ab-rate-bullets">
@@ -8708,20 +8787,20 @@ export default function Home() {
                                 <div className="ab-rate-title-wrap">
                                   <h4 className="ab-rate-title">
                                     {language === "ar"
-                                      ? "عرض أيام الأسبوع (خصم 25%) — شامل الإفطار"
-                                      : "Weekday Escape (Up to 25% Off) — With Breakfast"}
+                                      ? `عرض أيام الأسبوع (خصم ${cmsState.weekdayDiscountPct}%) — شامل الإفطار`
+                                      : `Weekday Escape (Up to ${cmsState.weekdayDiscountPct}% Off) — With Breakfast`}
                                   </h4>
                                   <span className="ab-breakfast-pill">
                                     {language === "ar"
-                                      ? `+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص`
-                                      : `+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person`}
+                                      ? `+${dynamicBreakfastSar} ريال للشخص`
+                                      : `+SAR ${dynamicBreakfastSar} per person`}
                                   </span>
                                 </div>
                                 <ul className="ab-rate-bullets">
                                   <li>
                                     {language === "ar"
-                                      ? `شامل الإفطار اليومي في مطعم ديوان مدى (+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص)`
-                                      : `Includes daily breakfast at Diwan Mada Restaurant (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} / person)`}
+                                      ? `شامل الإفطار اليومي في مطعم ديوان مدى (+${dynamicBreakfastSar} ريال للشخص)`
+                                      : `Includes daily breakfast at Diwan Mada Restaurant (+SAR ${dynamicBreakfastSar} / person)`}
                                   </li>
                                 </ul>
                               </div>
@@ -8735,8 +8814,8 @@ export default function Home() {
                                   </div>
                                   <div className="ab-rate-tax-note">
                                     {language === "ar"
-                                      ? `شامل الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults})`
-                                      : `Includes breakfast (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults})`}
+                                      ? `شامل الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults})`
+                                      : `Includes breakfast (SAR ${dynamicBreakfastSar} × ${bookingAdults})`}
                                   </div>
                                 </div>
                                 <button
@@ -8864,8 +8943,8 @@ export default function Home() {
                           }
                         >
                           {language === "ar"
-                            ? `شامل الإفطار (+${BREAKFAST_PRICE_PER_PERSON_SAR} ر.س/شخص)`
-                            : `With Breakfast (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR}/person)`}
+                            ? `شامل الإفطار (+${dynamicBreakfastSar} ر.س/شخص)`
+                            : `With Breakfast (+SAR ${dynamicBreakfastSar}/person)`}
                         </button>
                       </div>
                     </div>
@@ -8890,11 +8969,11 @@ export default function Home() {
                         <span>
                           {includesBreakfast
                             ? language === "ar"
-                              ? `الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة)`
-                              : `Breakfast (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults}p × ${nightsCount}n)`
+                              ? `الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة)`
+                              : `Breakfast (SAR ${dynamicBreakfastSar} × ${bookingAdults}p × ${nightsCount}n)`
                             : language === "ar"
-                            ? "الإفطار (50 ريال للشخص)"
-                            : "Breakfast (SAR 50 / person)"}
+                            ? `الإفطار (${dynamicBreakfastSar} ريال للشخص)`
+                            : `Breakfast (SAR ${dynamicBreakfastSar} / person)`}
                         </span>
                         <span>
                           {includesBreakfast
@@ -8965,9 +9044,21 @@ export default function Home() {
             </div>
           );
         })()
+      ) : activePage === "admin" ? (
+        <AdminDashboard
+          cmsState={cmsState}
+          onUpdateCmsState={handleUpdateCmsState}
+          onResetCmsState={handleResetCmsState}
+          onOpenWebsiteHome={() => navigateToHomeSection("top")}
+          onOpenBookingPage={(slug) =>
+            openBookingPage(slug ? { roomSlug: slug } : undefined)
+          }
+          onOpenRoomPage={(slug) => openRoomDetailPage(slug)}
+        />
       ) : null}
 
       {/* SECTION 7 (HOMEPAGE SECTION 5) — STANDARD OZ PARK HOTEL WEBSITE FOOTER */}
+      {activePage !== "admin" && (
       <footer id="contact">
         <div className="footer-top">
           <div className="footer-brand-block">
@@ -9052,6 +9143,16 @@ export default function Home() {
             <button type="button" className="footer-link-btn" onClick={() => setLegalModal("terms")}>
               {t.footerTermsLink}
             </button>
+            <a
+              href="#admin"
+              onClick={(e) => {
+                e.preventDefault();
+                openAdminPage();
+              }}
+              style={{ color: "var(--gold-light)", marginTop: "6px", display: "inline-block" }}
+            >
+              {language === "ar" ? "لوحة تحكم الغرف (Admin)" : "Rooms Admin Portal"}
+            </a>
           </div>
 
           <div>
@@ -9079,6 +9180,7 @@ export default function Home() {
           <span>Al Qunfudhah, Red Sea — Saudi Arabia</span>
         </div>
       </footer>
+      )}
 
       {/* FULL-SCREEN LIGHTBOX FOR WEDDING ROOM GALLERY */}
       {fullscreenPhotoIndex !== null && (
@@ -9350,7 +9452,7 @@ export default function Home() {
             </h3>
 
             <div className="ard-list-modal-grid">
-              {specificRoomsData[language][activeRoomSlug].allAmenities.map((am) => (
+              {cmsState.roomsData[language][activeRoomSlug].allAmenities.map((am) => (
                 <div key={am.label} className="ard-list-modal-item">
                   <AtlantisRoomIcon name={am.icon} stroke="#2559a8" size={24} />
                   <span>{am.label}</span>
@@ -9364,7 +9466,7 @@ export default function Home() {
       {/* FULL-SCREEN LIGHTBOX FOR SPECIFIC ROOM PHOTO GALLERY */}
       {roomGalleryLightboxIndex !== null &&
         (() => {
-          const room = specificRoomsData[language][activeRoomSlug];
+          const room = cmsState.roomsData[language][activeRoomSlug];
           const imgs = room.allGalleryImages;
           const safeIdx = ((roomGalleryLightboxIndex % imgs.length) + imgs.length) % imgs.length;
           return (
