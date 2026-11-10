@@ -2915,6 +2915,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeOffer, setActiveOffer] = useState(0);
   const [signatureSlide, setSignatureSlide] = useState(0);
+  const [signatureVerticalProgress, setSignatureVerticalProgress] = useState(0);
   const [soundOn, setSoundOn] = useState(false);
 
   // Wedding page interactive states
@@ -3125,8 +3126,10 @@ export default function Home() {
       if (!section) return;
       const rect = section.getBoundingClientRect();
       const range = Math.max(1, section.offsetHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / range));
-      const next = Math.round(progress * (signatureImages.length - 1));
+      const normalized = Math.min(1, Math.max(0, -rect.top / range));
+      const continuous = normalized * Math.max(1, signatureImages.length - 1);
+      setSignatureVerticalProgress(continuous);
+      const next = Math.round(continuous);
       setSignatureSlide((current) => (current === next ? current : next));
     };
     const onScroll = () => {
@@ -3566,9 +3569,13 @@ export default function Home() {
   const jumpToSignature = (index: number) => {
     const section = signatureRef.current;
     if (!section) return;
+    const clamped = Math.max(0, Math.min(signatureImages.length - 1, index));
     const sectionTop = window.scrollY + section.getBoundingClientRect().top;
-    const range = section.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: sectionTop + (range * index) / (signatureImages.length - 1), behavior: "smooth" });
+    const range = Math.max(1, section.offsetHeight - window.innerHeight);
+    window.scrollTo({
+      top: sectionTop + (range * clamped) / Math.max(1, signatureImages.length - 1),
+      behavior: "smooth",
+    });
   };
 
   const openWhatsAppBooking = (subjectText: string) => {
@@ -3782,72 +3789,191 @@ export default function Home() {
             </div>
           </section>
 
-          {/* SECTION 3 — DISCOVER OZ PARK / EXPERIENCE SLIDER (5 Full-Width Slides) */}
-          <section className="discover-section" id="signature">
-            <div className="signature-carousel" ref={signatureRef} aria-label={t.signatureLabel}>
-              <div className="signature-stage">
-                {slides.map((slide, index) => {
-                  const state = index === signatureSlide ? "is-active" : index < signatureSlide ? "is-past" : "is-next";
-                  return (
-                    <article
-                      className={`signature-slide ${state}`}
-                      key={`${language}-${slide.id}`}
-                      aria-hidden={index !== signatureSlide}
+          {/* SECTION 3 — DISCOVER OZ PARK / EXPERIENCE SLIDER (5 Full-Width Slides — 1:1 Atlantis Continuous Vertical Curtain-Wipe Carousel) */}
+          {(() => {
+            const totalSlides = slides.length;
+            const maxTransIdx = Math.max(0, totalSlides - 2);
+            const baseIdx = Math.min(maxTransIdx, Math.max(0, Math.floor(signatureVerticalProgress)));
+            const localPct = Math.min(100, Math.max(0, (signatureVerticalProgress - baseIdx) * 100));
+            const activeSegmentIdx = Math.min(
+              totalSlides - 1,
+              Math.max(0, Math.round(signatureVerticalProgress))
+            );
+            const thumbPercent =
+              totalSlides > 1
+                ? Math.min(100, Math.max(0, (signatureVerticalProgress / (totalSlides - 1)) * 100))
+                : 0;
+
+            return (
+              <section
+                id="signature"
+                ref={signatureRef}
+                className="discover-section ac-vcarousel-section as-vcarousel-section"
+                style={{ height: `${totalSlides * 100}vh` }}
+                aria-label={t.signatureLabel}
+              >
+                <div className="ac-vcarousel-static">
+                  {/* Right-hand Vertical Navigation Rail (Up chevron + 5 progress segments + circular thumb + Down chevron) */}
+                  <div className="ac-vcarousel-nav">
+                    <button
+                      type="button"
+                      className="ac-vcarousel-nav-btn"
+                      disabled={activeSegmentIdx === 0}
+                      onClick={() => jumpToSignature(activeSegmentIdx - 1)}
+                      aria-label={t.previousOffer}
                     >
-                      <img src={slide.image} alt={slide.title} />
-                      <div className="signature-shade" />
-                      <div className="signature-copy">
-                        <p>{slide.category}</p>
-                        <h2>{slide.title}</h2>
-                        <span>{slide.copy}</span>
-                        {slide.comingSoon ? (
-                          <div className="coming-soon-pill">{slide.ctaLabel}</div>
-                        ) : (
-                          <button
-                            type="button"
-                            className="signature-cta-btn"
-                            tabIndex={index === signatureSlide ? 0 : -1}
-                            onClick={() => {
-                              if (slide.id === "oz-park-hotel") {
-                                openStayPage();
-                              } else if (slide.id === "diwan-mada-restaurant") {
-                                openDiningPage();
-                              } else if (slide.id === "oz-park-cafe") {
-                                openCafePage();
-                              } else if (slide.id === "meeting-room") {
-                                openMeetingPage();
-                              } else {
-                                setSelectedSlideModal(slide);
-                              }
-                            }}
-                          >
-                            {slide.ctaLabel}
-                          </button>
-                        )}
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          fill="currentColor"
+                          d="M6.354 15.354a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L12 9.707l-5.646 5.647z"
+                        />
+                      </svg>
+                    </button>
+
+                    <div className="ac-vcarousel-progress-wrapper">
+                      <div className="ac-vcarousel-progress-track">
+                        <div className="ac-vcarousel-progress-bars">
+                          {slides.map((s, idx) => (
+                            <button
+                              key={`${language}-${s.id}`}
+                              type="button"
+                              className={`ac-vcarousel-progress-segment ${
+                                idx === activeSegmentIdx ? "is-active" : ""
+                              }`}
+                              onClick={() => jumpToSignature(idx)}
+                              aria-label={`${s.category}: ${s.title}`}
+                              aria-current={idx === activeSegmentIdx ? "true" : undefined}
+                            />
+                          ))}
+                        </div>
+                        <div
+                          className="ac-vcarousel-thumb"
+                          style={{
+                            top: `${thumbPercent.toFixed(2)}%`,
+                            transform: "translate(-50%, -50%)",
+                          }}
+                        />
                       </div>
-                    </article>
-                  );
-                })}
-                <div className="signature-progress" aria-label={t.signatureLabel}>
-                  <span className="signature-count">0{signatureSlide + 1}</span>
-                  <div className="signature-rail">
-                    {slides.map((slide, index) => (
-                      <button
-                        type="button"
-                        className={index === signatureSlide ? "is-active" : ""}
-                        key={`${language}-${slide.id}`}
-                        onClick={() => jumpToSignature(index)}
-                        aria-label={`${slide.category}: ${slide.title}`}
-                        aria-current={index === signatureSlide ? "true" : undefined}
-                      />
-                    ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="ac-vcarousel-nav-btn"
+                      disabled={activeSegmentIdx === totalSlides - 1}
+                      onClick={() => jumpToSignature(activeSegmentIdx + 1)}
+                      aria-label={t.nextOffer}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          fill="currentColor"
+                          d="M17.646 8.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 .708-.708L12 14.293l5.646-5.647z"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                  <span className="signature-total">0{slides.length}</span>
+
+                  {/* Full-Screen Stacked Slides with Exact Atlantis Clip-Path Curtain Wipe & Parallax */}
+                  {slides.map((slide, idx) => {
+                    let clipPath = "inset(100% 0% 0% 0%)";
+                    let zIndex = 1;
+                    let display: "block" | "none" = "none";
+                    let bgTransform = "translateY(30px)";
+
+                    if (idx === baseIdx) {
+                      clipPath = `inset(0% 0% ${localPct.toFixed(2)}% 0%)`;
+                      zIndex = 20;
+                      display = "block";
+                      bgTransform = `translateY(${(-0.3 * localPct).toFixed(2)}px)`;
+                    } else if (idx === baseIdx + 1) {
+                      clipPath = `inset(${(100 - localPct).toFixed(2)}% 0% 0% 0%)`;
+                      zIndex = 10;
+                      display = "block";
+                      bgTransform = `translateY(${(30 - 0.3 * localPct).toFixed(2)}px)`;
+                    }
+
+                    return (
+                      <div
+                        key={`${language}-vslide-${slide.id}`}
+                        className="ac-vcarousel-slide"
+                        style={{ clipPath, zIndex, display }}
+                        aria-hidden={idx !== activeSegmentIdx}
+                      >
+                        <div className="ac-vcarousel-slide-bg" style={{ transform: bgTransform }}>
+                          <img
+                            src={slide.image}
+                            alt={slide.title}
+                            className="ac-vcarousel-bg-img"
+                          />
+                          <div className="ac-vcarousel-bg-overlay" />
+                        </div>
+
+                        <div className="ac-vcarousel-text-container">
+                          <div className="ac-vcarousel-text-inner">
+                            <span className="ac-vcarousel-overline">{slide.category}</span>
+                            <h2 className="ac-vcarousel-heading">{slide.title}</h2>
+                            <p className="ac-vcarousel-desc">{slide.copy}</p>
+                            <div className="ac-vcarousel-cta-wrap">
+                              {slide.comingSoon ? (
+                                <div className="coming-soon-pill">{slide.ctaLabel}</div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="ac-vcarousel-cta"
+                                  tabIndex={idx === activeSegmentIdx ? 0 : -1}
+                                  onClick={() => {
+                                    if (slide.id === "oz-park-hotel") {
+                                      openStayPage();
+                                    } else if (slide.id === "diwan-mada-restaurant") {
+                                      openDiningPage();
+                                    } else if (slide.id === "oz-park-cafe") {
+                                      openCafePage();
+                                    } else if (slide.id === "meeting-room") {
+                                      openMeetingPage();
+                                    } else {
+                                      setSelectedSlideModal(slide);
+                                    }
+                                  }}
+                                >
+                                  {slide.ctaLabel}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Bottom 5-Tab Experience Selector Bar on the Vertical Carousel Stage */}
+                  <div className="as-vcarousel-bottom-tabs">
+                    <div className="as-vcarousel-bottom-tabs-inner">
+                      {slides.map((s, idx) => {
+                        const isActive = idx === activeSegmentIdx;
+                        return (
+                          <button
+                            key={`${language}-vtab-${s.id}`}
+                            type="button"
+                            className={`as-immersive-tab ${isActive ? "is-active" : ""}`}
+                            onClick={() => jumpToSignature(idx)}
+                          >
+                            <span>{s.category}</span>
+                          </button>
+                        );
+                      })}
+                      <span
+                        className="as-immersive-ink-bar"
+                        aria-hidden="true"
+                        style={{
+                          width: `${100 / slides.length}%`,
+                          insetInlineStart: `${(activeSegmentIdx * 100) / slides.length}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <p className="signature-scroll-note">{t.scrollToExplore}</p>
-              </div>
-            </div>
-          </section>
+              </section>
+            );
+          })()}
 
           {/* SECTION 4 — STAY / ACCOMMODATION (3 Large Cards: Rooms, Studios, Suites — No Room Prices on Homepage) */}
           <section className="stay-section section-pad" id="stay">
@@ -4064,7 +4190,7 @@ export default function Home() {
               <div className="aw-folding-track">
                 {getFoldingGalleryWindow().map(({ item, index, offset, isCenter }) => (
                   <article
-                    key={`${item.src}-${offset}`}
+                    key={item.src}
                     className={`aw-folding-card ${isCenter ? "is-center" : ""} offset-${offset}`}
                     onClick={() => {
                       if (isCenter) {
@@ -4763,7 +4889,7 @@ export default function Home() {
               <div className="ad-peeking-track">
                 {getDiningGalleryWindow().map(({ item, index, offset, isCenter }) => (
                   <div
-                    key={`${item.src}-${offset}`}
+                    key={item.src}
                     className={`ad-peeking-slide ${isCenter ? "is-center" : ""} offset-${offset}`}
                     onClick={() => {
                       if (isCenter) {
@@ -6589,7 +6715,7 @@ export default function Home() {
                 <div className="arc-folding-stage">
                   {privWindow.map(({ item, index, offset, isCenter }) => (
                     <div
-                      key={`${item.id}-${offset}`}
+                      key={item.id}
                       className={`arc-folding-slide arc-folding-offset-${offset} ${
                         isCenter ? "is-center" : ""
                       }`}
@@ -6600,23 +6726,13 @@ export default function Home() {
                       </div>
                       <div className="arc-folding-card-caption">
                         <h3 className="arc-folding-card-title">{item.title}</h3>
-                        {isCenter && (
-                          <p className="arc-folding-card-desc">{item.description}</p>
-                        )}
+                        <p className="arc-folding-card-desc">{item.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="arc-folding-controls">
-                  <button
-                    type="button"
-                    className="arc-folding-arrow"
-                    onClick={() => movePrivilegeCarousel(-1)}
-                    aria-label={t.previousOffer}
-                  >
-                    <Arrow reverse rtl={isRtl} />
-                  </button>
                   <div className="arc-folding-progress">
                     <div
                       className="arc-folding-progress-bar"
@@ -6626,14 +6742,24 @@ export default function Home() {
                       }}
                     />
                   </div>
-                  <button
-                    type="button"
-                    className="arc-folding-arrow"
-                    onClick={() => movePrivilegeCarousel(1)}
-                    aria-label={t.nextOffer}
-                  >
-                    <Arrow rtl={isRtl} />
-                  </button>
+                  <div className="arc-folding-arrows">
+                    <button
+                      type="button"
+                      className="arc-folding-arrow"
+                      onClick={() => movePrivilegeCarousel(-1)}
+                      aria-label={t.previousOffer}
+                    >
+                      <Arrow reverse rtl={isRtl} />
+                    </button>
+                    <button
+                      type="button"
+                      className="arc-folding-arrow"
+                      onClick={() => movePrivilegeCarousel(1)}
+                      aria-label={t.nextOffer}
+                    >
+                      <Arrow rtl={isRtl} />
+                    </button>
+                  </div>
                 </div>
               </section>
 
@@ -6890,7 +7016,7 @@ export default function Home() {
                 <div className="arc-folding-stage">
                   {privWindow.map(({ item, index, offset, isCenter }) => (
                     <div
-                      key={`${item.id}-${offset}`}
+                      key={item.id}
                       className={`arc-folding-slide arc-folding-offset-${offset} ${
                         isCenter ? "is-center" : ""
                       }`}
@@ -6901,23 +7027,13 @@ export default function Home() {
                       </div>
                       <div className="arc-folding-card-caption">
                         <h3 className="arc-folding-card-title">{item.title}</h3>
-                        {isCenter && (
-                          <p className="arc-folding-card-desc">{item.description}</p>
-                        )}
+                        <p className="arc-folding-card-desc">{item.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="arc-folding-controls">
-                  <button
-                    type="button"
-                    className="arc-folding-arrow"
-                    onClick={() => movePrivilegeCarousel(-1)}
-                    aria-label={t.previousOffer}
-                  >
-                    <Arrow reverse rtl={isRtl} />
-                  </button>
                   <div className="arc-folding-progress">
                     <div
                       className="arc-folding-progress-bar"
@@ -6927,14 +7043,24 @@ export default function Home() {
                       }}
                     />
                   </div>
-                  <button
-                    type="button"
-                    className="arc-folding-arrow"
-                    onClick={() => movePrivilegeCarousel(1)}
-                    aria-label={t.nextOffer}
-                  >
-                    <Arrow rtl={isRtl} />
-                  </button>
+                  <div className="arc-folding-arrows">
+                    <button
+                      type="button"
+                      className="arc-folding-arrow"
+                      onClick={() => movePrivilegeCarousel(-1)}
+                      aria-label={t.previousOffer}
+                    >
+                      <Arrow reverse rtl={isRtl} />
+                    </button>
+                    <button
+                      type="button"
+                      className="arc-folding-arrow"
+                      onClick={() => movePrivilegeCarousel(1)}
+                      aria-label={t.nextOffer}
+                    >
+                      <Arrow rtl={isRtl} />
+                    </button>
+                  </div>
                 </div>
               </section>
 
