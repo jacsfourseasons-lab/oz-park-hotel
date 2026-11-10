@@ -346,7 +346,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       mainHeading: "A Refreshing Meeting Break",
       description:
         "Keep your team refreshed with a carefully selected assortment of hot and cold beverages, savory snacks, and delicious pastries.",
-      price: "SAR 50 per person",
+      price: "⃁ 50 per person",
       inclusionsLabel: "Package Inclusions:",
       inclusions: [
         {
@@ -369,7 +369,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       buttonLabel: "INQUIRE ON WHATSAPP",
       viewInclusionsLabel: "VIEW PACKAGE DETAILS",
       image: "/images/ozpark/meeting-pkg-standard-4k.jpg",
-      whatsappSubject: "Meeting Room — Standard Coffee Break Package (SAR 50 per person)",
+      whatsappSubject: "Meeting Room — Standard Coffee Break Package (⃁ 50 per person)",
     },
     {
       id: "special-coffee-break",
@@ -378,7 +378,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       mainHeading: "Elevate Your Meeting Experience",
       description:
         "Add an elevated touch to your gathering with a generous selection of refreshing drinks, premium savory bites, delightful pastries, and sweet treats.",
-      price: "SAR 70 per person",
+      price: "⃁ 70 per person",
       inclusionsLabel: "Package Inclusions:",
       inclusions: [
         {
@@ -414,7 +414,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       buttonLabel: "INQUIRE ON WHATSAPP",
       viewInclusionsLabel: "VIEW PACKAGE DETAILS",
       image: "/images/ozpark/meeting-pkg-special-4k.jpg",
-      whatsappSubject: "Meeting Room — Special Coffee Break Package (SAR 70 per person)",
+      whatsappSubject: "Meeting Room — Special Coffee Break Package (⃁ 70 per person)",
     },
   ],
   ar: [
@@ -425,7 +425,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       mainHeading: "استراحة اجتماع منعشة",
       description:
         "حافظ على نشاط فريقك مع تشكيلة مختارة بعناية من المشروبات الساخنة والباردة، والوجبات الخفيفة المالحة، والمعجنات الشهية.",
-      price: "SAR 50 للشخص الواحد",
+      price: "⃁ 50 للشخص الواحد",
       inclusionsLabel: "محتويات الباقة:",
       inclusions: [
         {
@@ -448,7 +448,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       buttonLabel: "استفسر عبر واتساب",
       viewInclusionsLabel: "عرض تفاصيل الباقة",
       image: "/images/ozpark/meeting-pkg-standard-4k.jpg",
-      whatsappSubject: "قاعة الاجتماعات — باقة استراحة القهوة القياسية (SAR 50 للشخص الواحد)",
+      whatsappSubject: "قاعة الاجتماعات — باقة استراحة القهوة القياسية (⃁ 50 للشخص الواحد)",
     },
     {
       id: "special-coffee-break",
@@ -457,7 +457,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       mainHeading: "ارتقِ بتجربة اجتماعاتك",
       description:
         "أضف لمسة راقية لاجتماعك مع تشكيلة غنية من المشروبات المنعشة، والمقبلات المالحة الفاخرة، والمعجنات الشهية، والحلويات المميزة.",
-      price: "SAR 70 للشخص الواحد",
+      price: "⃁ 70 للشخص الواحد",
       inclusionsLabel: "محتويات الباقة:",
       inclusions: [
         {
@@ -493,7 +493,7 @@ const meetingPackageSlidesData: Record<Language, MeetingPackageSlide[]> = {
       buttonLabel: "استفسر عبر واتساب",
       viewInclusionsLabel: "عرض تفاصيل الباقة",
       image: "/images/ozpark/meeting-pkg-special-4k.jpg",
-      whatsappSubject: "قاعة الاجتماعات — باقة استراحة القهوة المميزة (SAR 70 للشخص الواحد)",
+      whatsappSubject: "قاعة الاجتماعات — باقة استراحة القهوة المميزة (⃁ 70 للشخص الواحد)",
     },
   ],
 };
@@ -1320,10 +1320,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "The couple's initials beautifully arranged.",
       ],
       priceLabel: "Package Price",
-      price: "SAR 200",
+      price: "⃁ 200",
       priceNote: "VAT included. Room accommodation is charged separately.",
       cta: "INQUIRE ON WHATSAPP",
-      whatsappSubject: "Package 01 — First Whisper Package (The Essential Package - SAR 200)",
+      whatsappSubject: "Package 01 — First Whisper Package (The Essential Package - ⃁ 200)",
     },
     {
       id: "package-02",
@@ -1342,10 +1342,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "A selection of crunchy nuts.",
       ],
       priceLabel: "Package Price",
-      price: "SAR 400",
+      price: "⃁ 400",
       priceNote: "VAT included. Room accommodation is charged separately.",
       cta: "INQUIRE ON WHATSAPP",
-      whatsappSubject: "Package 02 — Haneen Package (The Golden Package - SAR 400)",
+      whatsappSubject: "Package 02 — Haneen Package (The Golden Package - ⃁ 400)",
     },
     {
       id: "package-03",
@@ -1365,10 +1365,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "Two varieties of salads served with dinner.",
       ],
       priceLabel: "Package Price",
-      price: "SAR 700",
+      price: "⃁ 700",
       priceNote: "VAT included. Room accommodation is charged separately.",
       cta: "INQUIRE ON WHATSAPP",
-      whatsappSubject: "Package 03 — A Thousand Nights & A Night Package (The Golden Package - SAR 700)",
+      whatsappSubject: "Package 03 — A Thousand Nights & A Night Package (The Golden Package - ⃁ 700)",
     },
     {
       id: "package-04",
@@ -1388,10 +1388,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "Four varieties of distinctive international salads served with dinner.",
       ],
       priceLabel: "Package Price",
-      price: "SAR 1,000",
+      price: "⃁ 1,000",
       priceNote: "VAT included. Room accommodation is charged separately.",
       cta: "INQUIRE ON WHATSAPP",
-      whatsappSubject: "Package 04 — Royal Package (The Royal Package - SAR 1,000)",
+      whatsappSubject: "Package 04 — Royal Package (The Royal Package - ⃁ 1,000)",
     },
   ],
   ar: [
@@ -1410,10 +1410,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "تنسيق أول حرفين من اسمي العروسين بشكل أنيق.",
       ],
       priceLabel: "سعر الباقة",
-      price: "SAR 200",
+      price: "⃁ 200",
       priceNote: "شامل ضريبة القيمة المضافة. رسوم إقامة الغرفة تُحتسب بشكل منفصل.",
       cta: "استفسر عبر واتساب",
-      whatsappSubject: "الباقة 01 — باقة همسة أولى (الباقة الأساسية - SAR 200)",
+      whatsappSubject: "الباقة 01 — باقة همسة أولى (الباقة الأساسية - ⃁ 200)",
     },
     {
       id: "package-02",
@@ -1432,10 +1432,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "تشكيلة مختارة من المكسرات المقرمشة.",
       ],
       priceLabel: "سعر الباقة",
-      price: "SAR 400",
+      price: "⃁ 400",
       priceNote: "شامل ضريبة القيمة المضافة. رسوم إقامة الغرفة تُحتسب بشكل منفصل.",
       cta: "استفسر عبر واتساب",
-      whatsappSubject: "الباقة 02 — باقة حنين (الباقة الذهبية - SAR 400)",
+      whatsappSubject: "الباقة 02 — باقة حنين (الباقة الذهبية - ⃁ 400)",
     },
     {
       id: "package-03",
@@ -1455,10 +1455,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "صنفان من السلطات يُقدمان مع العشاء.",
       ],
       priceLabel: "سعر الباقة",
-      price: "SAR 700",
+      price: "⃁ 700",
       priceNote: "شامل ضريبة القيمة المضافة. رسوم إقامة الغرفة تُحتسب بشكل منفصل.",
       cta: "استفسر عبر واتساب",
-      whatsappSubject: "الباقة 03 — باقة ألف ليلة وليلة (الباقة الذهبية - SAR 700)",
+      whatsappSubject: "الباقة 03 — باقة ألف ليلة وليلة (الباقة الذهبية - ⃁ 700)",
     },
     {
       id: "package-04",
@@ -1478,10 +1478,10 @@ const weddingPackagesData: Record<Language, WeddingPackageItem[]> = {
         "أربعة أصناف من السلطات العالمية المميزة تُقدم مع العشاء.",
       ],
       priceLabel: "سعر الباقة",
-      price: "SAR 1,000",
+      price: "⃁ 1,000",
       priceNote: "شامل ضريبة القيمة المضافة. رسوم إقامة الغرفة تُحتسب بشكل منفصل.",
       cta: "استفسر عبر واتساب",
-      whatsappSubject: "الباقة 04 — الباقة الملكية (الباقة الملكية - SAR 1,000)",
+      whatsappSubject: "الباقة 04 — الباقة الملكية (الباقة الملكية - ⃁ 1,000)",
     },
   ],
 };
@@ -7212,9 +7212,7 @@ export default function Home() {
                         <img src={rm.cardImage} alt={rm.name} />
                         <div className="arc-room-price-tag">
                           <span className="arc-room-price-amount">
-                            {language === "ar"
-                              ? `${(cmsState.baseRatesSar[rm.slug] ?? 380).toLocaleString()} ر.س`
-                              : `SAR ${(cmsState.baseRatesSar[rm.slug] ?? 380).toLocaleString()}`}
+                            {`⃁ ${(cmsState.baseRatesSar[rm.slug] ?? 380).toLocaleString()}`}
                           </span>
                           <span className="arc-room-price-unit">
                             {language === "ar" ? "/ الليلة" : "/ night"}
@@ -8029,17 +8027,17 @@ export default function Home() {
           const handleCompleteBookingWhatsApp = () => {
             const planLabelEn =
               activeCartItem.ratePlan === "with-breakfast"
-                ? `With Breakfast (+SAR ${dynamicBreakfastSar} per person)`
+                ? `With Breakfast (+⃁ ${dynamicBreakfastSar} per person)`
                 : activeCartItem.ratePlan === "weekday-with-breakfast"
-                ? `Weekday Special (${cmsState.weekdayDiscountPct}% Off) With Breakfast (+SAR ${dynamicBreakfastSar} per person)`
+                ? `Weekday Special (${cmsState.weekdayDiscountPct}% Off) With Breakfast (+⃁ ${dynamicBreakfastSar} per person)`
                 : activeCartItem.ratePlan === "weekday-room-only"
                 ? `Weekday Special (${cmsState.weekdayDiscountPct}% Off) — Room Only`
                 : "Room Only";
             const planLabelAr =
               activeCartItem.ratePlan === "with-breakfast"
-                ? `شامل الإفطار (+${dynamicBreakfastSar} ريال للشخص)`
+                ? `شامل الإفطار (+⃁ ${dynamicBreakfastSar} للشخص)`
                 : activeCartItem.ratePlan === "weekday-with-breakfast"
-                ? `عرض أيام الأسبوع شاملة الإفطار (+${dynamicBreakfastSar} ريال للشخص)`
+                ? `عرض أيام الأسبوع شاملة الإفطار (+⃁ ${dynamicBreakfastSar} للشخص)`
                 : activeCartItem.ratePlan === "weekday-room-only"
                 ? "عرض أيام الأسبوع — غرفة فقط"
                 : "غرفة فقط (بدون إفطار)";
@@ -8053,11 +8051,11 @@ export default function Home() {
                     `• تسجيل الوصول: ${bookingCheckIn}`,
                     `• تسجيل المغادرة: ${bookingCheckOut} (${nightsCount} ليلة)`,
                     `• عدد الغرف والضيوف: ${bookingRoomsCount} غرفة، ${bookingAdults} بالغ، ${bookingChildren} طفل`,
-                    `• سعر الغرفة: SAR ${roomSubtotal.toLocaleString()}`,
+                    `• سعر الغرفة: ⃁ ${roomSubtotal.toLocaleString()}`,
                     includesBreakfast
-                      ? `• الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة): SAR ${breakfastSubtotal.toLocaleString()}`
+                      ? `• الإفطار (⃁ ${dynamicBreakfastSar} × ${bookingAdults} شخص × ${nightsCount} ليلة): ⃁ ${breakfastSubtotal.toLocaleString()}`
                       : "• الإفطار: غير مشمول (غرفة فقط)",
-                    `• الإجمالي: SAR ${grandTotalSar.toLocaleString()}`,
+                    `• الإجمالي: ⃁ ${grandTotalSar.toLocaleString()}`,
                     bookingGuestName ? `• اسم الضيف: ${bookingGuestName}` : "",
                     bookingGuestPhone ? `• رقم الجوال: ${bookingGuestPhone}` : "",
                     bookingSpecialRequests ? `• طلبات خاصة: ${bookingSpecialRequests}` : "",
@@ -8071,11 +8069,11 @@ export default function Home() {
                     `• Check-in: ${bookingCheckIn}`,
                     `• Check-out: ${bookingCheckOut} (${nightsCount} ${nightsCount === 1 ? "Night" : "Nights"})`,
                     `• Guests: ${bookingRoomsCount} ${bookingRoomsCount === 1 ? "Room" : "Rooms"}, ${bookingAdults} ${bookingAdults === 1 ? "Adult" : "Adults"}, ${bookingChildren} ${bookingChildren === 1 ? "Child" : "Children"}`,
-                    `• Room Subtotal: SAR ${roomSubtotal.toLocaleString()}`,
+                    `• Room Subtotal: ⃁ ${roomSubtotal.toLocaleString()}`,
                     includesBreakfast
-                      ? `• Breakfast Add-On (SAR ${dynamicBreakfastSar} × ${bookingAdults} person(s) × ${nightsCount} night(s)): SAR ${breakfastSubtotal.toLocaleString()}`
+                      ? `• Breakfast Add-On (⃁ ${dynamicBreakfastSar} × ${bookingAdults} person(s) × ${nightsCount} night(s)): ⃁ ${breakfastSubtotal.toLocaleString()}`
                       : "• Breakfast: Not included (Room Only)",
-                    `• Total Stay Price: SAR ${grandTotalSar.toLocaleString()}`,
+                    `• Total Stay Price: ⃁ ${grandTotalSar.toLocaleString()}`,
                     bookingGuestName ? `• Guest Name: ${bookingGuestName}` : "",
                     bookingGuestPhone ? `• Phone: ${bookingGuestPhone}` : "",
                     bookingSpecialRequests ? `• Special Requests: ${bookingSpecialRequests}` : "",
@@ -8103,8 +8101,8 @@ export default function Home() {
                     </span>
                     <span className="ab-utility-badge">
                       {language === "ar"
-                        ? `الإفطار الإضافي: ${dynamicBreakfastSar} ريال للشخص`
-                        : `Breakfast Option: SAR ${dynamicBreakfastSar} per person`}
+                        ? `الإفطار الإضافي: ⃁ ${dynamicBreakfastSar} للشخص`
+                        : `Breakfast Option: ⃁ ${dynamicBreakfastSar} per person`}
                     </span>
                   </div>
                   <div className="ab-utility-right">
@@ -8123,7 +8121,7 @@ export default function Home() {
                       {language === "ar" ? "English ⌄" : "العربية ⌄"}
                     </button>
                     <span className="ab-utility-item">
-                      {language === "ar" ? "العملة: ريال سعودي (SAR)" : "SAR (Saudi Riyal) ⌄"}
+                      {language === "ar" ? "العملة: ريال سعودي (⃁)" : "⃁ (Saudi Riyal) ⌄"}
                     </span>
                   </div>
                 </div>
@@ -8252,8 +8250,8 @@ export default function Home() {
                               </span>
                               <span className="ab-guest-stepper-sub">
                                 {language === "ar"
-                                  ? `الإفطار: +${BREAKFAST_PRICE_PER_PERSON_SAR} ريال / شخص`
-                                  : `Breakfast: +SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} / person`}
+                                  ? `الإفطار: +⃁ ${BREAKFAST_PRICE_PER_PERSON_SAR} / شخص`
+                                  : `Breakfast: +⃁ ${BREAKFAST_PRICE_PER_PERSON_SAR} / person`}
                               </span>
                             </div>
                             <div className="ab-stepper-controls">
@@ -8307,10 +8305,10 @@ export default function Home() {
 
                         <div className="ab-guests-breakfast-note">
                           {language === "ar"
-                            ? `سعر الإفطار لـ ${bookingAdults} شخص: +SAR ${breakfastPerNightTotal} في الليلة`
+                            ? `سعر الإفطار لـ ${bookingAdults} شخص: +⃁ ${breakfastPerNightTotal} في الليلة`
                             : `Breakfast for ${bookingAdults} ${
                                 bookingAdults === 1 ? "person" : "persons"
-                              }: +SAR ${breakfastPerNightTotal} / night`}
+                              }: +⃁ ${breakfastPerNightTotal} / night`}
                         </div>
                       </div>
                     )}
@@ -8321,8 +8319,8 @@ export default function Home() {
                         <div className="ab-calendar-top-row">
                           <p className="ab-calendar-rate-note">
                             {language === "ar"
-                              ? `الأسعار المعروضة أدناه هي متوسط الأسعار الليلية بالريال السعودي (SAR) غير شاملة الضرائب والرسوم لمدة ${nightsCount} ليلة.`
-                              : `Rates shown below are average nightly rates in SAR excluding taxes and fees for ${nightsCount} ${
+                              ? `الأسعار المعروضة أدناه هي متوسط الأسعار الليلية بالريال السعودي (⃁) غير شاملة الضرائب والرسوم لمدة ${nightsCount} ليلة.`
+                              : `Rates shown below are average nightly rates in ⃁ excluding taxes and fees for ${nightsCount} ${
                                   nightsCount === 1 ? "night" : "nights"
                                 }.`}
                           </p>
@@ -8420,7 +8418,7 @@ export default function Home() {
                                     >
                                       <span className="ab-day-num">{cell.day}</span>
                                       {!cell.isPast && cell.price && (
-                                        <span className="ab-day-price">{cell.price}</span>
+                                        <span className="ab-day-price">⃁ {cell.price}</span>
                                       )}
                                     </button>
                                   );
@@ -8452,8 +8450,8 @@ export default function Home() {
                             <div className="ab-calendar-total">
                               <strong>
                                 {language === "ar"
-                                  ? `ابتداءً من SAR ${lowestCalendarTotal.toLocaleString()} لإجمالي ${nightsCount} ليلة`
-                                  : `From SAR ${lowestCalendarTotal.toLocaleString()} Total for ${nightsCount} ${
+                                  ? `ابتداءً من ⃁ ${lowestCalendarTotal.toLocaleString()} لإجمالي ${nightsCount} ليلة`
+                                  : `From ⃁ ${lowestCalendarTotal.toLocaleString()} Total for ${nightsCount} ${
                                       nightsCount === 1 ? "Night" : "Nights"
                                     }`}
                               </strong>
@@ -8706,7 +8704,7 @@ export default function Home() {
                           <div className="ab-rate-right">
                             <div>
                               <div className="ab-rate-price">
-                                SAR {roomOnlyNightly.toLocaleString()}
+                                ⃁ {roomOnlyNightly.toLocaleString()}
                               </div>
                               <div className="ab-rate-per-night">
                                 {language === "ar" ? "لكل ليلة" : "Per Night"}
@@ -8744,15 +8742,15 @@ export default function Home() {
                               </h4>
                               <span className="ab-breakfast-pill">
                                 {language === "ar"
-                                  ? `+${dynamicBreakfastSar} ريال للشخص`
-                                  : `+SAR ${dynamicBreakfastSar} per person`}
+                                  ? `+⃁ ${dynamicBreakfastSar} للشخص`
+                                  : `+⃁ ${dynamicBreakfastSar} per person`}
                               </span>
                             </div>
                             <ul className="ab-rate-bullets">
                               <li>
                                 {language === "ar"
-                                  ? `بوفيه إفطار يومي في مطعم ديوان مدى (${dynamicBreakfastSar} ريال للشخص في الليلة)`
-                                  : `Daily breakfast buffet at Diwan Mada Restaurant (SAR ${dynamicBreakfastSar} per person / night)`}
+                                  ? `بوفيه إفطار يومي في مطعم ديوان مدى (⃁ ${dynamicBreakfastSar} للشخص في الليلة)`
+                                  : `Daily breakfast buffet at Diwan Mada Restaurant (⃁ ${dynamicBreakfastSar} per person / night)`}
                               </li>
                               <li>
                                 {language === "ar"
@@ -8770,15 +8768,15 @@ export default function Home() {
                           <div className="ab-rate-right">
                             <div>
                               <div className="ab-rate-price">
-                                SAR {withBreakfastNightly.toLocaleString()}
+                                ⃁ {withBreakfastNightly.toLocaleString()}
                               </div>
                               <div className="ab-rate-per-night">
                                 {language === "ar" ? "لكل ليلة" : "Per Night"}
                               </div>
                               <div className="ab-rate-tax-note">
                                 {language === "ar"
-                                  ? `شامل الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults} شخص)`
-                                  : `Includes breakfast (SAR ${dynamicBreakfastSar} × ${bookingAdults} ${
+                                  ? `شامل الإفطار (⃁ ${dynamicBreakfastSar} × ${bookingAdults} شخص)`
+                                  : `Includes breakfast (⃁ ${dynamicBreakfastSar} × ${bookingAdults} ${
                                       bookingAdults === 1 ? "person" : "persons"
                                     })`}
                               </div>
@@ -8824,7 +8822,7 @@ export default function Home() {
                               <div className="ab-rate-right">
                                 <div>
                                   <div className="ab-rate-price">
-                                    SAR {weekdayRoomOnlyNightly.toLocaleString()}
+                                    ⃁ {weekdayRoomOnlyNightly.toLocaleString()}
                                   </div>
                                   <div className="ab-rate-per-night">
                                     {language === "ar" ? "لكل ليلة" : "Per Night"}
@@ -8855,30 +8853,30 @@ export default function Home() {
                                   </h4>
                                   <span className="ab-breakfast-pill">
                                     {language === "ar"
-                                      ? `+${dynamicBreakfastSar} ريال للشخص`
-                                      : `+SAR ${dynamicBreakfastSar} per person`}
+                                      ? `+⃁ ${dynamicBreakfastSar} للشخص`
+                                      : `+⃁ ${dynamicBreakfastSar} per person`}
                                   </span>
                                 </div>
                                 <ul className="ab-rate-bullets">
                                   <li>
                                     {language === "ar"
-                                      ? `شامل الإفطار اليومي في مطعم ديوان مدى (+${dynamicBreakfastSar} ريال للشخص)`
-                                      : `Includes daily breakfast at Diwan Mada Restaurant (+SAR ${dynamicBreakfastSar} / person)`}
+                                      ? `شامل الإفطار اليومي في مطعم ديوان مدى (+⃁ ${dynamicBreakfastSar} للشخص)`
+                                      : `Includes daily breakfast at Diwan Mada Restaurant (+⃁ ${dynamicBreakfastSar} / person)`}
                                   </li>
                                 </ul>
                               </div>
                               <div className="ab-rate-right">
                                 <div>
                                   <div className="ab-rate-price">
-                                    SAR {weekdayWithBreakfastNightly.toLocaleString()}
+                                    ⃁ {weekdayWithBreakfastNightly.toLocaleString()}
                                   </div>
                                   <div className="ab-rate-per-night">
                                     {language === "ar" ? "لكل ليلة" : "Per Night"}
                                   </div>
                                   <div className="ab-rate-tax-note">
                                     {language === "ar"
-                                      ? `شامل الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults})`
-                                      : `Includes breakfast (SAR ${dynamicBreakfastSar} × ${bookingAdults})`}
+                                      ? `شامل الإفطار (⃁ ${dynamicBreakfastSar} × ${bookingAdults})`
+                                      : `Includes breakfast (⃁ ${dynamicBreakfastSar} × ${bookingAdults})`}
                                   </div>
                                 </div>
                                 <button
@@ -9006,8 +9004,8 @@ export default function Home() {
                           }
                         >
                           {language === "ar"
-                            ? `شامل الإفطار (+${dynamicBreakfastSar} ر.س/شخص)`
-                            : `With Breakfast (+SAR ${dynamicBreakfastSar}/person)`}
+                            ? `شامل الإفطار (+⃁ ${dynamicBreakfastSar}/شخص)`
+                            : `With Breakfast (+⃁ ${dynamicBreakfastSar}/person)`}
                         </button>
                       </div>
                     </div>
@@ -9021,7 +9019,7 @@ export default function Home() {
                                 nightsCount === 1 ? "night" : "nights"
                               } × ${bookingRoomsCount})`}
                         </span>
-                        <strong>SAR {roomSubtotal.toLocaleString()}</strong>
+                        <strong>⃁ {roomSubtotal.toLocaleString()}</strong>
                       </div>
 
                       <div
@@ -9032,15 +9030,15 @@ export default function Home() {
                         <span>
                           {includesBreakfast
                             ? language === "ar"
-                              ? `الإفطار (${dynamicBreakfastSar} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة)`
-                              : `Breakfast (SAR ${dynamicBreakfastSar} × ${bookingAdults}p × ${nightsCount}n)`
+                              ? `الإفطار (⃁ ${dynamicBreakfastSar} × ${bookingAdults} شخص × ${nightsCount} ليلة)`
+                              : `Breakfast (⃁ ${dynamicBreakfastSar} × ${bookingAdults}p × ${nightsCount}n)`
                             : language === "ar"
-                            ? `الإفطار (${dynamicBreakfastSar} ريال للشخص)`
-                            : `Breakfast (SAR ${dynamicBreakfastSar} / person)`}
+                            ? `الإفطار (⃁ ${dynamicBreakfastSar} للشخص)`
+                            : `Breakfast (⃁ ${dynamicBreakfastSar} / person)`}
                         </span>
                         <span>
                           {includesBreakfast
-                            ? `SAR ${breakfastSubtotal.toLocaleString()}`
+                            ? `⃁ ${breakfastSubtotal.toLocaleString()}`
                             : language === "ar"
                             ? "غير مضاف"
                             : "Not added"}
@@ -9053,7 +9051,7 @@ export default function Home() {
                         {language === "ar" ? "الإجمالي" : "Total for Stay"}
                       </span>
                       <span className="ab-summary-total-amount">
-                        SAR {grandTotalSar.toLocaleString()}
+                        ⃁ {grandTotalSar.toLocaleString()}
                       </span>
                     </div>
 

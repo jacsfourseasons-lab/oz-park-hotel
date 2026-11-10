@@ -821,7 +821,7 @@ export default function AdminDashboard({
                 {isAr ? "سعر الإفطار الإضافي" : "Breakfast Add-On"}
               </label>
               <div className="oz-admin-inline-input-wrap" dir="ltr">
-                <span>SAR</span>
+                <span>⃁</span>
                 <input
                   id="global-breakfast-sar"
                   type="number"
@@ -1009,19 +1009,19 @@ export default function AdminDashboard({
                       </span>
                       <span className="oz-admin-price-sub">
                         {isAr
-                          ? `شامل الإفطار: ${rate + cmsState.breakfastPriceSar} ريال`
-                          : `With Breakfast: SAR ${rate + cmsState.breakfastPriceSar}`}
+                          ? `شامل الإفطار: ⃁ ${rate + cmsState.breakfastPriceSar}`
+                          : `With Breakfast: ⃁ ${rate + cmsState.breakfastPriceSar}`}
                       </span>
                     </div>
                     <div className="oz-admin-price-input-group" dir="ltr">
-                      <span>SAR</span>
+                      <span>⃁</span>
                       <input
                         type="number"
                         min={50}
                         step={10}
                         value={rate}
                         onChange={(e) => updateRoomRate(slug, Number(e.target.value))}
-                        aria-label={`${rmDisplay.name} nightly rate in SAR`}
+                        aria-label={`${rmDisplay.name} nightly rate in ⃁`}
                       />
                       <button
                         type="button"
@@ -1033,8 +1033,8 @@ export default function AdminDashboard({
                           });
                           triggerToast(
                             isAr
-                              ? `✓ تم حفظ سعر "${rmDisplay.name}" (${rate} ريال)`
-                              : `✓ Saved "${rmDisplay.name}" rate (SAR ${rate})`
+                              ? `✓ تم حفظ سعر "${rmDisplay.name}" (⃁ ${rate})`
+                              : `✓ Saved "${rmDisplay.name}" rate (⃁ ${rate})`
                           );
                         }}
                       >
@@ -1143,7 +1143,7 @@ export default function AdminDashboard({
                 </h3>
                 <div className="oz-admin-form-grid-3">
                   <div className="oz-admin-field">
-                    <label>{isAr ? "سعر الليلة (ريال سعودي SAR)" : "Nightly Rate (SAR)"}</label>
+                    <label>{isAr ? "سعر الليلة (⃁)" : "Nightly Rate (⃁)"}</label>
                     <input
                       type="number"
                       min={50}
@@ -1642,8 +1642,8 @@ export default function AdminDashboard({
                   <div className="oz-admin-field">
                     <label>
                       {isAr
-                        ? "سعر الليلة — غرفة فقط (SAR) *"
-                        : "Nightly Rate — Room Only (SAR) *"}
+                        ? "سعر الليلة — غرفة فقط (⃁) *"
+                        : "Nightly Rate — Room Only (⃁) *"}
                     </label>
                     <input
                       type="number"

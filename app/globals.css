@@ -1,10 +1,105 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&family=Manrope:wght@300;400;500;600&family=Marcellus&family=Noto+Sans+Arabic:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
 
+/* Official Saudi Riyal Symbol (U+20C1 ⃁) Web Font — Embedded for instant zero-latency rendering across all OS & browsers */
+@font-face {
+  font-family: "Riyal";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2"),
+    url("/fonts/riyal-regular.woff2") format("woff2"),
+    url("/fonts/riyal-regular.woff") format("woff");
+  font-weight: 100 500;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Riyal";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAJcAAkAAAAABRAAAAIYAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIjBmAALAE2AiQDCAQGBYQ3ByAbbQTIjtRG+UoGEjxfa+X7PdMLgBN2zOUJFBF1AEizRJSpOHJbUVHLdzXw7/9z7/j/2mBLL0aBXPXauGgD7kFP4zZYJ+Bta3JgeYBZOzueGNQvMsggGS79yuRLBFsQEd+UZdvmrRy/ZuVCRKRXM0+zoJpFq1myjWnvbMd1EVgVLgJro6YI0i2GFgmk8uWe30ysb+9+jKATfLQ9Nq1e1r/vhH6AGJSI/TD5Q/hE823DlTRG71i6d9GRBZ5G5Ye+/vDSk9PPPB2VCbrxuTEuOf52fao2DXRj5wt9/VHe2Uzr+ZuWrFq9xGM6fuqum8S+VS/YWNY5RHfsnU3OuPVBm46CMz6ZqF3y2Kvv+sGZO1ev3va8+6WN0WcvnLpoLnlMw6+rdzdDK7Sdc0JY1h71Ag3quHoOnGiLyF/6iUIdBFAos9KMdd6GAv8AqhmJSnV4F0CwECCAjQPY2Ag4b4fT37EIwHKBQ/8fjpoTHlnzWISZSrcNQ0vI2j2LYtlICByXeyxKNKim7oVlEih0lVtIQnA6BA1Q2IRhEWATbHzkofEzDS68DJNunvSAvexjPwc4yCERsWgmuhILsb2Aog8g+NBQeIjDIsM+2CToAU2KOXARY7x086QH7GUf+znAQQ7JiFejrqdqZArL2MY8HnbeeNawkoW317Hqx4m9xBM77/fvzGAR69nAMtawGoe+9KafM5w70GE4e3gsFA==") format("woff2"),
+    url("/fonts/riyal-bold.woff2") format("woff2"),
+    url("/fonts/riyal-bold.woff") format("woff");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Marcellus";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
+@font-face {
+  font-family: "Cairo";
+  src:
+    url("data:font/woff2;base64,d09GMk9UVE8AAAKEAAkAAAAABTwAAAI+AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYIsBmAALAE2AiQDCAQGBYRbByAbmgTILgt4auWwq0mp1sGRujS1TBqMuZ3+cT4/jATP11h7fwUzqVJJ5pmbTjPJLCKWvVuiRNoN00/s74/5/qLDMqjOk0aRbUnjEY7KxiNcN0AMDnei1TVdq9kT+VtdUMGrLydGvrtgaPqeBcfkRYKVHo4G8urLpgaMwsj3aYMOOCJ5NvANdL7bep4/NAgrYhCDfMAxVrVcKLdGMIKIpI6Wx+naj0UfASRS/5FWSNah0oTKxrnIbEoB5tJLARYz93JICwesSEqhQm/40IQtJusZl8qXce7Qb5RtllAA4sCImOdoXbzjnye8/d5OS6v8OksKenP5fPK2+5Hw94oP/h6w/+4yjndBEFwJf3xJc0NCM/1ivVEkueiDqr7TjvD0CmJu0Y0Ec9LNjYvKjPwtLC7e93n3tHd3fn6bcDnn7OFo59idJOyDVL77TX8VPaekofU62gMPalOdALbqMPInUZCOAArBdAL8FWeflX+gKJGQ+LpXAQSNACkYKgCDQaDi5w56+wEBjBbo9fQLSWbPkxSGAW/d5YBeG7m0jqiAOFvXWE52NTROVMOAQpXcgKJCY4NgAYp40qFJZw+GVGpgSWYWcaTQx+P5eAJoIk2iyTSFptI0lqFRSeZYNGISAUU3ICRhoUgjD5oybmEoohOWPJYQRwFTPN7yBNBEmkSTaQpNpWk8wwozDZdVDDHKjElzu7/HyFOkT400nUcs2WuFaqWKKw+l7/03MEmeDl3KNGmgooM2Oit8Qm2q6BJrHywEAAA=") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+20C1;
+}
+
 :root {
-  --font-display: "Marcellus", "Cormorant Garamond", Georgia, serif;
-  --font-serif: "Marcellus", "Cormorant Garamond", Georgia, serif;
-  --font-sans: "DM Sans", "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Riyal", "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --font-serif: "Riyal", "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Riyal", "DM Sans", "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
   --atlantis-blue: rgb(51, 112, 171);
   --atlantis-icon-blue: #2559a8;
   --atlantis-navy: rgb(0, 32, 92);
@@ -28,9 +123,9 @@
 }
 
 html[dir="rtl"] {
-  --font-display: "Noto Sans Arabic", sans-serif;
-  --font-serif: "Noto Sans Arabic", sans-serif;
-  --font-sans: "Noto Sans Arabic", sans-serif;
+  --font-display: "Riyal", "Noto Sans Arabic", sans-serif;
+  --font-serif: "Riyal", "Noto Sans Arabic", sans-serif;
+  --font-sans: "Riyal", "Noto Sans Arabic", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -39,7 +134,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Riyal", "DM Sans", sans-serif;
   font-weight: 300;
   overflow-x: hidden;
 }
