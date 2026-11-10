@@ -9073,6 +9073,8 @@ export default function Home() {
         })()
       ) : activePage === "admin" ? (
         <AdminDashboard
+          language={language}
+          onToggleLanguage={toggleLanguage}
           cmsState={cmsState}
           onUpdateCmsState={handleUpdateCmsState}
           onResetCmsState={handleResetCmsState}

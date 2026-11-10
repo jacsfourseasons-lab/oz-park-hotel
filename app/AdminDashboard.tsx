@@ -128,22 +128,31 @@ function buildFiveCollageImages(
 
 const CATEGORY_META: Record<
   RoomCategorySlug,
-  { label: string; eyebrowEn: string; eyebrowAr: string; templateSlug: RoomSlug }
+  {
+    labelEn: string;
+    labelAr: string;
+    eyebrowEn: string;
+    eyebrowAr: string;
+    templateSlug: RoomSlug;
+  }
 > = {
   rooms: {
-    label: "Rooms",
+    labelEn: "Rooms",
+    labelAr: "الغرف",
     eyebrowEn: "DELUXE & SUPERIOR ROOMS",
     eyebrowAr: "غرف الديلوكس والسوبيريور",
     templateSlug: "deluxe-room",
   },
   studios: {
-    label: "Studios",
+    labelEn: "Studios",
+    labelAr: "الاستوديوهات",
     eyebrowEn: "SUPERIOR STUDIOS",
     eyebrowAr: "استوديو سوبيريور",
     templateSlug: "superior-studio",
   },
   suites: {
-    label: "Suites",
+    labelEn: "Suites",
+    labelAr: "الأجنحة",
     eyebrowEn: "LUXURY SUITES",
     eyebrowAr: "الأجنحة الفاخرة",
     templateSlug: "superior-suite",
@@ -151,6 +160,8 @@ const CATEGORY_META: Record<
 };
 
 export default function AdminDashboard({
+  language = "ar",
+  onToggleLanguage,
   cmsState,
   onUpdateCmsState,
   onResetCmsState,
@@ -158,6 +169,8 @@ export default function AdminDashboard({
   onOpenBookingPage,
   onOpenRoomPage,
 }: {
+  language?: "ar" | "en";
+  onToggleLanguage?: () => void;
   cmsState: OzParkRoomsCmsState;
   onUpdateCmsState: (next: OzParkRoomsCmsState) => void;
   onResetCmsState: () => void;
@@ -165,6 +178,18 @@ export default function AdminDashboard({
   onOpenBookingPage: (roomSlug?: RoomSlug) => void;
   onOpenRoomPage: (roomSlug: RoomSlug) => void;
 }) {
+  const [localLang, setLocalLang] = useState<"ar" | "en">(language);
+  const activeLang = onToggleLanguage ? language : localLang;
+  const isAr = activeLang === "ar";
+
+  const handleSwitchLanguage = () => {
+    if (onToggleLanguage) {
+      onToggleLanguage();
+    } else {
+      setLocalLang((prev) => (prev === "ar" ? "en" : "ar"));
+    }
+  };
+
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -213,7 +238,6 @@ export default function AdminDashboard({
     null | "edit-cover" | "edit-gallery" | "new-room"
   >(null);
 
-  const coverUploadRef = useRef<HTMLInputElement | null>(null);
   const galleryUploadRef = useRef<HTMLInputElement | null>(null);
   const newRoomUploadRef = useRef<HTMLInputElement | null>(null);
 
@@ -242,9 +266,15 @@ export default function AdminDashboard({
           window.localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY);
         }
       }
-      triggerToast("Welcome to OZ Park Hotel Admin");
+      triggerToast(
+        isAr ? "مرحباً بك في لوحة تحكم فندق أوز بارك" : "Welcome to OZ Park Hotel Admin"
+      );
     } else {
-      setLoginError("Invalid email or password. Please verify your credentials.");
+      setLoginError(
+        isAr
+          ? "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+          : "Invalid email or password. Please verify your credentials."
+      );
     }
   };
 
@@ -291,10 +321,11 @@ export default function AdminDashboard({
       },
       updatedAt: new Date().toISOString(),
     });
+    const rmName = cmsState.roomsData[activeLang][slug]?.name || "Room";
     triggerToast(
-      `${cmsState.roomsData.en[slug]?.name || "Room"} set to ${
-        nextAvail ? "Available" : "Sold Out"
-      }`
+      isAr
+        ? `تم تحديث حالة "${rmName}" إلى ${nextAvail ? "متاح للحجز" : "غير متاح"}`
+        : `${rmName} set to ${nextAvail ? "Available" : "Sold Out"}`
     );
   };
 
@@ -385,7 +416,7 @@ export default function AdminDashboard({
       },
       updatedAt: new Date().toISOString(),
     });
-    triggerToast("Main cover photo updated");
+    triggerToast(isAr ? "تم تحديث الصورة الرئيسية للغرفة" : "Main cover photo updated");
   };
 
   const updateRoomGalleryList = (slug: RoomSlug, nextGallery: string[]) => {
@@ -428,7 +459,7 @@ export default function AdminDashboard({
   // Create a brand new room and add it to the website
   const handleCreateNewRoom = (e: React.FormEvent) => {
     e.preventDefault();
-    const titleEn = newRoomNameEn.trim();
+    const titleEn = newRoomNameEn.trim() || newRoomNameAr.trim();
     if (!titleEn) return;
     const titleAr = newRoomNameAr.trim() || titleEn;
 
@@ -515,17 +546,23 @@ export default function AdminDashboard({
     setIsAddModalOpen(false);
     setNewRoomNameEn("");
     setNewRoomNameAr("");
-    triggerToast(`Added "${titleEn}" to the website`);
+    triggerToast(
+      isAr ? `تمت إضافة "${titleAr}" إلى الموقع` : `Added "${titleEn}" to the website`
+    );
   };
 
   // Delete a room from the website
   const handleDeleteRoom = (slug: RoomSlug) => {
     if (allRoomSlugs.length <= 1) {
-      triggerToast("At least one room must remain on the website.");
+      triggerToast(
+        isAr
+          ? "يجب إبقاء غرفة واحدة على الأقل في الموقع."
+          : "At least one room must remain on the website."
+      );
       setDeleteConfirmSlug(null);
       return;
     }
-    const roomTitle = cmsState.roomsData.en[slug]?.name || slug;
+    const roomTitle = cmsState.roomsData[activeLang][slug]?.name || slug;
     const nextOrder = allRoomSlugs.filter((s) => s !== slug);
     const nextEn = { ...cmsState.roomsData.en };
     const nextAr = { ...cmsState.roomsData.ar };
@@ -550,7 +587,7 @@ export default function AdminDashboard({
     if (editingRoomSlug === slug) {
       setEditingRoomSlug(null);
     }
-    triggerToast(`Deleted "${roomTitle}"`);
+    triggerToast(isAr ? `تم حذف "${roomTitle}"` : `Deleted "${roomTitle}"`);
   };
 
   const filteredSlugs = allRoomSlugs.filter((slug) => {
@@ -559,34 +596,54 @@ export default function AdminDashboard({
   });
 
   // ============================================================================
-  // 1. MINIMALIST LUXURY LOGIN GATE
+  // 1. MINIMALIST LUXURY LOGIN GATE (EN / AR)
   // ============================================================================
   if (!isAuthenticated) {
     return (
-      <div className="oz-admin-login-shell">
+      <div className="oz-admin-login-shell" dir={isAr ? "rtl" : "ltr"}>
         <div className="oz-admin-login-card">
+          <div className="oz-admin-login-top-row">
+            <button
+              type="button"
+              className="oz-admin-lang-switch-btn oz-admin-lang-switch-btn--login"
+              onClick={handleSwitchLanguage}
+            >
+              {isAr ? "English" : "العربية"}
+            </button>
+          </div>
+
           <button
             type="button"
             className="oz-admin-wordmark oz-admin-wordmark--login"
             onClick={onOpenWebsiteHome}
+            dir="ltr"
           >
             <span className="oz-admin-wordmark-emblem">OZ</span>
             <span className="oz-admin-wordmark-text">PARK</span>
           </button>
 
-          <p className="oz-admin-login-eyebrow">ADMINISTRATION PORTAL</p>
-          <h1 className="oz-admin-login-title">Rooms & Rates Management</h1>
+          <p className="oz-admin-login-eyebrow">
+            {isAr ? "بوابة الإدارة" : "ADMINISTRATION PORTAL"}
+          </p>
+          <h1 className="oz-admin-login-title">
+            {isAr ? "إدارة الغرف والأسعار" : "Rooms & Rates Management"}
+          </h1>
           <p className="oz-admin-login-subtitle">
-            Sign in to manage rooms, nightly rates, and photo galleries.
+            {isAr
+              ? "سجّل الدخول لإدارة الغرف وأسعار الليالي ومعرض الصور."
+              : "Sign in to manage rooms, nightly rates, and photo galleries."}
           </p>
 
           <form className="oz-admin-login-form" onSubmit={handleLoginSubmit}>
             <div className="oz-admin-field">
-              <label htmlFor="oz-admin-email">Email Address</label>
+              <label htmlFor="oz-admin-email">
+                {isAr ? "البريد الإلكتروني" : "Email Address"}
+              </label>
               <input
                 id="oz-admin-email"
                 type="email"
                 required
+                dir="ltr"
                 autoComplete="username"
                 placeholder="jacsfourseasons@gmail.com"
                 value={loginEmail}
@@ -595,14 +652,16 @@ export default function AdminDashboard({
             </div>
 
             <div className="oz-admin-field">
-              <label htmlFor="oz-admin-password">Password</label>
-              <div className="oz-admin-pass-row">
+              <label htmlFor="oz-admin-password">
+                {isAr ? "كلمة المرور" : "Password"}
+              </label>
+              <div className="oz-admin-pass-row" dir="ltr">
                 <input
                   id="oz-admin-password"
                   type={showPassword ? "text" : "password"}
                   required
                   autoComplete="current-password"
-                  placeholder="Enter password"
+                  placeholder={isAr ? "أدخل كلمة المرور" : "Enter password"}
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                 />
@@ -611,7 +670,13 @@ export default function AdminDashboard({
                   className="oz-admin-pass-toggle"
                   onClick={() => setShowPassword((s) => !s)}
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword
+                    ? isAr
+                      ? "إخفاء"
+                      : "Hide"
+                    : isAr
+                    ? "إظهار"
+                    : "Show"}
                 </button>
               </div>
             </div>
@@ -623,14 +688,14 @@ export default function AdminDashboard({
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
-                <span>Keep me signed in</span>
+                <span>{isAr ? "البقاء قيد تسجيل الدخول" : "Keep me signed in"}</span>
               </label>
             </div>
 
             {loginError && <div className="oz-admin-login-error">{loginError}</div>}
 
             <button type="submit" className="oz-admin-primary-btn oz-admin-login-submit">
-              Sign In
+              {isAr ? "تسجيل الدخول" : "Sign In"}
             </button>
           </form>
 
@@ -639,7 +704,9 @@ export default function AdminDashboard({
             className="oz-admin-back-site-link"
             onClick={onOpenWebsiteHome}
           >
-            ← Return to OZ Park Hotel Website
+            {isAr
+              ? "العودة إلى موقع فندق أوز بارك ←"
+              : "← Return to OZ Park Hotel Website"}
           </button>
         </div>
       </div>
@@ -647,13 +714,13 @@ export default function AdminDashboard({
   }
 
   // ============================================================================
-  // 2. MINIMALIST LUXURY ROOMS DASHBOARD
+  // 2. MINIMALIST LUXURY ROOMS DASHBOARD (EN / AR)
   // ============================================================================
   const editingRoomEn = editingRoomSlug ? cmsState.roomsData.en[editingRoomSlug] : null;
   const editingRoomAr = editingRoomSlug ? cmsState.roomsData.ar[editingRoomSlug] : null;
 
   return (
-    <div className="oz-admin-shell">
+    <div className="oz-admin-shell" dir={isAr ? "rtl" : "ltr"}>
       {/* Toast Notification */}
       {saveToast && (
         <div className="oz-admin-toast" role="status">
@@ -670,36 +737,47 @@ export default function AdminDashboard({
               type="button"
               className="oz-admin-wordmark"
               onClick={onOpenWebsiteHome}
-              title="Back to OZ Park Hotel Website"
+              title={isAr ? "العودة إلى الموقع الرئيسي" : "Back to OZ Park Hotel Website"}
+              dir="ltr"
             >
               <span className="oz-admin-wordmark-emblem">OZ</span>
               <span className="oz-admin-wordmark-text">PARK</span>
             </button>
             <span className="oz-admin-topbar-divider" />
-            <span className="oz-admin-topbar-label">Rooms & Pricing</span>
+            <span className="oz-admin-topbar-label">
+              {isAr ? "إدارة الغرف والأسعار" : "Rooms & Pricing"}
+            </span>
           </div>
 
           <div className="oz-admin-topbar-right">
             <button
               type="button"
+              className="oz-admin-lang-switch-btn"
+              onClick={handleSwitchLanguage}
+              title={isAr ? "Switch to English" : "التبديل إلى العربية"}
+            >
+              {isAr ? "English" : "العربية"}
+            </button>
+            <button
+              type="button"
               className="oz-admin-ghost-btn"
               onClick={onOpenWebsiteHome}
             >
-              View Website
+              {isAr ? "عرض الموقع" : "View Website"}
             </button>
             <button
               type="button"
               className="oz-admin-ghost-btn"
               onClick={() => onOpenBookingPage()}
             >
-              Booking Page
+              {isAr ? "صفحة الحجز" : "Booking Page"}
             </button>
             <button
               type="button"
               className="oz-admin-ghost-btn oz-admin-ghost-btn--signout"
               onClick={handleLogout}
             >
-              Sign Out
+              {isAr ? "تسجيل الخروج" : "Sign Out"}
             </button>
           </div>
         </div>
@@ -710,16 +788,20 @@ export default function AdminDashboard({
         {/* Clean Header Row: Title + Global Breakfast Setting + Add New Room */}
         <section className="oz-admin-header-bar">
           <div className="oz-admin-header-title-group">
-            <h1>Rooms & Suites</h1>
+            <h1>{isAr ? "الغرف والأجنحة" : "Rooms & Suites"}</h1>
             <p>
-              Manage room rates, descriptions, photos, or add and remove rooms on the live website.
+              {isAr
+                ? "تحكم بأسعار الغرف، التفاصيل، الصور، أو أضف واحذف الغرف مباشرة على الموقع."
+                : "Manage room rates, descriptions, photos, or add and remove rooms on the live website."}
             </p>
           </div>
 
           <div className="oz-admin-header-controls">
             <div className="oz-admin-inline-setting">
-              <label htmlFor="global-breakfast-sar">Breakfast Add-On</label>
-              <div className="oz-admin-inline-input-wrap">
+              <label htmlFor="global-breakfast-sar">
+                {isAr ? "سعر الإفطار الإضافي" : "Breakfast Add-On"}
+              </label>
+              <div className="oz-admin-inline-input-wrap" dir="ltr">
                 <span>SAR</span>
                 <input
                   id="global-breakfast-sar"
@@ -735,7 +817,7 @@ export default function AdminDashboard({
                     })
                   }
                 />
-                <span>/ person</span>
+                <span>{isAr ? "/ للشخص" : "/ person"}</span>
               </div>
             </div>
 
@@ -744,7 +826,7 @@ export default function AdminDashboard({
               className="oz-admin-primary-btn"
               onClick={() => setIsAddModalOpen(true)}
             >
-              + Add New Room
+              {isAr ? "+ إضافة غرفة جديدة" : "+ Add New Room"}
             </button>
           </div>
         </section>
@@ -754,27 +836,53 @@ export default function AdminDashboard({
           <div className="oz-admin-filter-pills">
             {(
               [
-                ["all", `All Rooms (${allRoomSlugs.length})`],
+                [
+                  "all",
+                  isAr
+                    ? `جميع الغرف (${allRoomSlugs.length})`
+                    : `All Rooms (${allRoomSlugs.length})`,
+                ],
                 [
                   "rooms",
-                  `Rooms (${
-                    allRoomSlugs.filter((s) => cmsState.roomsData.en[s]?.categorySlug === "rooms")
-                      .length
-                  })`,
+                  isAr
+                    ? `الغرف (${
+                        allRoomSlugs.filter(
+                          (s) => cmsState.roomsData.en[s]?.categorySlug === "rooms"
+                        ).length
+                      })`
+                    : `Rooms (${
+                        allRoomSlugs.filter(
+                          (s) => cmsState.roomsData.en[s]?.categorySlug === "rooms"
+                        ).length
+                      })`,
                 ],
                 [
                   "studios",
-                  `Studios (${
-                    allRoomSlugs.filter((s) => cmsState.roomsData.en[s]?.categorySlug === "studios")
-                      .length
-                  })`,
+                  isAr
+                    ? `الاستوديوهات (${
+                        allRoomSlugs.filter(
+                          (s) => cmsState.roomsData.en[s]?.categorySlug === "studios"
+                        ).length
+                      })`
+                    : `Studios (${
+                        allRoomSlugs.filter(
+                          (s) => cmsState.roomsData.en[s]?.categorySlug === "studios"
+                        ).length
+                      })`,
                 ],
                 [
                   "suites",
-                  `Suites (${
-                    allRoomSlugs.filter((s) => cmsState.roomsData.en[s]?.categorySlug === "suites")
-                      .length
-                  })`,
+                  isAr
+                    ? `الأجنحة (${
+                        allRoomSlugs.filter(
+                          (s) => cmsState.roomsData.en[s]?.categorySlug === "suites"
+                        ).length
+                      })`
+                    : `Suites (${
+                        allRoomSlugs.filter(
+                          (s) => cmsState.roomsData.en[s]?.categorySlug === "suites"
+                        ).length
+                      })`,
                 ],
               ] as const
             ).map(([key, label]) => (
@@ -795,15 +903,21 @@ export default function AdminDashboard({
             onClick={() => {
               if (
                 window.confirm(
-                  "Reset all rooms, prices, and photos back to the original website defaults?"
+                  isAr
+                    ? "هل تريد استعادة جميع الغرف والأسعار والصور الافتراضية للموقع؟"
+                    : "Reset all rooms, prices, and photos back to the original website defaults?"
                 )
               ) {
                 onResetCmsState();
-                triggerToast("Restored default rooms and pricing");
+                triggerToast(
+                  isAr
+                    ? "تمت استعادة الغرف والأسعار الافتراضية"
+                    : "Restored default rooms and pricing"
+                );
               }
             }}
           >
-            Reset to Defaults
+            {isAr ? "استعادة الإعدادات الافتراضية" : "Reset to Defaults"}
           </button>
         </div>
 
@@ -813,9 +927,12 @@ export default function AdminDashboard({
             const rmEn = cmsState.roomsData.en[slug];
             const rmAr = cmsState.roomsData.ar[slug];
             if (!rmEn || !rmAr) return null;
+            const rmDisplay = isAr ? rmAr : rmEn;
+            const rmSecondary = isAr ? rmEn : rmAr;
             const rate = cmsState.baseRatesSar[slug] ?? 400;
             const isAvail = cmsState.roomAvailable[slug] ?? true;
-            const catLabel = CATEGORY_META[rmEn.categorySlug]?.label || "Room";
+            const catMeta = CATEGORY_META[rmEn.categorySlug];
+            const catLabel = isAr ? catMeta?.labelAr || "غرفة" : catMeta?.labelEn || "Room";
 
             return (
               <article
@@ -827,7 +944,7 @@ export default function AdminDashboard({
                   className="oz-admin-card-media"
                   onClick={() => setEditingRoomSlug(slug)}
                 >
-                  <img src={rmEn.cardImage} alt={rmEn.name} />
+                  <img src={rmEn.cardImage} alt={rmDisplay.name} />
                   <span className="oz-admin-card-cat">{catLabel}</span>
                   <button
                     type="button"
@@ -836,38 +953,48 @@ export default function AdminDashboard({
                       e.stopPropagation();
                       toggleRoomAvailability(slug);
                     }}
-                    title="Click to toggle availability"
+                    title={isAr ? "اضغط لتغيير حالة التوفر" : "Click to toggle availability"}
                   >
                     <span className="oz-admin-status-dot" />
-                    {isAvail ? "Available" : "Sold Out"}
+                    {isAvail
+                      ? isAr
+                        ? "متاح للحجز"
+                        : "Available"
+                      : isAr
+                      ? "غير متاح"
+                      : "Sold Out"}
                   </button>
                   <span className="oz-admin-photo-count">
-                    {rmEn.allGalleryImages.length} Photos
+                    {isAr
+                      ? `${rmEn.allGalleryImages.length} صور`
+                      : `${rmEn.allGalleryImages.length} Photos`}
                   </span>
                 </div>
 
                 {/* Room Info */}
                 <div className="oz-admin-card-body">
                   <div className="oz-admin-card-titles">
-                    <h3>{rmEn.name}</h3>
-                    <span className="oz-admin-card-ar" dir="rtl">
-                      {rmAr.name}
-                    </span>
+                    <h3>{rmDisplay.name}</h3>
+                    <span className="oz-admin-card-ar">{rmSecondary.name}</span>
                   </div>
 
                   <p className="oz-admin-card-specs">
-                    {rmEn.size} &bull; {rmEn.bed} &bull; {rmEn.view}
+                    {rmDisplay.size} &bull; {rmDisplay.bed} &bull; {rmDisplay.view}
                   </p>
 
                   {/* Instant Inline Price Editor */}
                   <div className="oz-admin-price-box">
                     <div className="oz-admin-price-box-left">
-                      <span className="oz-admin-price-label">Nightly Rate (Room Only)</span>
+                      <span className="oz-admin-price-label">
+                        {isAr ? "سعر الليلة (غرفة فقط)" : "Nightly Rate (Room Only)"}
+                      </span>
                       <span className="oz-admin-price-sub">
-                        With Breakfast: SAR {rate + cmsState.breakfastPriceSar}
+                        {isAr
+                          ? `شامل الإفطار: ${rate + cmsState.breakfastPriceSar} ريال`
+                          : `With Breakfast: SAR ${rate + cmsState.breakfastPriceSar}`}
                       </span>
                     </div>
-                    <div className="oz-admin-price-input-group">
+                    <div className="oz-admin-price-input-group" dir="ltr">
                       <span>SAR</span>
                       <input
                         type="number"
@@ -875,7 +1002,7 @@ export default function AdminDashboard({
                         step={10}
                         value={rate}
                         onChange={(e) => updateRoomRate(slug, Number(e.target.value))}
-                        aria-label={`${rmEn.name} nightly rate in SAR`}
+                        aria-label={`${rmDisplay.name} nightly rate in SAR`}
                       />
                     </div>
                   </div>
@@ -887,23 +1014,25 @@ export default function AdminDashboard({
                       className="oz-admin-edit-btn"
                       onClick={() => setEditingRoomSlug(slug)}
                     >
-                      Edit Room & Photos
+                      {isAr ? "تعديل الغرفة والصور" : "Edit Room & Photos"}
                     </button>
                     <button
                       type="button"
                       className="oz-admin-preview-icon-btn"
                       onClick={() => onOpenRoomPage(slug)}
-                      title="Preview Room Page on Website"
+                      title={
+                        isAr ? "معاينة صفحة الغرفة" : "Preview Room Page on Website"
+                      }
                     >
-                      View
+                      {isAr ? "معاينة" : "View"}
                     </button>
                     <button
                       type="button"
                       className="oz-admin-delete-icon-btn"
                       onClick={() => setDeleteConfirmSlug(slug)}
-                      title="Delete Room"
+                      title={isAr ? "حذف الغرفة" : "Delete Room"}
                     >
-                      Delete
+                      {isAr ? "حذف" : "Delete"}
                     </button>
                   </div>
                 </div>
@@ -923,12 +1052,15 @@ export default function AdminDashboard({
         >
           <div
             className="oz-admin-drawer"
+            dir={isAr ? "rtl" : "ltr"}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="oz-admin-drawer-header">
               <div>
-                <span className="oz-admin-drawer-overline">EDIT ROOM</span>
-                <h2>{editingRoomEn.name}</h2>
+                <span className="oz-admin-drawer-overline">
+                  {isAr ? "تعديل الغرفة" : "EDIT ROOM"}
+                </span>
+                <h2>{isAr ? editingRoomAr.name : editingRoomEn.name}</h2>
               </div>
               <div className="oz-admin-drawer-header-actions">
                 <button
@@ -936,7 +1068,7 @@ export default function AdminDashboard({
                   className="oz-admin-ghost-btn"
                   onClick={() => onOpenRoomPage(editingRoomSlug)}
                 >
-                  Open Live Page ↗
+                  {isAr ? "عرض الصفحة ↗" : "Open Live Page ↗"}
                 </button>
                 <button
                   type="button"
@@ -951,14 +1083,17 @@ export default function AdminDashboard({
             <div className="oz-admin-drawer-body">
               {/* SECTION 1: PRICING, CATEGORY & AVAILABILITY */}
               <div className="oz-admin-section-block">
-                <h3 className="oz-admin-section-heading">1. Pricing & Category</h3>
+                <h3 className="oz-admin-section-heading">
+                  {isAr ? "1. السعر والفئة والتوفر" : "1. Pricing & Category"}
+                </h3>
                 <div className="oz-admin-form-grid-3">
                   <div className="oz-admin-field">
-                    <label>Nightly Rate (SAR)</label>
+                    <label>{isAr ? "سعر الليلة (ريال سعودي SAR)" : "Nightly Rate (SAR)"}</label>
                     <input
                       type="number"
                       min={50}
                       step={10}
+                      dir="ltr"
                       value={cmsState.baseRatesSar[editingRoomSlug] ?? 400}
                       onChange={(e) =>
                         updateRoomRate(editingRoomSlug, Number(e.target.value))
@@ -967,7 +1102,7 @@ export default function AdminDashboard({
                   </div>
 
                   <div className="oz-admin-field">
-                    <label>Room Category</label>
+                    <label>{isAr ? "فئة الغرفة" : "Room Category"}</label>
                     <select
                       value={editingRoomEn.categorySlug}
                       onChange={(e) =>
@@ -977,14 +1112,20 @@ export default function AdminDashboard({
                         )
                       }
                     >
-                      <option value="rooms">Deluxe & Superior Rooms</option>
-                      <option value="studios">Superior Studios</option>
-                      <option value="suites">Luxury Suites</option>
+                      <option value="rooms">
+                        {isAr ? "غرف الديلوكس والسوبيريور" : "Deluxe & Superior Rooms"}
+                      </option>
+                      <option value="studios">
+                        {isAr ? "استوديو سوبيريور" : "Superior Studios"}
+                      </option>
+                      <option value="suites">
+                        {isAr ? "الأجنحة الفاخرة" : "Luxury Suites"}
+                      </option>
                     </select>
                   </div>
 
                   <div className="oz-admin-field">
-                    <label>Booking Status</label>
+                    <label>{isAr ? "حالة الحجز" : "Booking Status"}</label>
                     <select
                       value={
                         (cmsState.roomAvailable[editingRoomSlug] ?? true)
@@ -1003,8 +1144,12 @@ export default function AdminDashboard({
                         });
                       }}
                     >
-                      <option value="available">Available for Booking</option>
-                      <option value="soldout">Sold Out / Hidden</option>
+                      <option value="available">
+                        {isAr ? "متاح للحجز" : "Available for Booking"}
+                      </option>
+                      <option value="soldout">
+                        {isAr ? "غير متاح / مخفي" : "Sold Out / Hidden"}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -1013,18 +1158,28 @@ export default function AdminDashboard({
               {/* SECTION 2: ROOM NAME, SPECS & DESCRIPTION */}
               <div className="oz-admin-section-block">
                 <div className="oz-admin-section-heading-row">
-                  <h3 className="oz-admin-section-heading">2. Room Details & Specifications</h3>
+                  <h3 className="oz-admin-section-heading">
+                    {isAr
+                      ? "2. تفاصيل ومواصفات الغرفة"
+                      : "2. Room Details & Specifications"}
+                  </h3>
                   <button
                     type="button"
                     className="oz-admin-text-link"
                     onClick={() => setShowArabicSpecs((v) => !v)}
                   >
-                    {showArabicSpecs ? "Hide Arabic Specs" : "Edit Arabic Specs"}
+                    {showArabicSpecs
+                      ? isAr
+                        ? "إخفاء المواصفات الإضافية"
+                        : "Hide Arabic Specs"
+                      : isAr
+                      ? "تعديل المواصفات باللغتين"
+                      : "Edit Arabic Specs"}
                   </button>
                 </div>
 
                 <div className="oz-admin-form-grid-2">
-                  <div className="oz-admin-field">
+                  <div className="oz-admin-field" dir="ltr">
                     <label>Room Name (English)</label>
                     <input
                       type="text"
@@ -1035,7 +1190,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field" dir="rtl">
-                    <label>اسم الغرفة (Arabic)</label>
+                    <label>اسم الغرفة (العربية)</label>
                     <input
                       type="text"
                       value={editingRoomAr.name}
@@ -1046,88 +1201,128 @@ export default function AdminDashboard({
                   </div>
                 </div>
 
-                <div className="oz-admin-form-grid-4">
+                <div className="oz-admin-form-grid-4" dir={isAr ? "rtl" : "ltr"}>
                   <div className="oz-admin-field">
-                    <label>Size</label>
+                    <label>{isAr ? "المساحة" : "Size"}</label>
                     <input
                       type="text"
-                      value={editingRoomEn.size}
+                      value={isAr ? editingRoomAr.size : editingRoomEn.size}
                       onChange={(e) =>
-                        updateRoomField(editingRoomSlug, "en", "size", e.target.value)
+                        updateRoomField(
+                          editingRoomSlug,
+                          isAr ? "ar" : "en",
+                          "size",
+                          e.target.value
+                        )
                       }
                     />
                   </div>
                   <div className="oz-admin-field">
-                    <label>Bed Type</label>
+                    <label>{isAr ? "نوع السرير" : "Bed Type"}</label>
                     <input
                       type="text"
-                      value={editingRoomEn.bed}
+                      value={isAr ? editingRoomAr.bed : editingRoomEn.bed}
                       onChange={(e) =>
-                        updateRoomField(editingRoomSlug, "en", "bed", e.target.value)
+                        updateRoomField(
+                          editingRoomSlug,
+                          isAr ? "ar" : "en",
+                          "bed",
+                          e.target.value
+                        )
                       }
                     />
                   </div>
                   <div className="oz-admin-field">
-                    <label>Max Guests</label>
+                    <label>{isAr ? "عدد الضيوف" : "Max Guests"}</label>
                     <input
                       type="text"
-                      value={editingRoomEn.occupancy}
+                      value={isAr ? editingRoomAr.occupancy : editingRoomEn.occupancy}
                       onChange={(e) =>
-                        updateRoomField(editingRoomSlug, "en", "occupancy", e.target.value)
+                        updateRoomField(
+                          editingRoomSlug,
+                          isAr ? "ar" : "en",
+                          "occupancy",
+                          e.target.value
+                        )
                       }
                     />
                   </div>
                   <div className="oz-admin-field">
-                    <label>View</label>
+                    <label>{isAr ? "الإطلالة" : "View"}</label>
                     <input
                       type="text"
-                      value={editingRoomEn.view}
+                      value={isAr ? editingRoomAr.view : editingRoomEn.view}
                       onChange={(e) =>
-                        updateRoomField(editingRoomSlug, "en", "view", e.target.value)
+                        updateRoomField(
+                          editingRoomSlug,
+                          isAr ? "ar" : "en",
+                          "view",
+                          e.target.value
+                        )
                       }
                     />
                   </div>
                 </div>
 
                 {showArabicSpecs && (
-                  <div className="oz-admin-form-grid-4" dir="rtl">
+                  <div className="oz-admin-form-grid-4" dir={isAr ? "ltr" : "rtl"}>
                     <div className="oz-admin-field">
-                      <label>المساحة (Arabic)</label>
+                      <label>{isAr ? "Size (English)" : "المساحة (Arabic)"}</label>
                       <input
                         type="text"
-                        value={editingRoomAr.size}
+                        value={isAr ? editingRoomEn.size : editingRoomAr.size}
                         onChange={(e) =>
-                          updateRoomField(editingRoomSlug, "ar", "size", e.target.value)
+                          updateRoomField(
+                            editingRoomSlug,
+                            isAr ? "en" : "ar",
+                            "size",
+                            e.target.value
+                          )
                         }
                       />
                     </div>
                     <div className="oz-admin-field">
-                      <label>نوع السرير (Arabic)</label>
+                      <label>{isAr ? "Bed Type (English)" : "نوع السرير (Arabic)"}</label>
                       <input
                         type="text"
-                        value={editingRoomAr.bed}
+                        value={isAr ? editingRoomEn.bed : editingRoomAr.bed}
                         onChange={(e) =>
-                          updateRoomField(editingRoomSlug, "ar", "bed", e.target.value)
+                          updateRoomField(
+                            editingRoomSlug,
+                            isAr ? "en" : "ar",
+                            "bed",
+                            e.target.value
+                          )
                         }
                       />
                     </div>
                     <div className="oz-admin-field">
-                      <label>عدد الضيوف (Arabic)</label>
+                      <label>{isAr ? "Max Guests (English)" : "عدد الضيوف (Arabic)"}</label>
                       <input
                         type="text"
-                        value={editingRoomAr.occupancy}
+                        value={isAr ? editingRoomEn.occupancy : editingRoomAr.occupancy}
                         onChange={(e) =>
-                          updateRoomField(editingRoomSlug, "ar", "occupancy", e.target.value)
+                          updateRoomField(
+                            editingRoomSlug,
+                            isAr ? "en" : "ar",
+                            "occupancy",
+                            e.target.value
+                          )
                         }
                       />
                     </div>
                     <div className="oz-admin-field">
-                      <label>الإطلالة (Arabic)</label>
+                      <label>{isAr ? "View (English)" : "الإطلالة (Arabic)"}</label>
                       <input
                         type="text"
-                        value={editingRoomAr.view}
+                        value={isAr ? editingRoomEn.view : editingRoomAr.view}
                         onChange={(e) =>
-                          updateRoomField(editingRoomSlug, "ar", "view", e.target.value)
+                          updateRoomField(
+                            editingRoomSlug,
+                            isAr ? "en" : "ar",
+                            "view",
+                            e.target.value
+                          )
                         }
                       />
                     </div>
@@ -1135,7 +1330,7 @@ export default function AdminDashboard({
                 )}
 
                 <div className="oz-admin-form-grid-2">
-                  <div className="oz-admin-field">
+                  <div className="oz-admin-field" dir="ltr">
                     <label>Description (English)</label>
                     <textarea
                       rows={3}
@@ -1151,7 +1346,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field" dir="rtl">
-                    <label>وصف الغرفة (Arabic)</label>
+                    <label>وصف الغرفة (العربية)</label>
                     <textarea
                       rows={3}
                       value={editingRoomAr.cardDescription}
@@ -1173,10 +1368,14 @@ export default function AdminDashboard({
                 <div className="oz-admin-section-heading-row">
                   <div>
                     <h3 className="oz-admin-section-heading">
-                      3. Room Photos ({editingRoomEn.allGalleryImages.length})
+                      {isAr
+                        ? `3. صور الغرفة (${editingRoomEn.allGalleryImages.length})`
+                        : `3. Room Photos (${editingRoomEn.allGalleryImages.length})`}
                     </h3>
                     <p className="oz-admin-section-sub">
-                      The first photo is used as the main room cover. Click any photo to set it as cover, or upload new photos.
+                      {isAr
+                        ? "الصورة الأولى هي الغلاف الرئيسي للغرفة. مرر فوق أي صورة لتعيينها كغلاف أو حذفها."
+                        : "The first photo is used as the main room cover. Hover any photo to set it as cover or remove it."}
                     </p>
                   </div>
                   <div className="oz-admin-photo-upload-btns">
@@ -1185,14 +1384,14 @@ export default function AdminDashboard({
                       className="oz-admin-secondary-btn"
                       onClick={() => galleryUploadRef.current?.click()}
                     >
-                      + Upload Photos
+                      {isAr ? "+ رفع صور من الجهاز" : "+ Upload Photos"}
                     </button>
                     <button
                       type="button"
                       className="oz-admin-ghost-btn"
                       onClick={() => setLibraryTarget("edit-gallery")}
                     >
-                      Choose from Library
+                      {isAr ? "اختيار من مكتبة الفندق" : "Choose from Library"}
                     </button>
                     <input
                       ref={galleryUploadRef}
@@ -1212,7 +1411,11 @@ export default function AdminDashboard({
                           ...editingRoomEn.allGalleryImages,
                           ...uploaded,
                         ]);
-                        triggerToast(`Uploaded ${uploaded.length} photo(s)`);
+                        triggerToast(
+                          isAr
+                            ? `تم رفع ${uploaded.length} صورة بنجاح`
+                            : `Uploaded ${uploaded.length} photo(s)`
+                        );
                         e.target.value = "";
                       }}
                     />
@@ -1229,7 +1432,9 @@ export default function AdminDashboard({
                       >
                         <img src={imgUrl} alt={`${editingRoomEn.name} ${idx + 1}`} />
                         {isMainCover && (
-                          <span className="oz-admin-cover-badge">Main Cover</span>
+                          <span className="oz-admin-cover-badge">
+                            {isAr ? "الغلاف الرئيسي" : "Main Cover"}
+                          </span>
                         )}
                         <div className="oz-admin-photo-overlay">
                           {!isMainCover && (
@@ -1238,7 +1443,7 @@ export default function AdminDashboard({
                               className="oz-admin-photo-action"
                               onClick={() => updateRoomCoverPhoto(editingRoomSlug, imgUrl)}
                             >
-                              Set as Cover
+                              {isAr ? "تعيين كغلاف" : "Set as Cover"}
                             </button>
                           )}
                           {editingRoomEn.allGalleryImages.length > 1 && (
@@ -1251,9 +1456,9 @@ export default function AdminDashboard({
                                 );
                                 updateRoomGalleryList(editingRoomSlug, next);
                               }}
-                              title="Remove photo"
+                              title={isAr ? "حذف الصورة" : "Remove photo"}
                             >
-                              Remove
+                              {isAr ? "حذف" : "Remove"}
                             </button>
                           )}
                         </div>
@@ -1271,7 +1476,7 @@ export default function AdminDashboard({
                 className="oz-admin-danger-outline-btn"
                 onClick={() => setDeleteConfirmSlug(editingRoomSlug)}
               >
-                Delete Room
+                {isAr ? "حذف الغرفة" : "Delete Room"}
               </button>
               <div className="oz-admin-drawer-footer-right">
                 <button
@@ -1279,17 +1484,21 @@ export default function AdminDashboard({
                   className="oz-admin-ghost-btn"
                   onClick={() => setEditingRoomSlug(null)}
                 >
-                  Close
+                  {isAr ? "إغلاق" : "Close"}
                 </button>
                 <button
                   type="button"
                   className="oz-admin-primary-btn"
                   onClick={() => {
                     setEditingRoomSlug(null);
-                    triggerToast("Changes saved & published to website");
+                    triggerToast(
+                      isAr
+                        ? "تم حفظ التعديلات ونشرها على الموقع"
+                        : "Changes saved & published to website"
+                    );
                   }}
                 >
-                  Save Changes
+                  {isAr ? "حفظ التغييرات" : "Save Changes"}
                 </button>
               </div>
             </div>
@@ -1307,12 +1516,15 @@ export default function AdminDashboard({
         >
           <div
             className="oz-admin-drawer"
+            dir={isAr ? "rtl" : "ltr"}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="oz-admin-drawer-header">
               <div>
-                <span className="oz-admin-drawer-overline">CREATE NEW ROOM</span>
-                <h2>Add a Room or Suite</h2>
+                <span className="oz-admin-drawer-overline">
+                  {isAr ? "إنشاء غرفة جديدة" : "CREATE NEW ROOM"}
+                </span>
+                <h2>{isAr ? "إضافة غرفة أو جناح جديد" : "Add a Room or Suite"}</h2>
               </div>
               <button
                 type="button"
@@ -1325,9 +1537,13 @@ export default function AdminDashboard({
 
             <form onSubmit={handleCreateNewRoom} className="oz-admin-drawer-body">
               <div className="oz-admin-section-block">
-                <h3 className="oz-admin-section-heading">1. Room Identity & Nightly Price</h3>
+                <h3 className="oz-admin-section-heading">
+                  {isAr
+                    ? "1. اسم الغرفة وسعر الليلة"
+                    : "1. Room Identity & Nightly Price"}
+                </h3>
                 <div className="oz-admin-form-grid-2">
-                  <div className="oz-admin-field">
+                  <div className="oz-admin-field" dir="ltr">
                     <label>Room Name (English) *</label>
                     <input
                       type="text"
@@ -1338,7 +1554,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field" dir="rtl">
-                    <label>اسم الغرفة (Arabic)</label>
+                    <label>اسم الغرفة (العربية)</label>
                     <input
                       type="text"
                       placeholder="مثال: غرفة تنفيذية مطلة على البحر"
@@ -1350,23 +1566,34 @@ export default function AdminDashboard({
 
                 <div className="oz-admin-form-grid-2">
                   <div className="oz-admin-field">
-                    <label>Category</label>
+                    <label>{isAr ? "الفئة" : "Category"}</label>
                     <select
                       value={newRoomCategory}
                       onChange={(e) =>
                         setNewRoomCategory(e.target.value as RoomCategorySlug)
                       }
                     >
-                      <option value="rooms">Deluxe & Superior Rooms</option>
-                      <option value="studios">Superior Studios</option>
-                      <option value="suites">Luxury Suites</option>
+                      <option value="rooms">
+                        {isAr ? "غرف الديلوكس والسوبيريور" : "Deluxe & Superior Rooms"}
+                      </option>
+                      <option value="studios">
+                        {isAr ? "استوديو سوبيريور" : "Superior Studios"}
+                      </option>
+                      <option value="suites">
+                        {isAr ? "الأجنحة الفاخرة" : "Luxury Suites"}
+                      </option>
                     </select>
                   </div>
                   <div className="oz-admin-field">
-                    <label>Nightly Rate — Room Only (SAR) *</label>
+                    <label>
+                      {isAr
+                        ? "سعر الليلة — غرفة فقط (SAR) *"
+                        : "Nightly Rate — Room Only (SAR) *"}
+                    </label>
                     <input
                       type="number"
                       required
+                      dir="ltr"
                       min={50}
                       step={10}
                       value={newRoomPrice}
@@ -1377,10 +1604,12 @@ export default function AdminDashboard({
               </div>
 
               <div className="oz-admin-section-block">
-                <h3 className="oz-admin-section-heading">2. Specifications & Description</h3>
+                <h3 className="oz-admin-section-heading">
+                  {isAr ? "2. المواصفات والوصف" : "2. Specifications & Description"}
+                </h3>
                 <div className="oz-admin-form-grid-4">
                   <div className="oz-admin-field">
-                    <label>Size</label>
+                    <label>{isAr ? "المساحة" : "Size"}</label>
                     <input
                       type="text"
                       value={newRoomSize}
@@ -1388,7 +1617,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field">
-                    <label>Bed Type</label>
+                    <label>{isAr ? "نوع السرير" : "Bed Type"}</label>
                     <input
                       type="text"
                       value={newRoomBed}
@@ -1396,7 +1625,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field">
-                    <label>Max Guests</label>
+                    <label>{isAr ? "عدد الضيوف" : "Max Guests"}</label>
                     <input
                       type="text"
                       value={newRoomGuests}
@@ -1404,7 +1633,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field">
-                    <label>View</label>
+                    <label>{isAr ? "الإطلالة" : "View"}</label>
                     <input
                       type="text"
                       value={newRoomView}
@@ -1414,7 +1643,7 @@ export default function AdminDashboard({
                 </div>
 
                 <div className="oz-admin-form-grid-2">
-                  <div className="oz-admin-field">
+                  <div className="oz-admin-field" dir="ltr">
                     <label>Description (English)</label>
                     <textarea
                       rows={3}
@@ -1423,7 +1652,7 @@ export default function AdminDashboard({
                     />
                   </div>
                   <div className="oz-admin-field" dir="rtl">
-                    <label>وصف الغرفة (Arabic)</label>
+                    <label>وصف الغرفة (العربية)</label>
                     <textarea
                       rows={3}
                       value={newRoomDescAr}
@@ -1437,10 +1666,14 @@ export default function AdminDashboard({
                 <div className="oz-admin-section-heading-row">
                   <div>
                     <h3 className="oz-admin-section-heading">
-                      3. Room Photos ({newRoomPhotos.length})
+                      {isAr
+                        ? `3. صور الغرفة (${newRoomPhotos.length})`
+                        : `3. Room Photos (${newRoomPhotos.length})`}
                     </h3>
                     <p className="oz-admin-section-sub">
-                      Upload photos from your computer or choose from the hotel library.
+                      {isAr
+                        ? "ارفع صوراً من جهازك أو اختر من مكتبة صور الفندق."
+                        : "Upload photos from your computer or choose from the hotel library."}
                     </p>
                   </div>
                   <div className="oz-admin-photo-upload-btns">
@@ -1449,14 +1682,14 @@ export default function AdminDashboard({
                       className="oz-admin-secondary-btn"
                       onClick={() => newRoomUploadRef.current?.click()}
                     >
-                      + Upload Photos
+                      {isAr ? "+ رفع صور" : "+ Upload Photos"}
                     </button>
                     <button
                       type="button"
                       className="oz-admin-ghost-btn"
                       onClick={() => setLibraryTarget("new-room")}
                     >
-                      Choose from Library
+                      {isAr ? "من مكتبة الفندق" : "Choose from Library"}
                     </button>
                     <input
                       ref={newRoomUploadRef}
@@ -1487,7 +1720,9 @@ export default function AdminDashboard({
                     >
                       <img src={imgUrl} alt={`New room ${idx + 1}`} />
                       {idx === 0 && (
-                        <span className="oz-admin-cover-badge">Main Cover</span>
+                        <span className="oz-admin-cover-badge">
+                          {isAr ? "الغلاف الرئيسي" : "Main Cover"}
+                        </span>
                       )}
                       <div className="oz-admin-photo-overlay">
                         {idx !== 0 && (
@@ -1501,7 +1736,7 @@ export default function AdminDashboard({
                               ])
                             }
                           >
-                            Set as Cover
+                            {isAr ? "تعيين كغلاف" : "Set as Cover"}
                           </button>
                         )}
                         {newRoomPhotos.length > 1 && (
@@ -1514,7 +1749,7 @@ export default function AdminDashboard({
                               )
                             }
                           >
-                            Remove
+                            {isAr ? "حذف" : "Remove"}
                           </button>
                         )}
                       </div>
@@ -1531,10 +1766,10 @@ export default function AdminDashboard({
                     className="oz-admin-ghost-btn"
                     onClick={() => setIsAddModalOpen(false)}
                   >
-                    Cancel
+                    {isAr ? "إلغاء" : "Cancel"}
                   </button>
                   <button type="submit" className="oz-admin-primary-btn">
-                    Create & Publish Room
+                    {isAr ? "إنشاء ونشر الغرفة" : "Create & Publish Room"}
                   </button>
                 </div>
               </div>
@@ -1553,14 +1788,26 @@ export default function AdminDashboard({
         >
           <div
             className="oz-admin-confirm-dialog"
+            dir={isAr ? "rtl" : "ltr"}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>Delete Room?</h3>
+            <h3>{isAr ? "تأكيد حذف الغرفة؟" : "Delete Room?"}</h3>
             <p>
-              Are you sure you want to delete{" "}
-              <strong>{cmsState.roomsData.en[deleteConfirmSlug]?.name}</strong>? It will be
-              removed from the website and booking engine immediately. You can restore default
-              rooms anytime using &ldquo;Reset to Defaults&rdquo;.
+              {isAr ? (
+                <>
+                  هل أنت متأكد من رغبتك في حذف{" "}
+                  <strong>{cmsState.roomsData.ar[deleteConfirmSlug]?.name}</strong>؟ سيتم
+                  إزالتها فوراً من الموقع ومحرك الحجز. يمكنك استعادة الغرف الافتراضية في أي
+                  وقت عبر زر &ldquo;استعادة الإعدادات الافتراضية&rdquo;.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to delete{" "}
+                  <strong>{cmsState.roomsData.en[deleteConfirmSlug]?.name}</strong>? It will
+                  be removed from the website and booking engine immediately. You can
+                  restore default rooms anytime using &ldquo;Reset to Defaults&rdquo;.
+                </>
+              )}
             </p>
             <div className="oz-admin-confirm-actions">
               <button
@@ -1568,14 +1815,14 @@ export default function AdminDashboard({
                 className="oz-admin-ghost-btn"
                 onClick={() => setDeleteConfirmSlug(null)}
               >
-                Cancel
+                {isAr ? "إلغاء" : "Cancel"}
               </button>
               <button
                 type="button"
                 className="oz-admin-danger-btn"
                 onClick={() => handleDeleteRoom(deleteConfirmSlug)}
               >
-                Yes, Delete Room
+                {isAr ? "نعم، احذف الغرفة" : "Yes, Delete Room"}
               </button>
             </div>
           </div>
@@ -1592,12 +1839,15 @@ export default function AdminDashboard({
         >
           <div
             className="oz-admin-library-modal"
+            dir={isAr ? "rtl" : "ltr"}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="oz-admin-drawer-header">
               <div>
-                <span className="oz-admin-drawer-overline">HOTEL MEDIA LIBRARY</span>
-                <h2>Select a Room Photo</h2>
+                <span className="oz-admin-drawer-overline">
+                  {isAr ? "مكتبة صور الفندق" : "HOTEL MEDIA LIBRARY"}
+                </span>
+                <h2>{isAr ? "اختر صورة للغرفة" : "Select a Room Photo"}</h2>
               </div>
               <button
                 type="button"
@@ -1619,7 +1869,11 @@ export default function AdminDashboard({
                         ...editingRoomEn.allGalleryImages,
                         imgUrl,
                       ]);
-                      triggerToast("Added photo to room gallery");
+                      triggerToast(
+                        isAr
+                          ? "تمت إضافة الصورة إلى معرض الغرفة"
+                          : "Added photo to room gallery"
+                      );
                     } else if (libraryTarget === "new-room") {
                       setNewRoomPhotos((prev) => [imgUrl, ...prev]);
                     }
