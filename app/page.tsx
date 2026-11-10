@@ -7197,6 +7197,16 @@ export default function Home() {
                         }}
                       >
                         <img src={rm.cardImage} alt={rm.name} />
+                        <div className="arc-room-price-tag">
+                          <span className="arc-room-price-amount">
+                            {language === "ar"
+                              ? `${(cmsState.baseRatesSar[rm.slug] ?? 380).toLocaleString()} ر.س`
+                              : `SAR ${(cmsState.baseRatesSar[rm.slug] ?? 380).toLocaleString()}`}
+                          </span>
+                          <span className="arc-room-price-unit">
+                            {language === "ar" ? "/ الليلة" : "/ night"}
+                          </span>
+                        </div>
                       </div>
                       <div className="arc-room-card-body">
                         <h3 className="arc-room-card-title">{rm.name}</h3>

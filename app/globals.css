@@ -5506,6 +5506,47 @@ html[dir="rtl"] .header-left-group {
   transform: scale(1.04);
 }
 
+.arc-room-price-tag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 7px 14px;
+  background: rgba(15, 36, 66, 0.84);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(197, 165, 103, 0.55);
+  border-radius: 4px;
+  box-shadow: 0 8px 22px rgba(0, 12, 32, 0.25);
+  color: #ffffff;
+  pointer-events: none;
+  transition: transform 0.35s var(--ease-luxury), background 0.35s var(--ease-luxury), border-color 0.35s var(--ease-luxury);
+}
+
+.arc-room-card:hover .arc-room-price-tag {
+  background: rgba(15, 36, 66, 0.94);
+  border-color: #c5a567;
+  transform: translateY(-1px);
+}
+
+.arc-room-price-amount {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #f8f6f1;
+}
+
+.arc-room-price-unit {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #c5a567;
+}
+
 .arc-room-card-body {
   padding: 22px 0 0;
   display: flex;
