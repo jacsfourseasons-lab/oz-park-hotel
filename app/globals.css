@@ -6797,3 +6797,1077 @@ a,
 .ard-list-modal {
   animation: luxuryModalCardIn 0.48s var(--ease-luxury) both;
 }
+
+/* ============================================================================
+   1:1 ATLANTIS BOOKING ENGINE PAGE (booking.atlantis.com — #booking)
+   ============================================================================ */
+.site-header.is-booking-header {
+  background: #004799 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 12px rgba(0, 24, 68, 0.18);
+}
+
+.atlantis-booking-page {
+  min-height: 100vh;
+  background: #eaf1f8;
+  padding-top: 88px;
+  padding-bottom: 80px;
+  color: #1e293b;
+  font-family: var(--font-sans);
+  animation: luxuryPageFadeIn 0.6s var(--ease-luxury) both;
+}
+
+/* Sub-bar right under header matching Atlantis booking engine utility bar */
+.ab-utility-bar {
+  background: #003d85;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12.5px;
+}
+
+.ab-utility-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ab-utility-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+
+.ab-utility-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.ab-utility-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ab-utility-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #ffffff;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 12.5px;
+  cursor: pointer;
+  opacity: 0.92;
+}
+
+.ab-utility-item:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* Main 2-Column Booking Container */
+.ab-main-container {
+  max-width: 1180px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Top 3-Box Search Bar (Guests | Check-in | Check-out) */
+.ab-search-widget {
+  background: #ffffff;
+  border: 1px solid #d3dfec;
+  box-shadow: 0 2px 8px rgba(0, 36, 92, 0.05);
+  margin-bottom: 28px;
+}
+
+.ab-search-boxes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid #d3dfec;
+}
+
+.ab-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 0;
+  border-inline-end: 1px solid #d3dfec;
+  text-align: start;
+  cursor: pointer;
+  position: relative;
+}
+
+.ab-search-box:last-child {
+  border-inline-end: 0;
+}
+
+.ab-search-box:hover,
+.ab-search-box.is-active {
+  background: #f5f9fe;
+}
+
+.ab-search-box.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #0057b7;
+}
+
+.ab-search-box-icon {
+  color: #0057b7;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-search-box-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ab-search-box-label {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.ab-search-box-value {
+  font-size: 13.5px;
+  color: #0f172a;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Guests & Rooms Counter Bar inside Search Widget */
+.ab-guests-panel {
+  padding: 18px 24px;
+  background: #f8fbff;
+  border-bottom: 1px solid #d3dfec;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ab-guests-counters {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.ab-guest-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ab-guest-stepper-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ab-guest-stepper-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: #64748b;
+}
+
+.ab-stepper-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 8px;
+}
+
+.ab-stepper-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #0057b7;
+  background: #ffffff;
+  color: #0057b7;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ab-stepper-btn:hover:not(:disabled) {
+  background: #0057b7;
+  color: #ffffff;
+}
+
+.ab-stepper-btn:disabled {
+  border-color: #cbd5e1;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.ab-stepper-val {
+  min-width: 20px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ab-guests-breakfast-note {
+  font-size: 12px;
+  color: #0057b7;
+  background: #e6f0fa;
+  padding: 6px 12px;
+  border-inline-start: 3px solid #0057b7;
+  font-weight: 500;
+}
+
+/* Expandable Dual-Month Calendar Panel */
+.ab-calendar-panel {
+  padding: 18px 26px 22px;
+  background: #ffffff;
+}
+
+.ab-calendar-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.ab-calendar-rate-note {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+.ab-promo-toggle {
+  background: transparent;
+  border: 0;
+  color: #0057b7;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ab-promo-toggle:hover {
+  text-decoration: underline;
+}
+
+.ab-promo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.ab-promo-input {
+  flex: 1;
+  max-width: 240px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+}
+
+.ab-dual-months-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 8px;
+}
+
+.ab-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.ab-month-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #004799;
+  text-align: center;
+  flex: 1;
+}
+
+.ab-month-nav-btn {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: #0057b7;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-month-nav-btn:hover {
+  background: #f0f6ff;
+}
+
+.ab-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.ab-weekday-cell {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 4px 0;
+}
+
+.ab-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.ab-day-cell {
+  height: 46px;
+  border: 0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 2px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ab-day-cell.is-empty {
+  background: transparent;
+  cursor: default;
+}
+
+.ab-day-cell.is-past {
+  background: #eaedf0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.ab-day-cell:not(.is-empty):not(.is-past):hover {
+  background: #e0edff;
+}
+
+.ab-day-num {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1.15;
+}
+
+.ab-day-price {
+  font-size: 9.5px;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+.ab-day-cell.is-selected,
+.ab-day-cell.is-in-range {
+  background: #0057b7 !important;
+  color: #ffffff !important;
+}
+
+.ab-day-cell.is-selected .ab-day-price,
+.ab-day-cell.is-in-range .ab-day-price {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ab-calendar-footer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ab-calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.ab-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ab-legend-swatch {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  border: 1px solid #cbd5e1;
+}
+
+.ab-legend-swatch.is-blue {
+  background: #0057b7;
+  border-color: #0057b7;
+  color: #ffffff;
+}
+
+.ab-calendar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-inline-start: auto;
+}
+
+.ab-calendar-total {
+  text-align: end;
+}
+
+.ab-calendar-total strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ab-calendar-total span {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.ab-calendar-cancel-btn {
+  border: 0;
+  background: transparent;
+  color: #0057b7;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ab-calendar-apply-btn {
+  border: 0;
+  background: #0057b7;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 28px;
+  cursor: pointer;
+}
+
+.ab-calendar-apply-btn:hover {
+  background: #004494;
+}
+
+/* Select a Room Header & 3 Filter Controls */
+.ab-select-room-title {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  color: #004799;
+}
+
+.ab-filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.ab-filter-select-wrap {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #d3dfec;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 40px;
+}
+
+.ab-filter-label {
+  font-size: 12.5px;
+  color: #475569;
+  margin-inline-end: 6px;
+  white-space: nowrap;
+}
+
+.ab-filter-select {
+  border: 0;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0057b7;
+  cursor: pointer;
+  padding-inline-end: 6px;
+  outline: none;
+}
+
+/* Room Booking Card (1:1 Atlantis SynXis White Room Card) */
+.ab-room-card {
+  background: #ffffff;
+  border: 1px solid #d5e0ec;
+  box-shadow: 0 2px 8px rgba(0, 32, 91, 0.05);
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.35s var(--ease-luxury), border-color 0.35s var(--ease-luxury);
+}
+
+.ab-room-card.is-highlighted {
+  border: 2px solid #0057b7;
+  box-shadow: 0 8px 26px rgba(0, 87, 183, 0.14);
+}
+
+.ab-room-highlight-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e6f0fa;
+  color: #0057b7;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ab-room-top {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 22px;
+  padding-bottom: 20px;
+}
+
+.ab-room-thumb {
+  position: relative;
+  width: 230px;
+  height: 154px;
+  overflow: hidden;
+  background: #e2e8f0;
+  cursor: pointer;
+}
+
+.ab-room-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s var(--ease-luxury);
+}
+
+.ab-room-thumb:hover img {
+  transform: scale(1.05);
+}
+
+.ab-room-thumb-badges {
+  position: absolute;
+  bottom: 8px;
+  inset-inline-end: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ab-thumb-badge {
+  background: rgba(15, 23, 42, 0.78);
+  color: #ffffff;
+  border: 0;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.ab-thumb-badge:hover {
+  background: #0057b7;
+}
+
+.ab-room-info {
+  min-width: 0;
+}
+
+.ab-room-name {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: #0057b7;
+  cursor: pointer;
+  line-height: 1.25;
+}
+
+.ab-room-name:hover {
+  text-decoration: underline;
+}
+
+.ab-room-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.ab-room-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 2px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.ab-room-pill.is-primary {
+  background: #0057b7;
+  border-color: #0057b7;
+  color: #ffffff;
+}
+
+.ab-room-specs {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.ab-room-desc {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.ab-room-details-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #0057b7;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Rate Plan Rows inside each Room Card (Room Only vs With Breakfast +50 SAR/person) */
+.ab-rate-row {
+  border-top: 1px solid #e2e8f0;
+  padding: 18px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.ab-rate-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.ab-rate-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.ab-rate-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0057b7;
+}
+
+.ab-breakfast-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #e6f0fa;
+  color: #0057b7;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.ab-rate-bullets {
+  margin: 0;
+  padding-inline-start: 16px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #475569;
+}
+
+.ab-rate-right {
+  text-align: end;
+  flex-shrink: 0;
+  min-width: 170px;
+}
+
+.ab-rate-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.ab-rate-per-night {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 1px;
+}
+
+.ab-rate-tax-note {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+
+.ab-rate-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 136px;
+  height: 38px;
+  padding: 0 22px;
+  background: #0057b7;
+  color: #ffffff;
+  border: 0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ab-rate-book-btn:hover {
+  background: #00428f;
+}
+
+.ab-rate-book-btn.is-selected {
+  background: #0c7a43;
+}
+
+.ab-room-card-footer {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ab-show-more-btn {
+  border: 0;
+  background: transparent;
+  color: #0057b7;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ab-show-more-btn:hover {
+  text-decoration: underline;
+}
+
+/* Right Column — Sticky Reservation Summary Sidebar */
+.ab-summary-sidebar {
+  position: sticky;
+  top: 104px;
+}
+
+.ab-summary-card {
+  background: #ffffff;
+  border: 1px solid #d3dfec;
+  box-shadow: 0 2px 10px rgba(0, 32, 91, 0.06);
+  padding: 22px 24px;
+}
+
+.ab-summary-heading {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: #004799;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ab-summary-dates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12.5px;
+}
+
+.ab-summary-meta-label {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.ab-summary-meta-val {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ab-summary-Selected-block {
+  padding: 16px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ab-summary-room-mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ab-summary-room-mini img {
+  width: 68px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ab-summary-room-mini h4 {
+  margin: 0 0 2px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #004799;
+}
+
+.ab-summary-room-mini p {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+/* Rate Plan Switcher inside Summary Card (Room Only vs With Breakfast +50 SAR/person) */
+.ab-summary-plan-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.ab-plan-chip {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.ab-plan-chip.is-active {
+  background: #e6f0fa;
+  border-color: #0057b7;
+  color: #0057b7;
+}
+
+.ab-summary-breakdown {
+  padding: 14px 0;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ab-breakdown-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #334155;
+}
+
+.ab-breakdown-line.is-breakfast {
+  color: #0057b7;
+  font-weight: 600;
+}
+
+.ab-summary-total-row {
+  padding: 16px 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ab-summary-total-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ab-summary-total-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: #004799;
+}
+
+.ab-guest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.ab-guest-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.ab-guest-input:focus {
+  border-color: #0057b7;
+  outline: none;
+}
+
+.ab-confirm-book-btn {
+  width: 100%;
+  height: 44px;
+  background: #0057b7;
+  color: #ffffff;
+  border: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ab-confirm-book-btn:hover {
+  background: #00428f;
+}
+
+.ab-summary-empty {
+  padding: 18px 0 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+@media (max-width: 1024px) {
+  .ab-main-container {
+    grid-template-columns: 1fr;
+  }
+  .ab-summary-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .atlantis-booking-page {
+    padding-top: 72px;
+  }
+  .ab-search-boxes {
+    grid-template-columns: 1fr;
+  }
+  .ab-search-box {
+    border-inline-end: 0;
+    border-bottom: 1px solid #d3dfec;
+  }
+  .ab-dual-months-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .ab-room-top {
+    grid-template-columns: 1fr;
+  }
+  .ab-room-thumb {
+    width: 100%;
+    height: 200px;
+  }
+  .ab-rate-row {
+    flex-direction: column;
+  }
+  .ab-rate-right {
+    width: 100%;
+    text-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

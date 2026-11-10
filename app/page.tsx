@@ -23,7 +23,32 @@ type ActivePage =
   | "meeting"
   | "stay"
   | "room-category"
-  | "room-detail";
+  | "room-detail"
+  | "booking";
+
+type BookingRatePlan = "room-only" | "with-breakfast" | "weekday-room-only" | "weekday-with-breakfast";
+
+const BREAKFAST_PRICE_PER_PERSON_SAR = 50;
+
+const ROOM_BASE_RATES_SAR: Record<RoomSlug, number> = {
+  "deluxe-room": 380,
+  "superior-room": 440,
+  "superior-studio": 520,
+  "twin-junior-suite": 620,
+  "superior-suite": 750,
+  "deluxe-suite": 890,
+  "royal-suite": 1250,
+};
+
+const ALL_BOOKING_ROOM_SLUGS: RoomSlug[] = [
+  "deluxe-room",
+  "superior-room",
+  "superior-studio",
+  "twin-junior-suite",
+  "superior-suite",
+  "deluxe-suite",
+  "royal-suite",
+];
 
 const signatureImages = [
   "/images/ozpark/slider-hotel.jpg",
@@ -2974,6 +2999,33 @@ export default function Home() {
   const [roomAmenitiesModalOpen, setRoomAmenitiesModalOpen] = useState(false);
   const [roomGalleryLightboxIndex, setRoomGalleryLightboxIndex] = useState<number | null>(null);
 
+  // Atlantis Booking Engine (#booking) states
+  const [bookingCheckIn, setBookingCheckIn] = useState<string>("2026-11-10");
+  const [bookingCheckOut, setBookingCheckOut] = useState<string>("2026-11-11");
+  const [bookingCalendarOpen, setBookingCalendarOpen] = useState<boolean>(true);
+  const [bookingGuestsOpen, setBookingGuestsOpen] = useState<boolean>(false);
+  const [bookingPromoOpen, setBookingPromoOpen] = useState<boolean>(false);
+  const [bookingPromoCode, setBookingPromoCode] = useState<string>("");
+  const [bookingMonthOffset, setBookingMonthOffset] = useState<number>(0);
+  const [bookingRoomsCount, setBookingRoomsCount] = useState<number>(1);
+  const [bookingAdults, setBookingAdults] = useState<number>(1);
+  const [bookingChildren, setBookingChildren] = useState<number>(0);
+  const [bookingCategoryFilter, setBookingCategoryFilter] = useState<"all" | RoomCategorySlug>("all");
+  const [bookingBedFilter, setBookingBedFilter] = useState<"all" | "king" | "twin" | "seaview">("all");
+  const [bookingSortBy, setBookingSortBy] = useState<"recommended" | "lowest" | "highest">("recommended");
+  const [bookingHighlightedRoom, setBookingHighlightedRoom] = useState<RoomSlug | null>(null);
+  const [bookingExpandedRates, setBookingExpandedRates] = useState<Record<string, boolean>>({});
+  const [selectedBookingItem, setSelectedBookingItem] = useState<{
+    roomSlug: RoomSlug;
+    ratePlan: BookingRatePlan;
+  } | null>({
+    roomSlug: "deluxe-room",
+    ratePlan: "with-breakfast",
+  });
+  const [bookingGuestName, setBookingGuestName] = useState<string>("");
+  const [bookingGuestPhone, setBookingGuestPhone] = useState<string>("");
+  const [bookingSpecialRequests, setBookingSpecialRequests] = useState<string>("");
+
   const offersRef = useRef<HTMLDivElement>(null);
   const signatureRef = useRef<HTMLElement>(null);
   const cafeVerticalRef = useRef<HTMLElement>(null);
@@ -3006,7 +3058,7 @@ export default function Home() {
   const meetingPackageSlides = meetingPackageSlidesData[language];
   const isRtl = language === "ar";
 
-  // Sync URL hash with dedicated offer, dining, café, meeting room, category & room pages
+  // Sync URL hash with dedicated offer, dining, café, meeting room, category, room & booking pages
   useEffect(() => {
     const syncFromHash = () => {
       const hash = window.location.hash;
@@ -3033,6 +3085,14 @@ export default function Home() {
         window.scrollTo({ top: 0, behavior: "auto" });
       } else if (hash === "#stay-at-oz-park") {
         setActivePage("stay");
+        window.scrollTo({ top: 0, behavior: "auto" });
+      } else if (hash === "#booking" || hash.startsWith("#booking-")) {
+        const maybeRoom = hash.replace("#booking-", "") as RoomSlug;
+        if (maybeRoom in specificRoomsData.en) {
+          setBookingHighlightedRoom(maybeRoom);
+          setSelectedBookingItem({ roomSlug: maybeRoom, ratePlan: "with-breakfast" });
+        }
+        setActivePage("booking");
         window.scrollTo({ top: 0, behavior: "auto" });
       } else if (hash.startsWith("#stay-category-")) {
         const catSlug = hash.replace("#stay-category-", "") as RoomCategorySlug;
@@ -3519,6 +3579,38 @@ export default function Home() {
     }
   };
 
+  const openBookingPage = (opts?: { roomSlug?: RoomSlug; categorySlug?: RoomCategorySlug; promoCode?: string }) => {
+    setSelectedOfferModal(null);
+    setSelectedSlideModal(null);
+    setSelectedCategoryModal(null);
+    setRoomAmenitiesModalOpen(false);
+    setRoomGalleryLightboxIndex(null);
+    setMenuOpen(false);
+    if (opts?.roomSlug) {
+      setBookingHighlightedRoom(opts.roomSlug);
+      setActiveRoomSlug(opts.roomSlug);
+      setBookingCategoryFilter("all");
+      setSelectedBookingItem({ roomSlug: opts.roomSlug, ratePlan: "with-breakfast" });
+    } else if (opts?.categorySlug) {
+      setBookingCategoryFilter(opts.categorySlug);
+      const firstRoomInCat = roomCategoriesPageData.en[opts.categorySlug].roomSlugs[0];
+      setBookingHighlightedRoom(firstRoomInCat);
+      setSelectedBookingItem({ roomSlug: firstRoomInCat, ratePlan: "with-breakfast" });
+    } else {
+      setBookingHighlightedRoom(null);
+      setBookingCategoryFilter("all");
+    }
+    if (opts?.promoCode) {
+      setBookingPromoOpen(true);
+      setBookingPromoCode(opts.promoCode);
+    }
+    setActivePage("booking");
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", opts?.roomSlug ? `#booking-${opts.roomSlug}` : "#booking");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const toggleRoomPrivilegeAccordion = (idx: number) => {
     setRoomPrivilegeAccordions((prev) => ({
       ...prev,
@@ -3902,10 +3994,14 @@ export default function Home() {
       {/* HEADER */}
       <header
         className={`site-header ${
-          scrolled || menuOpen || activePage === "stay" || activePage === "room-category"
+          scrolled ||
+          menuOpen ||
+          activePage === "stay" ||
+          activePage === "room-category" ||
+          activePage === "booking"
             ? "is-solid"
             : ""
-        }`}
+        } ${activePage === "booking" ? "is-booking-header" : ""}`}
       >
         <div className="header-left-group">
           <button
@@ -3958,15 +4054,17 @@ export default function Home() {
           </button>
           <a
             className="book-link"
-            href="#stay"
+            href="#booking"
             onClick={(e) => {
               e.preventDefault();
               if (activePage === "wedding") {
                 document.getElementById("wedding-packages-section")?.scrollIntoView({ behavior: "smooth" });
-              } else if (activePage === "offer2") {
-                document.getElementById("offer2-details")?.scrollIntoView({ behavior: "smooth" });
+              } else if (activePage === "room-detail") {
+                openBookingPage({ roomSlug: activeRoomSlug });
+              } else if (activePage === "room-category") {
+                openBookingPage({ categorySlug: activeCategorySlug });
               } else {
-                navigateToHomeSection("stay");
+                openBookingPage();
               }
             }}
           >
@@ -4023,7 +4121,14 @@ export default function Home() {
               <h1>{t.heroTitle}</h1>
               <p className="hero-subtitle">{t.heroSubtitle}</p>
               <div className="hero-cta-row">
-                <a href="#stay" className="hero-book-btn">
+                <a
+                  href="#booking"
+                  className="hero-book-btn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openBookingPage();
+                  }}
+                >
                   {t.bookYourStay}
                 </a>
               </div>
@@ -4319,7 +4424,7 @@ export default function Home() {
                         <button
                           type="button"
                           className="as-package-book-btn"
-                          onClick={() => openWhatsAppBooking(cat.title)}
+                          onClick={() => openBookingPage({ categorySlug: catSlug })}
                         >
                           {language === "ar" ? "احجز" : "Book"}
                         </button>
@@ -6896,7 +7001,7 @@ export default function Home() {
                   title: offers[0].title,
                   copy: offers[0].copy,
                   image: "/images/ozpark/wedding-pkg-royal-4k.jpg",
-                  onBook: () => openWhatsAppBooking(offers[0].title),
+                  onBook: () => openBookingPage({ categorySlug: "suites" }),
                   onExplore: openWeddingPage,
                 },
                 {
@@ -6904,7 +7009,7 @@ export default function Home() {
                   title: offers[1].title,
                   copy: offers[1].copy,
                   image: "/images/ozpark/offer2-room-king-4k.jpg",
-                  onBook: () => openWhatsAppBooking(offers[1].title),
+                  onBook: () => openBookingPage({ categorySlug: "rooms", promoCode: "WEEKDAY25" }),
                   onExplore: openOffer2Page,
                 },
                 {
@@ -6912,7 +7017,7 @@ export default function Home() {
                   title: offers[2].title,
                   copy: offers[2].copy,
                   image: "/images/ozpark/stay-suites.jpg",
-                  onBook: () => openWhatsAppBooking(offers[2].title),
+                  onBook: () => openBookingPage({ promoCode: "EXTENDED35" }),
                   onExplore: openOffer3Page,
                 },
               ].map((pkg) => (
@@ -7035,7 +7140,7 @@ export default function Home() {
                           <button
                             type="button"
                             className="as-package-book-btn"
-                            onClick={() => openWhatsAppBooking(`${rm.name} (${catData.title})`)}
+                            onClick={() => openBookingPage({ roomSlug: rm.slug })}
                           >
                             {language === "ar" ? "احجز" : "Book"}
                           </button>
@@ -7257,7 +7362,7 @@ export default function Home() {
                   <button
                     type="button"
                     className="ard-hero-book-btn"
-                    onClick={() => openWhatsAppBooking(`${room.name} (${parentCat.title})`)}
+                    onClick={() => openBookingPage({ roomSlug: room.slug })}
                   >
                     {language === "ar" ? "احجز" : "Book"}
                   </button>
@@ -7570,7 +7675,7 @@ export default function Home() {
                       <button
                         type="button"
                         className="as-package-book-btn"
-                        onClick={() => openWhatsAppBooking(`${room.name} — Direct Booking`)}
+                        onClick={() => openBookingPage({ roomSlug: room.slug })}
                       >
                         {language === "ar" ? "احجز" : "Book"}
                       </button>
@@ -7612,6 +7717,1251 @@ export default function Home() {
                 <span>›</span>
                 <span className="is-current">{room.name}</span>
               </nav>
+            </div>
+          );
+        })()
+      ) : activePage === "booking" ? (
+        /* ============================================================================
+           1:1 ATLANTIS SYNXIS BOOKING ENGINE PAGE (#booking)
+           Modeled 1:1 on booking.atlantis.com + User Screenshot
+           Includes "Room Only" & "With Breakfast (+50 SAR per person)" on every room card
+           ============================================================================ */
+        (() => {
+          const parseIsoDate = (iso: string) => {
+            const [y, m, d] = iso.split("-").map(Number);
+            return new Date(y || 2026, (m || 11) - 1, d || 10);
+          };
+          const toIsoDate = (dt: Date) => {
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, "0");
+            const d = String(dt.getDate()).padStart(2, "0");
+            return `${y}-${m}-${d}`;
+          };
+          const checkInDate = parseIsoDate(bookingCheckIn);
+          const checkOutDate = parseIsoDate(bookingCheckOut);
+          const rawNights = Math.round(
+            (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          const nightsCount = Math.max(1, rawNights);
+
+          const formatDisplayDate = (iso: string) => {
+            const dt = parseIsoDate(iso);
+            return dt.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+          };
+
+          // Build two consecutive calendar months starting from Nov 2026 + bookingMonthOffset
+          const baseCalendarYear = 2026;
+          const baseCalendarMonth = 10 + bookingMonthOffset; // 10 = November (0-indexed)
+          const buildMonthData = (monthOffsetFromBase: number) => {
+            const firstOfMonth = new Date(baseCalendarYear, baseCalendarMonth + monthOffsetFromBase, 1);
+            const year = firstOfMonth.getFullYear();
+            const month = firstOfMonth.getMonth();
+            const monthLabel = firstOfMonth.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
+              month: "long",
+              year: "numeric",
+            });
+            const startWeekday = firstOfMonth.getDay(); // 0 (Sun) - 6 (Sat)
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const cells: Array<{
+              key: string;
+              day?: number;
+              iso?: string;
+              isPast?: boolean;
+              isSelected?: boolean;
+              isInRange?: boolean;
+              price?: number;
+            }> = [];
+
+            for (let i = 0; i < startWeekday; i += 1) {
+              cells.push({ key: `empty-${year}-${month}-${i}` });
+            }
+            for (let d = 1; d <= daysInMonth; d += 1) {
+              const cellDate = new Date(year, month, d);
+              const iso = toIsoDate(cellDate);
+              const isPast = year === 2026 && month === 10 && d < 9;
+              const isSelected = iso === bookingCheckIn || iso === bookingCheckOut;
+              const isInRange = iso > bookingCheckIn && iso < bookingCheckOut;
+              const dayOfWeek = cellDate.getDay();
+              const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+              const lowestNightly = isWeekend ? 420 : 380;
+              cells.push({
+                key: iso,
+                day: d,
+                iso,
+                isPast,
+                isSelected,
+                isInRange,
+                price: lowestNightly,
+              });
+            }
+            return { monthLabel, cells };
+          };
+
+          const month1 = buildMonthData(0);
+          const month2 = buildMonthData(1);
+
+          const handleCalendarDayClick = (iso?: string, isPast?: boolean) => {
+            if (!iso || isPast) return;
+            if (iso <= bookingCheckIn || (bookingCheckIn && bookingCheckOut && bookingCheckOut !== bookingCheckIn)) {
+              // If user clicks a new start date or already has a range, set Check-in and next day as Check-out
+              if (iso > bookingCheckIn && bookingCheckOut === toIsoDate(new Date(parseIsoDate(bookingCheckIn).getTime() + 86400000))) {
+                setBookingCheckOut(iso);
+              } else {
+                const nextDay = new Date(parseIsoDate(iso).getTime() + 86400000);
+                setBookingCheckIn(iso);
+                setBookingCheckOut(toIsoDate(nextDay));
+              }
+            } else {
+              setBookingCheckOut(iso);
+            }
+          };
+
+          // Filter & sort the 7 rooms
+          const roomsMap = specificRoomsData[language];
+          let filteredRoomSlugs = ALL_BOOKING_ROOM_SLUGS.filter((slug) => {
+            const rm = roomsMap[slug];
+            if (bookingCategoryFilter !== "all" && rm.categorySlug !== bookingCategoryFilter) {
+              return false;
+            }
+            if (bookingBedFilter === "king" && !rm.bed.toLowerCase().includes("king") && !rm.bed.includes("كينغ")) {
+              return false;
+            }
+            if (bookingBedFilter === "twin" && !rm.bed.toLowerCase().includes("twin") && !rm.bed.includes("مفرد")) {
+              return false;
+            }
+            if (bookingBedFilter === "seaview" && !rm.view.toLowerCase().includes("sea") && !rm.view.includes("البحر")) {
+              return false;
+            }
+            return true;
+          });
+
+          if (bookingSortBy === "lowest") {
+            filteredRoomSlugs = [...filteredRoomSlugs].sort(
+              (a, b) => ROOM_BASE_RATES_SAR[a] - ROOM_BASE_RATES_SAR[b]
+            );
+          } else if (bookingSortBy === "highest") {
+            filteredRoomSlugs = [...filteredRoomSlugs].sort(
+              (a, b) => ROOM_BASE_RATES_SAR[b] - ROOM_BASE_RATES_SAR[a]
+            );
+          } else if (bookingHighlightedRoom) {
+            filteredRoomSlugs = [
+              ...filteredRoomSlugs.filter((s) => s === bookingHighlightedRoom),
+              ...filteredRoomSlugs.filter((s) => s !== bookingHighlightedRoom),
+            ];
+          }
+
+          const breakfastPerNightTotal = BREAKFAST_PRICE_PER_PERSON_SAR * bookingAdults * bookingRoomsCount;
+          const lowestCalendarTotal = 380 * nightsCount * bookingRoomsCount;
+
+          const activeCartItem = selectedBookingItem ?? {
+            roomSlug: filteredRoomSlugs[0] ?? "deluxe-room",
+            ratePlan: "with-breakfast" as BookingRatePlan,
+          };
+          const selectedRoomObj = roomsMap[activeCartItem.roomSlug];
+          const selectedBaseRate = ROOM_BASE_RATES_SAR[activeCartItem.roomSlug];
+          const isWeekdayDiscountPlan =
+            activeCartItem.ratePlan === "weekday-room-only" ||
+            activeCartItem.ratePlan === "weekday-with-breakfast";
+          const effectiveRoomNightly = isWeekdayDiscountPlan
+            ? Math.round(selectedBaseRate * 0.75)
+            : selectedBaseRate;
+          const includesBreakfast =
+            activeCartItem.ratePlan === "with-breakfast" ||
+            activeCartItem.ratePlan === "weekday-with-breakfast";
+          const roomSubtotal = effectiveRoomNightly * nightsCount * bookingRoomsCount;
+          const breakfastSubtotal = includesBreakfast ? breakfastPerNightTotal * nightsCount : 0;
+          const grandTotalSar = roomSubtotal + breakfastSubtotal;
+
+          const handleSelectRoomRate = (roomSlug: RoomSlug, ratePlan: BookingRatePlan) => {
+            setSelectedBookingItem({ roomSlug, ratePlan });
+            setActiveRoomSlug(roomSlug);
+            if (typeof window !== "undefined" && window.innerWidth <= 1024) {
+              document.getElementById("ab-reservation-summary")?.scrollIntoView({ behavior: "smooth" });
+            }
+          };
+
+          const handleCompleteBookingWhatsApp = () => {
+            const planLabelEn =
+              activeCartItem.ratePlan === "with-breakfast"
+                ? `With Breakfast (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person)`
+                : activeCartItem.ratePlan === "weekday-with-breakfast"
+                ? `Weekday Special (25% Off) With Breakfast (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person)`
+                : activeCartItem.ratePlan === "weekday-room-only"
+                ? "Weekday Special (25% Off) — Room Only"
+                : "Room Only";
+            const planLabelAr =
+              activeCartItem.ratePlan === "with-breakfast"
+                ? `شامل الإفطار (+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص)`
+                : activeCartItem.ratePlan === "weekday-with-breakfast"
+                ? `عرض أيام الأسبوع شاملة الإفطار (+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص)`
+                : activeCartItem.ratePlan === "weekday-room-only"
+                ? "عرض أيام الأسبوع — غرفة فقط"
+                : "غرفة فقط (بدون إفطار)";
+
+            const msg =
+              language === "ar"
+                ? [
+                    "مرحباً فندق أوز بارك، أود تأكيد حجز إقامة:",
+                    `• الغرفة: ${selectedRoomObj.name}`,
+                    `• الباقة: ${planLabelAr}`,
+                    `• تسجيل الوصول: ${bookingCheckIn}`,
+                    `• تسجيل المغادرة: ${bookingCheckOut} (${nightsCount} ليلة)`,
+                    `• عدد الغرف والضيوف: ${bookingRoomsCount} غرفة، ${bookingAdults} بالغ، ${bookingChildren} طفل`,
+                    `• سعر الغرفة: SAR ${roomSubtotal.toLocaleString()}`,
+                    includesBreakfast
+                      ? `• الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة): SAR ${breakfastSubtotal.toLocaleString()}`
+                      : "• الإفطار: غير مشمول (غرفة فقط)",
+                    `• الإجمالي: SAR ${grandTotalSar.toLocaleString()}`,
+                    bookingGuestName ? `• اسم الضيف: ${bookingGuestName}` : "",
+                    bookingGuestPhone ? `• رقم الجوال: ${bookingGuestPhone}` : "",
+                    bookingSpecialRequests ? `• طلبات خاصة: ${bookingSpecialRequests}` : "",
+                  ]
+                    .filter(Boolean)
+                    .join("\n")
+                : [
+                    "Hello OZ Park Hotel, I would like to confirm my room reservation:",
+                    `• Room: ${selectedRoomObj.name}`,
+                    `• Rate Plan: ${planLabelEn}`,
+                    `• Check-in: ${bookingCheckIn}`,
+                    `• Check-out: ${bookingCheckOut} (${nightsCount} ${nightsCount === 1 ? "Night" : "Nights"})`,
+                    `• Guests: ${bookingRoomsCount} ${bookingRoomsCount === 1 ? "Room" : "Rooms"}, ${bookingAdults} ${bookingAdults === 1 ? "Adult" : "Adults"}, ${bookingChildren} ${bookingChildren === 1 ? "Child" : "Children"}`,
+                    `• Room Subtotal: SAR ${roomSubtotal.toLocaleString()}`,
+                    includesBreakfast
+                      ? `• Breakfast Add-On (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults} person(s) × ${nightsCount} night(s)): SAR ${breakfastSubtotal.toLocaleString()}`
+                      : "• Breakfast: Not included (Room Only)",
+                    `• Total Stay Price: SAR ${grandTotalSar.toLocaleString()}`,
+                    bookingGuestName ? `• Guest Name: ${bookingGuestName}` : "",
+                    bookingGuestPhone ? `• Phone: ${bookingGuestPhone}` : "",
+                    bookingSpecialRequests ? `• Special Requests: ${bookingSpecialRequests}` : "",
+                  ]
+                    .filter(Boolean)
+                    .join("\n");
+
+            window.open(
+              `https://wa.me/966500955877?text=${encodeURIComponent(msg)}`,
+              "_blank",
+              "noopener,noreferrer"
+            );
+          };
+
+          return (
+            <div className="atlantis-booking-page" id="booking-top">
+              {/* Top Atlantis Booking Utility Sub-Bar */}
+              <div className="ab-utility-bar">
+                <div className="ab-utility-inner">
+                  <div className="ab-utility-left">
+                    <span>
+                      {language === "ar"
+                        ? "فندق أوز بارك — الكورنيش الجنوبي، القنفذة"
+                        : "OZ Park Hotel — South Corniche, Al Qunfudhah"}
+                    </span>
+                    <span className="ab-utility-badge">
+                      {language === "ar"
+                        ? `الإفطار الإضافي: ${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص`
+                        : `Breakfast Option: SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person`}
+                    </span>
+                  </div>
+                  <div className="ab-utility-right">
+                    <button
+                      type="button"
+                      className="ab-utility-item"
+                      onClick={() =>
+                        document
+                          .getElementById("ab-reservation-summary")
+                          ?.scrollIntoView({ behavior: "smooth" })
+                      }
+                    >
+                      {language === "ar" ? "حجوزاتي" : "My Reservations"}
+                    </button>
+                    <button type="button" className="ab-utility-item" onClick={toggleLanguage}>
+                      {language === "ar" ? "English ⌄" : "العربية ⌄"}
+                    </button>
+                    <span className="ab-utility-item">
+                      {language === "ar" ? "العملة: ريال سعودي (SAR)" : "SAR (Saudi Riyal) ⌄"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main 2-Column Atlantis Booking Layout */}
+              <div className="ab-main-container">
+                {/* LEFT COLUMN: Search Bar + Dual-Month Calendar + Select a Room List */}
+                <div className="ab-left-column">
+                  {/* Top 3-Box Search & Expandable Calendar Widget */}
+                  <div className="ab-search-widget">
+                    <div className="ab-search-boxes">
+                      {/* Box 1: Guests & Rooms */}
+                      <button
+                        type="button"
+                        className={`ab-search-box ${bookingGuestsOpen ? "is-active" : ""}`}
+                        onClick={() => setBookingGuestsOpen((v) => !v)}
+                      >
+                        <span className="ab-search-box-icon">
+                          <AtlantisRoomIcon name="guests" stroke="#0057b7" size={22} />
+                        </span>
+                        <span className="ab-search-box-text">
+                          <span className="ab-search-box-label">
+                            {language === "ar" ? "الضيوف والغرف" : "Guests"}
+                          </span>
+                          <span className="ab-search-box-value">
+                            {language === "ar"
+                              ? `${bookingRoomsCount} غرفة، ${bookingAdults} بالغ${
+                                  bookingChildren > 0 ? `، ${bookingChildren} طفل` : ""
+                                }`
+                              : `${bookingRoomsCount} ${
+                                  bookingRoomsCount === 1 ? "Room" : "Rooms"
+                                }, ${bookingAdults} ${
+                                  bookingAdults === 1 ? "Adult" : "Adults"
+                                }${
+                                  bookingChildren > 0
+                                    ? `, ${bookingChildren} ${
+                                        bookingChildren === 1 ? "Child" : "Children"
+                                      }`
+                                    : ""
+                                }`}
+                          </span>
+                        </span>
+                      </button>
+
+                      {/* Box 2: Check-in Date */}
+                      <button
+                        type="button"
+                        className={`ab-search-box ${bookingCalendarOpen ? "is-active" : ""}`}
+                        onClick={() => setBookingCalendarOpen((v) => !v)}
+                      >
+                        <span className="ab-search-box-icon">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="17" rx="2" stroke="#0057b7" strokeWidth="1.5" />
+                            <line x1="3" y1="9" x2="21" y2="9" stroke="#0057b7" strokeWidth="1.5" />
+                            <line x1="8" y1="2" x2="8" y2="6" stroke="#0057b7" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="16" y1="2" x2="16" y2="6" stroke="#0057b7" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        </span>
+                        <span className="ab-search-box-text">
+                          <span className="ab-search-box-label">
+                            {language === "ar" ? "تسجيل الوصول" : "Check-in"}
+                          </span>
+                          <span className="ab-search-box-value">{formatDisplayDate(bookingCheckIn)}</span>
+                        </span>
+                      </button>
+
+                      {/* Box 3: Check-out Date */}
+                      <button
+                        type="button"
+                        className={`ab-search-box ${bookingCalendarOpen ? "is-active" : ""}`}
+                        onClick={() => setBookingCalendarOpen((v) => !v)}
+                      >
+                        <span className="ab-search-box-icon">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="17" rx="2" stroke="#0057b7" strokeWidth="1.5" />
+                            <line x1="3" y1="9" x2="21" y2="9" stroke="#0057b7" strokeWidth="1.5" />
+                            <line x1="8" y1="2" x2="8" y2="6" stroke="#0057b7" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="16" y1="2" x2="16" y2="6" stroke="#0057b7" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        </span>
+                        <span className="ab-search-box-text">
+                          <span className="ab-search-box-label">
+                            {language === "ar" ? "تسجيل المغادرة" : "Check-out"}
+                          </span>
+                          <span className="ab-search-box-value">{formatDisplayDate(bookingCheckOut)}</span>
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Expandable Guests & Rooms Counter Panel */}
+                    {bookingGuestsOpen && (
+                      <div className="ab-guests-panel">
+                        <div className="ab-guests-counters">
+                          <div className="ab-guest-stepper">
+                            <div>
+                              <span className="ab-guest-stepper-label">
+                                {language === "ar" ? "الغرف" : "Rooms"}
+                              </span>
+                            </div>
+                            <div className="ab-stepper-controls">
+                              <button
+                                type="button"
+                                className="ab-stepper-btn"
+                                disabled={bookingRoomsCount <= 1}
+                                onClick={() => setBookingRoomsCount((c) => Math.max(1, c - 1))}
+                              >
+                                −
+                              </button>
+                              <span className="ab-stepper-val">{bookingRoomsCount}</span>
+                              <button
+                                type="button"
+                                className="ab-stepper-btn"
+                                disabled={bookingRoomsCount >= 4}
+                                onClick={() => setBookingRoomsCount((c) => Math.min(4, c + 1))}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="ab-guest-stepper">
+                            <div>
+                              <span className="ab-guest-stepper-label">
+                                {language === "ar" ? "البالغون" : "Adults"}
+                              </span>
+                              <span className="ab-guest-stepper-sub">
+                                {language === "ar"
+                                  ? `الإفطار: +${BREAKFAST_PRICE_PER_PERSON_SAR} ريال / شخص`
+                                  : `Breakfast: +SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} / person`}
+                              </span>
+                            </div>
+                            <div className="ab-stepper-controls">
+                              <button
+                                type="button"
+                                className="ab-stepper-btn"
+                                disabled={bookingAdults <= 1}
+                                onClick={() => setBookingAdults((a) => Math.max(1, a - 1))}
+                              >
+                                −
+                              </button>
+                              <span className="ab-stepper-val">{bookingAdults}</span>
+                              <button
+                                type="button"
+                                className="ab-stepper-btn"
+                                disabled={bookingAdults >= 6}
+                                onClick={() => setBookingAdults((a) => Math.min(6, a + 1))}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="ab-guest-stepper">
+                            <div>
+                              <span className="ab-guest-stepper-label">
+                                {language === "ar" ? "الأطفال" : "Children"}
+                              </span>
+                            </div>
+                            <div className="ab-stepper-controls">
+                              <button
+                                type="button"
+                                className="ab-stepper-btn"
+                                disabled={bookingChildren <= 0}
+                                onClick={() => setBookingChildren((c) => Math.max(0, c - 1))}
+                              >
+                                −
+                              </button>
+                              <span className="ab-stepper-val">{bookingChildren}</span>
+                              <button
+                                type="button"
+                                className="ab-stepper-btn"
+                                disabled={bookingChildren >= 4}
+                                onClick={() => setBookingChildren((c) => Math.min(4, c + 1))}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="ab-guests-breakfast-note">
+                          {language === "ar"
+                            ? `سعر الإفطار لـ ${bookingAdults} شخص: +SAR ${breakfastPerNightTotal} في الليلة`
+                            : `Breakfast for ${bookingAdults} ${
+                                bookingAdults === 1 ? "person" : "persons"
+                              }: +SAR ${breakfastPerNightTotal} / night`}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Expandable Dual-Month Calendar (Open by default matching screenshot) */}
+                    {bookingCalendarOpen && (
+                      <div className="ab-calendar-panel">
+                        <div className="ab-calendar-top-row">
+                          <p className="ab-calendar-rate-note">
+                            {language === "ar"
+                              ? `الأسعار المعروضة أدناه هي متوسط الأسعار الليلية بالريال السعودي (SAR) غير شاملة الضرائب والرسوم لمدة ${nightsCount} ليلة.`
+                              : `Rates shown below are average nightly rates in SAR excluding taxes and fees for ${nightsCount} ${
+                                  nightsCount === 1 ? "night" : "nights"
+                                }.`}
+                          </p>
+                          <button
+                            type="button"
+                            className="ab-promo-toggle"
+                            onClick={() => setBookingPromoOpen((v) => !v)}
+                          >
+                            {language === "ar"
+                              ? "رمز العرض أو الشركات +"
+                              : "Special Codes or Rates +"}
+                          </button>
+                        </div>
+
+                        {bookingPromoOpen && (
+                          <div className="ab-promo-row">
+                            <input
+                              type="text"
+                              className="ab-promo-input"
+                              placeholder={
+                                language === "ar"
+                                  ? "أدخل رمز العرض (مثل WEEKDAY25)"
+                                  : "Promo / Corporate Code (e.g. WEEKDAY25)"
+                              }
+                              value={bookingPromoCode}
+                              onChange={(e) => setBookingPromoCode(e.target.value)}
+                            />
+                            <button
+                              type="button"
+                              className="ab-calendar-apply-btn"
+                              style={{ padding: "7px 18px", fontSize: "12.5px" }}
+                              onClick={() => setBookingPromoOpen(false)}
+                            >
+                              {language === "ar" ? "تطبيق" : "Apply"}
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="ab-dual-months-grid">
+                          {[month1, month2].map((mData, mIdx) => (
+                            <div key={mData.monthLabel} className="ab-month-block">
+                              <div className="ab-month-header">
+                                {mIdx === 0 ? (
+                                  <button
+                                    type="button"
+                                    className="ab-month-nav-btn"
+                                    onClick={() => setBookingMonthOffset((o) => o - 1)}
+                                    aria-label="Previous Month"
+                                  >
+                                    ‹
+                                  </button>
+                                ) : (
+                                  <span style={{ width: 28 }} />
+                                )}
+                                <h4 className="ab-month-title">{mData.monthLabel}</h4>
+                                {mIdx === 1 ? (
+                                  <button
+                                    type="button"
+                                    className="ab-month-nav-btn"
+                                    onClick={() => setBookingMonthOffset((o) => o + 1)}
+                                    aria-label="Next Month"
+                                  >
+                                    ›
+                                  </button>
+                                ) : (
+                                  <span style={{ width: 28 }} />
+                                )}
+                              </div>
+
+                              <div className="ab-weekdays-row">
+                                {(language === "ar"
+                                  ? ["أحد", "إثن", "ثلا", "أرب", "خمي", "جمع", "سبت"]
+                                  : ["S", "M", "T", "W", "T", "F", "S"]
+                                ).map((wd, i) => (
+                                  <span key={`${mData.monthLabel}-wd-${i}`} className="ab-weekday-cell">
+                                    {wd}
+                                  </span>
+                                ))}
+                              </div>
+
+                              <div className="ab-days-grid">
+                                {mData.cells.map((cell) => {
+                                  if (!cell.day) {
+                                    return <div key={cell.key} className="ab-day-cell is-empty" />;
+                                  }
+                                  return (
+                                    <button
+                                      key={cell.key}
+                                      type="button"
+                                      disabled={cell.isPast}
+                                      className={`ab-day-cell ${cell.isPast ? "is-past" : ""} ${
+                                        cell.isSelected ? "is-selected" : ""
+                                      } ${cell.isInRange ? "is-in-range" : ""}`}
+                                      onClick={() => handleCalendarDayClick(cell.iso, cell.isPast)}
+                                    >
+                                      <span className="ab-day-num">{cell.day}</span>
+                                      {!cell.isPast && cell.price && (
+                                        <span className="ab-day-price">{cell.price}</span>
+                                      )}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="ab-calendar-footer">
+                          <div className="ab-calendar-legend">
+                            <span className="ab-legend-item">
+                              <span className="ab-legend-swatch is-blue">✓</span>
+                              <span>
+                                {language === "ar"
+                                  ? "تسجيل الوصول / المغادرة"
+                                  : "Check-in / Check-out"}
+                              </span>
+                            </span>
+                            <span className="ab-legend-item">
+                              <span className="ab-legend-swatch">⊘</span>
+                              <span>
+                                {language === "ar" ? "غير متاح للوصول" : "No Check-in"}
+                              </span>
+                            </span>
+                          </div>
+
+                          <div className="ab-calendar-actions">
+                            <div className="ab-calendar-total">
+                              <strong>
+                                {language === "ar"
+                                  ? `ابتداءً من SAR ${lowestCalendarTotal.toLocaleString()} لإجمالي ${nightsCount} ليلة`
+                                  : `From SAR ${lowestCalendarTotal.toLocaleString()} Total for ${nightsCount} ${
+                                      nightsCount === 1 ? "Night" : "Nights"
+                                    }`}
+                              </strong>
+                              <span>
+                                {language === "ar"
+                                  ? "غير شامل الضرائب والرسوم"
+                                  : "Excluding Taxes & Fees"}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              className="ab-calendar-cancel-btn"
+                              onClick={() => setBookingCalendarOpen(false)}
+                            >
+                              {language === "ar" ? "إخفاء التقويم" : "Cancel"}
+                            </button>
+                            <button
+                              type="button"
+                              className="ab-calendar-apply-btn"
+                              onClick={() => setBookingCalendarOpen(false)}
+                            >
+                              {language === "ar" ? "تحديث البحث" : "Search"}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Select a Room Heading + 3 Filter Controls */}
+                  <h2 className="ab-select-room-title">
+                    {language === "ar" ? "اختر الغرفة" : "Select a Room"}
+                  </h2>
+
+                  <div className="ab-filters-bar">
+                    <div className="ab-filter-select-wrap">
+                      <span className="ab-filter-label">
+                        {language === "ar" ? "عرض حسب:" : "View By:"}
+                      </span>
+                      <select
+                        className="ab-filter-select"
+                        value={bookingCategoryFilter}
+                        onChange={(e) =>
+                          setBookingCategoryFilter(e.target.value as "all" | RoomCategorySlug)
+                        }
+                      >
+                        <option value="all">
+                          {language === "ar" ? "جميع الغرف والأجنحة (7)" : "Rooms (All 7)"}
+                        </option>
+                        <option value="rooms">
+                          {language === "ar" ? "الغرف (2)" : "Rooms (2)"}
+                        </option>
+                        <option value="studios">
+                          {language === "ar" ? "الاستوديوهات (1)" : "Studios (1)"}
+                        </option>
+                        <option value="suites">
+                          {language === "ar" ? "الأجنحة (4)" : "Suites (4)"}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div className="ab-filter-select-wrap">
+                      <span className="ab-filter-label">
+                        {language === "ar" ? "فلاتر الغرف:" : "Room Filters:"}
+                      </span>
+                      <select
+                        className="ab-filter-select"
+                        value={bookingBedFilter}
+                        onChange={(e) =>
+                          setBookingBedFilter(
+                            e.target.value as "all" | "king" | "twin" | "seaview"
+                          )
+                        }
+                      >
+                        <option value="all">
+                          {language === "ar" ? "الكل (0)" : "All Beds & Views (0)"}
+                        </option>
+                        <option value="king">
+                          {language === "ar" ? "سرير كينغ" : "1 King Bed"}
+                        </option>
+                        <option value="twin">
+                          {language === "ar" ? "سريران مفردان" : "2 Twin Beds"}
+                        </option>
+                        <option value="seaview">
+                          {language === "ar" ? "إطلالة على البحر الأحمر" : "Red Sea View"}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div className="ab-filter-select-wrap">
+                      <span className="ab-filter-label">
+                        {language === "ar" ? "ترتيب حسب:" : "Sort:"}
+                      </span>
+                      <select
+                        className="ab-filter-select"
+                        value={bookingSortBy}
+                        onChange={(e) =>
+                          setBookingSortBy(
+                            e.target.value as "recommended" | "lowest" | "highest"
+                          )
+                        }
+                      >
+                        <option value="recommended">
+                          {language === "ar" ? "الموصى به" : "Recommended"}
+                        </option>
+                        <option value="lowest">
+                          {language === "ar" ? "الأقل سعراً" : "Lowest Price"}
+                        </option>
+                        <option value="highest">
+                          {language === "ar" ? "الأعلى سعراً" : "Highest Price"}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Vertical Stack of 7 Room Booking Cards */}
+                  {filteredRoomSlugs.map((slug) => {
+                    const rm = roomsMap[slug];
+                    const baseRate = ROOM_BASE_RATES_SAR[slug];
+                    const roomOnlyNightly = baseRate * bookingRoomsCount;
+                    const withBreakfastNightly =
+                      (baseRate + BREAKFAST_PRICE_PER_PERSON_SAR * bookingAdults) *
+                      bookingRoomsCount;
+                    const weekdayRoomOnlyNightly = Math.round(baseRate * 0.75) * bookingRoomsCount;
+                    const weekdayWithBreakfastNightly =
+                      (Math.round(baseRate * 0.75) +
+                        BREAKFAST_PRICE_PER_PERSON_SAR * bookingAdults) *
+                      bookingRoomsCount;
+                    const isMoreOpen = Boolean(bookingExpandedRates[slug]);
+                    const isHighlighted = bookingHighlightedRoom === slug;
+
+                    const isRoomOnlySelected =
+                      activeCartItem.roomSlug === slug &&
+                      activeCartItem.ratePlan === "room-only";
+                    const isBreakfastSelected =
+                      activeCartItem.roomSlug === slug &&
+                      activeCartItem.ratePlan === "with-breakfast";
+
+                    return (
+                      <article
+                        key={slug}
+                        className={`ab-room-card ${isHighlighted ? "is-highlighted" : ""}`}
+                      >
+                        {isHighlighted && (
+                          <div className="ab-room-highlight-ribbon">
+                            ★{" "}
+                            {language === "ar"
+                              ? "الغرفة المختارة"
+                              : "Selected Room Type"}
+                          </div>
+                        )}
+
+                        {/* Top Section: Left Thumbnail + Right Info */}
+                        <div className="ab-room-top">
+                          <div
+                            className="ab-room-thumb"
+                            onClick={() => {
+                              setActiveRoomSlug(slug);
+                              setRoomGalleryLightboxIndex(0);
+                            }}
+                          >
+                            <img src={rm.cardImage} alt={rm.name} />
+                            <div className="ab-room-thumb-badges">
+                              <button
+                                type="button"
+                                className="ab-thumb-badge"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveRoomSlug(slug);
+                                  setRoomAmenitiesModalOpen(true);
+                                }}
+                                title={language === "ar" ? "مرافق الغرفة" : "Room Amenities"}
+                              >
+                                🛏
+                              </button>
+                              <button
+                                type="button"
+                                className="ab-thumb-badge"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveRoomSlug(slug);
+                                  setRoomGalleryLightboxIndex(0);
+                                }}
+                              >
+                                📷 {rm.allGalleryImages.length}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="ab-room-info">
+                            <h3
+                              className="ab-room-name"
+                              onClick={() => openRoomDetailPage(slug)}
+                            >
+                              {rm.name}
+                            </h3>
+
+                            <div className="ab-room-pills">
+                              <span className="ab-room-pill is-primary">{rm.view}</span>
+                              <span className="ab-room-pill">{rm.bed}</span>
+                            </div>
+
+                            <p className="ab-room-specs">
+                              {rm.occupancy} &nbsp;|&nbsp; {rm.bed} &nbsp;|&nbsp; {rm.size}
+                            </p>
+
+                            <p className="ab-room-desc">{rm.cardDescription}</p>
+
+                            <button
+                              type="button"
+                              className="ab-room-details-link"
+                              onClick={() => {
+                                setActiveRoomSlug(slug);
+                                setRoomAmenitiesModalOpen(true);
+                              }}
+                            >
+                              {language === "ar" ? "تفاصيل الغرفة والمرافق" : "Room Details"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* RATE ROW 1 — ROOM ONLY */}
+                        <div className="ab-rate-row">
+                          <div className="ab-rate-left">
+                            <div className="ab-rate-title-wrap">
+                              <h4 className="ab-rate-title">
+                                {language === "ar" ? "غرفة فقط (Room Only)" : "Room Only"}
+                              </h4>
+                            </div>
+                            <ul className="ab-rate-bullets">
+                              <li>
+                                {language === "ar"
+                                  ? "إقامة في الغرفة فقط (بدون وجبة إفطار)"
+                                  : "Flexible Room Only rate (meals not included)"}
+                              </li>
+                              <li>
+                                {language === "ar"
+                                  ? "إلغاء مجاني حتى 24 ساعة قبل تسجيل الوصول"
+                                  : "Free cancellation up to 24 hours before arrival"}
+                              </li>
+                              <li>
+                                {language === "ar"
+                                  ? "واي فاي فائق السرعة مجاناً وخصم 10% في مطعم ديوان مدى ومقهى أوز بارك"
+                                  : "Complimentary high-speed Wi-Fi & 10% off at Diwan Mada Restaurant"}
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div className="ab-rate-right">
+                            <div>
+                              <div className="ab-rate-price">
+                                SAR {roomOnlyNightly.toLocaleString()}
+                              </div>
+                              <div className="ab-rate-per-night">
+                                {language === "ar" ? "لكل ليلة" : "Per Night"}
+                              </div>
+                              <div className="ab-rate-tax-note">
+                                {language === "ar"
+                                  ? "غير شامل الضرائب والرسوم"
+                                  : "Excluding taxes & fees"}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className={`ab-rate-book-btn ${
+                                isRoomOnlySelected ? "is-selected" : ""
+                              }`}
+                              onClick={() => handleSelectRoomRate(slug, "room-only")}
+                            >
+                              {isRoomOnlySelected
+                                ? language === "ar"
+                                  ? "✓ تم الاختيار"
+                                  : "✓ Selected"
+                                : language === "ar"
+                                ? "احجز الآن"
+                                : "Book Now"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* RATE ROW 2 — WITH BREAKFAST (+50 SAR PER PERSON!) */}
+                        <div className="ab-rate-row">
+                          <div className="ab-rate-left">
+                            <div className="ab-rate-title-wrap">
+                              <h4 className="ab-rate-title">
+                                {language === "ar" ? "شامل الإفطار (With Breakfast)" : "With Breakfast"}
+                              </h4>
+                              <span className="ab-breakfast-pill">
+                                {language === "ar"
+                                  ? `+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص`
+                                  : `+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person`}
+                              </span>
+                            </div>
+                            <ul className="ab-rate-bullets">
+                              <li>
+                                {language === "ar"
+                                  ? `بوفيه إفطار يومي في مطعم ديوان مدى (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص في الليلة)`
+                                  : `Daily breakfast buffet at Diwan Mada Restaurant (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person / night)`}
+                              </li>
+                              <li>
+                                {language === "ar"
+                                  ? "إلغاء مجاني حتى 24 ساعة قبل تسجيل الوصول"
+                                  : "Free cancellation up to 24 hours before arrival"}
+                              </li>
+                              <li>
+                                {language === "ar"
+                                  ? "واي فاي فائق السرعة مجاناً وخصم 10% في مطعم ديوان مدى ومقهى أوز بارك"
+                                  : "Complimentary high-speed Wi-Fi & 10% off at Diwan Mada Restaurant"}
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div className="ab-rate-right">
+                            <div>
+                              <div className="ab-rate-price">
+                                SAR {withBreakfastNightly.toLocaleString()}
+                              </div>
+                              <div className="ab-rate-per-night">
+                                {language === "ar" ? "لكل ليلة" : "Per Night"}
+                              </div>
+                              <div className="ab-rate-tax-note">
+                                {language === "ar"
+                                  ? `شامل الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults} شخص)`
+                                  : `Includes breakfast (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults} ${
+                                      bookingAdults === 1 ? "person" : "persons"
+                                    })`}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className={`ab-rate-book-btn ${
+                                isBreakfastSelected ? "is-selected" : ""
+                              }`}
+                              onClick={() => handleSelectRoomRate(slug, "with-breakfast")}
+                            >
+                              {isBreakfastSelected
+                                ? language === "ar"
+                                  ? "✓ تم الاختيار"
+                                  : "✓ Selected"
+                                : language === "ar"
+                                ? "احجز الآن"
+                                : "Book Now"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* EXPANDABLE EXTRA PROMOTIONAL RATES (Show More Rates) */}
+                        {isMoreOpen && (
+                          <>
+                            <div className="ab-rate-row">
+                              <div className="ab-rate-left">
+                                <div className="ab-rate-title-wrap">
+                                  <h4 className="ab-rate-title">
+                                    {language === "ar"
+                                      ? "عرض أيام الأسبوع (خصم 25%) — غرفة فقط"
+                                      : "Weekday Escape (Up to 25% Off) — Room Only"}
+                                  </h4>
+                                </div>
+                                <ul className="ab-rate-bullets">
+                                  <li>
+                                    {language === "ar"
+                                      ? "خصم حصري لإقامات أيام الأسبوع (الأحد – الخميس)"
+                                      : "Exclusive savings on Sunday–Thursday stays"}
+                                  </li>
+                                </ul>
+                              </div>
+                              <div className="ab-rate-right">
+                                <div>
+                                  <div className="ab-rate-price">
+                                    SAR {weekdayRoomOnlyNightly.toLocaleString()}
+                                  </div>
+                                  <div className="ab-rate-per-night">
+                                    {language === "ar" ? "لكل ليلة" : "Per Night"}
+                                  </div>
+                                  <div className="ab-rate-tax-note">
+                                    {language === "ar"
+                                      ? "غير شامل الضرائب والرسوم"
+                                      : "Excluding taxes & fees"}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="ab-rate-book-btn"
+                                  onClick={() => handleSelectRoomRate(slug, "weekday-room-only")}
+                                >
+                                  {language === "ar" ? "احجز الآن" : "Book Now"}
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="ab-rate-row">
+                              <div className="ab-rate-left">
+                                <div className="ab-rate-title-wrap">
+                                  <h4 className="ab-rate-title">
+                                    {language === "ar"
+                                      ? "عرض أيام الأسبوع (خصم 25%) — شامل الإفطار"
+                                      : "Weekday Escape (Up to 25% Off) — With Breakfast"}
+                                  </h4>
+                                  <span className="ab-breakfast-pill">
+                                    {language === "ar"
+                                      ? `+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص`
+                                      : `+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} per person`}
+                                  </span>
+                                </div>
+                                <ul className="ab-rate-bullets">
+                                  <li>
+                                    {language === "ar"
+                                      ? `شامل الإفطار اليومي في مطعم ديوان مدى (+${BREAKFAST_PRICE_PER_PERSON_SAR} ريال للشخص)`
+                                      : `Includes daily breakfast at Diwan Mada Restaurant (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} / person)`}
+                                  </li>
+                                </ul>
+                              </div>
+                              <div className="ab-rate-right">
+                                <div>
+                                  <div className="ab-rate-price">
+                                    SAR {weekdayWithBreakfastNightly.toLocaleString()}
+                                  </div>
+                                  <div className="ab-rate-per-night">
+                                    {language === "ar" ? "لكل ليلة" : "Per Night"}
+                                  </div>
+                                  <div className="ab-rate-tax-note">
+                                    {language === "ar"
+                                      ? `شامل الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults})`
+                                      : `Includes breakfast (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults})`}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="ab-rate-book-btn"
+                                  onClick={() =>
+                                    handleSelectRoomRate(slug, "weekday-with-breakfast")
+                                  }
+                                >
+                                  {language === "ar" ? "احجز الآن" : "Book Now"}
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        <div className="ab-room-card-footer">
+                          <button
+                            type="button"
+                            className="ab-show-more-btn"
+                            onClick={() =>
+                              setBookingExpandedRates((prev) => ({
+                                ...prev,
+                                [slug]: !prev[slug],
+                              }))
+                            }
+                          >
+                            {isMoreOpen
+                              ? language === "ar"
+                                ? "إخفاء الأسعار الإضافية ⌃"
+                                : "Show Less ⌃"
+                              : language === "ar"
+                              ? "عرض المزيد من الأسعار ⌄"
+                              : "Show More Rates ⌄"}
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                {/* RIGHT COLUMN: Sticky Reservation Summary Sidebar */}
+                <aside className="ab-summary-sidebar" id="ab-reservation-summary">
+                  <div className="ab-summary-card">
+                    <h3 className="ab-summary-heading">
+                      {language === "ar" ? "ملخص الحجز" : "Your Stay"}
+                    </h3>
+
+                    <div className="ab-summary-dates-grid">
+                      <div>
+                        <span className="ab-summary-meta-label">
+                          {language === "ar" ? "تسجيل الوصول" : "Check-in"}
+                        </span>
+                        <span className="ab-summary-meta-val">
+                          {formatDisplayDate(bookingCheckIn)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="ab-summary-meta-label">
+                          {language === "ar" ? "تسجيل المغادرة" : "Check-out"}
+                        </span>
+                        <span className="ab-summary-meta-val">
+                          {formatDisplayDate(bookingCheckOut)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="ab-summary-meta-label">
+                          {language === "ar" ? "المدة" : "Duration"}
+                        </span>
+                        <span className="ab-summary-meta-val">
+                          {language === "ar"
+                            ? `${nightsCount} ليلة`
+                            : `${nightsCount} ${nightsCount === 1 ? "Night" : "Nights"}`}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="ab-summary-meta-label">
+                          {language === "ar" ? "الضيوف" : "Guests"}
+                        </span>
+                        <span className="ab-summary-meta-val">
+                          {language === "ar"
+                            ? `${bookingRoomsCount} غرفة، ${bookingAdults} بالغ`
+                            : `${bookingRoomsCount} Rm, ${bookingAdults} ${
+                                bookingAdults === 1 ? "Adult" : "Adults"
+                              }`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="ab-summary-Selected-block">
+                      <div className="ab-summary-room-mini">
+                        <img src={selectedRoomObj.cardImage} alt={selectedRoomObj.name} />
+                        <div>
+                          <h4>{selectedRoomObj.name}</h4>
+                          <p>
+                            {selectedRoomObj.size} • {selectedRoomObj.bed}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* 1-Click Switcher between Room Only & With Breakfast (+50 SAR / person) */}
+                      <div className="ab-summary-plan-toggle">
+                        <button
+                          type="button"
+                          className={`ab-plan-chip ${!includesBreakfast ? "is-active" : ""}`}
+                          onClick={() =>
+                            setSelectedBookingItem({
+                              roomSlug: activeCartItem.roomSlug,
+                              ratePlan: isWeekdayDiscountPlan ? "weekday-room-only" : "room-only",
+                            })
+                          }
+                        >
+                          {language === "ar" ? "غرفة فقط" : "Room Only"}
+                        </button>
+                        <button
+                          type="button"
+                          className={`ab-plan-chip ${includesBreakfast ? "is-active" : ""}`}
+                          onClick={() =>
+                            setSelectedBookingItem({
+                              roomSlug: activeCartItem.roomSlug,
+                              ratePlan: isWeekdayDiscountPlan
+                                ? "weekday-with-breakfast"
+                                : "with-breakfast",
+                            })
+                          }
+                        >
+                          {language === "ar"
+                            ? `شامل الإفطار (+${BREAKFAST_PRICE_PER_PERSON_SAR} ر.س/شخص)`
+                            : `With Breakfast (+SAR ${BREAKFAST_PRICE_PER_PERSON_SAR}/person)`}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="ab-summary-breakdown">
+                      <div className="ab-breakdown-line">
+                        <span>
+                          {language === "ar"
+                            ? `سعر الغرفة (${nightsCount} ليلة × ${bookingRoomsCount})`
+                            : `Room (${nightsCount} ${
+                                nightsCount === 1 ? "night" : "nights"
+                              } × ${bookingRoomsCount})`}
+                        </span>
+                        <strong>SAR {roomSubtotal.toLocaleString()}</strong>
+                      </div>
+
+                      <div
+                        className={`ab-breakdown-line ${
+                          includesBreakfast ? "is-breakfast" : ""
+                        }`}
+                      >
+                        <span>
+                          {includesBreakfast
+                            ? language === "ar"
+                              ? `الإفطار (${BREAKFAST_PRICE_PER_PERSON_SAR} ريال × ${bookingAdults} شخص × ${nightsCount} ليلة)`
+                              : `Breakfast (SAR ${BREAKFAST_PRICE_PER_PERSON_SAR} × ${bookingAdults}p × ${nightsCount}n)`
+                            : language === "ar"
+                            ? "الإفطار (50 ريال للشخص)"
+                            : "Breakfast (SAR 50 / person)"}
+                        </span>
+                        <span>
+                          {includesBreakfast
+                            ? `SAR ${breakfastSubtotal.toLocaleString()}`
+                            : language === "ar"
+                            ? "غير مضاف"
+                            : "Not added"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="ab-summary-total-row">
+                      <span className="ab-summary-total-label">
+                        {language === "ar" ? "الإجمالي" : "Total for Stay"}
+                      </span>
+                      <span className="ab-summary-total-amount">
+                        SAR {grandTotalSar.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="ab-guest-form">
+                      <input
+                        type="text"
+                        className="ab-guest-input"
+                        placeholder={
+                          language === "ar" ? "الاسم الكامل للضيف" : "Guest Full Name"
+                        }
+                        value={bookingGuestName}
+                        onChange={(e) => setBookingGuestName(e.target.value)}
+                      />
+                      <input
+                        type="tel"
+                        className="ab-guest-input"
+                        placeholder={
+                          language === "ar"
+                            ? "رقم الجوال (مثال: +966 5X XXX XXXX)"
+                            : "Mobile Number (e.g. +966 5X XXX XXXX)"
+                        }
+                        value={bookingGuestPhone}
+                        onChange={(e) => setBookingGuestPhone(e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        className="ab-guest-input"
+                        placeholder={
+                          language === "ar"
+                            ? "طلبات خاصة (اختياري)"
+                            : "Special Requests (Optional)"
+                        }
+                        value={bookingSpecialRequests}
+                        onChange={(e) => setBookingSpecialRequests(e.target.value)}
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      className="ab-confirm-book-btn"
+                      onClick={handleCompleteBookingWhatsApp}
+                    >
+                      {language === "ar"
+                        ? "تأكيد وإتمام الحجز الآن"
+                        : "Confirm & Book Now"}
+                      <Arrow rtl={isRtl} />
+                    </button>
+                  </div>
+                </aside>
+              </div>
             </div>
           );
         })()
@@ -7688,10 +9038,10 @@ export default function Home() {
           <div>
             <span className="footer-label">{t.footerAdditionalLabel}</span>
             <a
-              href="#stay"
+              href="#booking"
               onClick={(e) => {
                 e.preventDefault();
-                navigateToHomeSection("stay");
+                openBookingPage();
               }}
             >
               {t.footerBookLink}
