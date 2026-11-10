@@ -3120,22 +3120,44 @@ export default function Home() {
   useEffect(() => {
     if (activePage !== "home") return;
     let frame = 0;
-    const updateSignature = () => {
-      frame = 0;
+    let currentVal = 0;
+    let targetVal = 0;
+    let initialized = false;
+
+    const computeTarget = () => {
       const section = signatureRef.current;
-      if (!section) return;
+      if (!section) return 0;
       const rect = section.getBoundingClientRect();
       const range = Math.max(1, section.offsetHeight - window.innerHeight);
       const normalized = Math.min(1, Math.max(0, -rect.top / range));
-      const continuous = normalized * Math.max(1, signatureImages.length - 1);
-      setSignatureVerticalProgress(continuous);
-      const next = Math.round(continuous);
+      return normalized * Math.max(1, signatureImages.length - 1);
+    };
+
+    const tick = () => {
+      targetVal = computeTarget();
+      if (!initialized) {
+        currentVal = targetVal;
+        initialized = true;
+      } else {
+        currentVal += (targetVal - currentVal) * 0.14;
+      }
+      if (Math.abs(targetVal - currentVal) < 0.0008) {
+        currentVal = targetVal;
+        frame = 0;
+      } else {
+        frame = window.requestAnimationFrame(tick);
+      }
+      setSignatureVerticalProgress(currentVal);
+      const next = Math.round(currentVal);
       setSignatureSlide((current) => (current === next ? current : next));
     };
+
     const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateSignature);
+      targetVal = computeTarget();
+      if (!frame) frame = window.requestAnimationFrame(tick);
     };
-    updateSignature();
+
+    tick();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
@@ -3148,20 +3170,42 @@ export default function Home() {
   useEffect(() => {
     if (activePage !== "cafe") return;
     let frame = 0;
-    const updateCafeVertical = () => {
-      frame = 0;
+    let currentVal = 0;
+    let targetVal = 0;
+    let initialized = false;
+
+    const computeTarget = () => {
       const section = cafeVerticalRef.current;
-      if (!section) return;
+      if (!section) return 0;
       const rect = section.getBoundingClientRect();
       const range = Math.max(1, section.offsetHeight - window.innerHeight);
       const normalized = Math.min(1, Math.max(0, -rect.top / range));
-      const continuous = normalized * (cafeMenuSlides.length - 1);
-      setCafeVerticalProgress(continuous);
+      return normalized * (cafeMenuSlides.length - 1);
     };
+
+    const tick = () => {
+      targetVal = computeTarget();
+      if (!initialized) {
+        currentVal = targetVal;
+        initialized = true;
+      } else {
+        currentVal += (targetVal - currentVal) * 0.14;
+      }
+      if (Math.abs(targetVal - currentVal) < 0.0008) {
+        currentVal = targetVal;
+        frame = 0;
+      } else {
+        frame = window.requestAnimationFrame(tick);
+      }
+      setCafeVerticalProgress(currentVal);
+    };
+
     const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateCafeVertical);
+      targetVal = computeTarget();
+      if (!frame) frame = window.requestAnimationFrame(tick);
     };
-    updateCafeVertical();
+
+    tick();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
@@ -3184,20 +3228,42 @@ export default function Home() {
   useEffect(() => {
     if (activePage !== "meeting") return;
     let frame = 0;
-    const updateMeetingVertical = () => {
-      frame = 0;
+    let currentVal = 0;
+    let targetVal = 0;
+    let initialized = false;
+
+    const computeTarget = () => {
       const section = meetingVerticalRef.current;
-      if (!section) return;
+      if (!section) return 0;
       const rect = section.getBoundingClientRect();
       const range = Math.max(1, section.offsetHeight - window.innerHeight);
       const normalized = Math.min(1, Math.max(0, -rect.top / range));
-      const continuous = normalized * Math.max(1, meetingPackageSlides.length - 1);
-      setMeetingVerticalProgress(continuous);
+      return normalized * Math.max(1, meetingPackageSlides.length - 1);
     };
+
+    const tick = () => {
+      targetVal = computeTarget();
+      if (!initialized) {
+        currentVal = targetVal;
+        initialized = true;
+      } else {
+        currentVal += (targetVal - currentVal) * 0.14;
+      }
+      if (Math.abs(targetVal - currentVal) < 0.0008) {
+        currentVal = targetVal;
+        frame = 0;
+      } else {
+        frame = window.requestAnimationFrame(tick);
+      }
+      setMeetingVerticalProgress(currentVal);
+    };
+
     const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateMeetingVertical);
+      targetVal = computeTarget();
+      if (!frame) frame = window.requestAnimationFrame(tick);
     };
-    updateMeetingVertical();
+
+    tick();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
@@ -3221,56 +3287,94 @@ export default function Home() {
   useEffect(() => {
     if (activePage !== "stay") return;
     let frame = 0;
-    const updateStayAnimations = () => {
-      frame = 0;
+    let initialized = false;
+    let curHero = 0;
+    let curAccom = 0;
+    let curVert = 0;
+    let curExp = 0;
+
+    const tick = () => {
       const vh = window.innerHeight;
       const headerH = window.innerWidth <= 900 ? 72 : 88;
 
-      // 1. Section 1 — Sticky Expanding Hero (Atlantis inspirational-hero--animated)
+      let tgtHero = curHero;
       const heroSec = stayHeroSectionRef.current;
       if (heroSec) {
         const rect = heroSec.getBoundingClientRect();
         const stickyH = Math.max(1, vh - headerH);
         const range = Math.max(1, heroSec.offsetHeight - stickyH);
         const scrolledPx = Math.max(0, headerH - rect.top);
-        const p = Math.min(1, Math.max(0, scrolledPx / range));
-        setStayHeroProgress(p);
+        tgtHero = Math.min(1, Math.max(0, scrolledPx / range));
       }
 
-      // 2. Section 3 — Accommodation Split-Screen Intro Curtain (100% -> 589px -> fade)
+      let tgtAccom = curAccom;
       const accomSec = stayAccomSliderRef.current;
       if (accomSec) {
         const rect = accomSec.getBoundingClientRect();
         const startTop = Math.max(260, Math.min(440, vh * 0.52));
         const endTop = headerH + 16;
-        const p = Math.min(1, Math.max(0, (startTop - rect.top) / Math.max(1, startTop - endTop)));
-        setStayAccomIntroProgress(p);
+        tgtAccom = Math.min(1, Math.max(0, (startTop - rect.top) / Math.max(1, startTop - endTop)));
       }
 
-      // 3. Section 5A — Vertical Curtain-Wipe Carousel (3 Experiences)
+      let tgtVert = curVert;
       const vertSec = stayVerticalRef.current;
       if (vertSec) {
         const rect = vertSec.getBoundingClientRect();
         const range = Math.max(1, vertSec.offsetHeight - vh);
         const normalized = Math.min(1, Math.max(0, -rect.top / range));
-        setStayVerticalProgress(normalized * 2);
+        tgtVert = normalized * 2;
       }
 
-      // 4. Section 5B — Experiences Split-Screen Intro Curtain (100% -> 589px -> fade)
+      let tgtExp = curExp;
       const expSec = stayExpSliderRef.current;
       if (expSec) {
         const rect = expSec.getBoundingClientRect();
         const startTop = Math.max(260, Math.min(440, vh * 0.52));
         const endTop = headerH + 16;
-        const p = Math.min(1, Math.max(0, (startTop - rect.top) / Math.max(1, startTop - endTop)));
-        setStayExpIntroProgress(p);
+        tgtExp = Math.min(1, Math.max(0, (startTop - rect.top) / Math.max(1, startTop - endTop)));
       }
+
+      if (!initialized) {
+        curHero = tgtHero;
+        curAccom = tgtAccom;
+        curVert = tgtVert;
+        curExp = tgtExp;
+        initialized = true;
+      } else {
+        curHero += (tgtHero - curHero) * 0.15;
+        curAccom += (tgtAccom - curAccom) * 0.15;
+        curVert += (tgtVert - curVert) * 0.14;
+        curExp += (tgtExp - curExp) * 0.15;
+      }
+
+      const maxDiff = Math.max(
+        Math.abs(tgtHero - curHero),
+        Math.abs(tgtAccom - curAccom),
+        Math.abs(tgtVert - curVert),
+        Math.abs(tgtExp - curExp)
+      );
+
+      if (maxDiff < 0.0008) {
+        curHero = tgtHero;
+        curAccom = tgtAccom;
+        curVert = tgtVert;
+        curExp = tgtExp;
+        frame = 0;
+      } else {
+        frame = window.requestAnimationFrame(tick);
+      }
+
+      setStayHeroProgress(curHero);
+      setStayAccomIntroProgress(curAccom);
+      setStayVerticalProgress(curVert);
+      setStayExpIntroProgress(curExp);
     };
 
     const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateStayAnimations);
+      if (!frame) frame = window.requestAnimationFrame(tick);
     };
-    updateStayAnimations();
+
+    tick();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
@@ -3556,7 +3660,7 @@ export default function Home() {
     }
   };
 
-  // Universal Mouse Grab-and-Drag for Horizontal Card Tracks & Grids
+  // Universal Mouse Grab-and-Drag with Smooth Inertia Coasting for Horizontal Card Tracks & Grids
   const createTrackDragProps = (onScrollSync?: (el: HTMLElement) => void) => ({
     onMouseDown: (e: React.MouseEvent<HTMLElement>) => {
       if (e.button !== 0) return;
@@ -3565,6 +3669,9 @@ export default function Home() {
       const el = e.currentTarget;
       const startX = e.clientX;
       const startScrollLeft = el.scrollLeft;
+      let prevX = e.clientX;
+      let prevTime = performance.now();
+      let velocityX = 0;
       let moved = false;
 
       el.classList.add("is-grabbing");
@@ -3572,6 +3679,13 @@ export default function Home() {
       delete el.dataset.dragged;
 
       const onMouseMove = (ev: MouseEvent) => {
+        const now = performance.now();
+        const dt = Math.max(8, now - prevTime);
+        const stepDx = ev.clientX - prevX;
+        velocityX = velocityX * 0.65 + (stepDx / dt) * 16 * 0.35;
+        prevX = ev.clientX;
+        prevTime = now;
+
         const dx = ev.clientX - startX;
         if (Math.abs(dx) > 5) {
           moved = true;
@@ -3581,20 +3695,20 @@ export default function Home() {
 
         const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
         if (maxScroll > 4) {
-          const desired = startScrollLeft - dx * 1.2;
+          const desired = startScrollLeft - dx * 1.15;
           if (desired < 0) {
             el.scrollLeft = 0;
-            el.style.transform = `translate3d(${Math.min(110, -desired * 0.35).toFixed(1)}px, 0, 0)`;
+            el.style.transform = `translate3d(${Math.min(110, -desired * 0.32).toFixed(1)}px, 0, 0)`;
           } else if (desired > maxScroll) {
             el.scrollLeft = maxScroll;
-            el.style.transform = `translate3d(${Math.max(-110, -(desired - maxScroll) * 0.35).toFixed(1)}px, 0, 0)`;
+            el.style.transform = `translate3d(${Math.max(-110, -(desired - maxScroll) * 0.32).toFixed(1)}px, 0, 0)`;
           } else {
             el.scrollLeft = desired;
             el.style.transform = "translate3d(0px, 0, 0)";
           }
           onScrollSync?.(el);
         } else {
-          const rubberX = Math.max(-130, Math.min(130, dx * 0.42));
+          const rubberX = Math.max(-130, Math.min(130, dx * 0.38));
           el.style.transform = `translate3d(${rubberX.toFixed(1)}px, 0, 0)`;
         }
       };
@@ -3602,13 +3716,32 @@ export default function Home() {
       const onMouseUp = () => {
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
-        el.classList.remove("is-grabbing");
-        el.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
+        el.style.transition = "transform 0.68s cubic-bezier(0.16, 1, 0.3, 1)";
         el.style.transform = "translate3d(0px, 0, 0)";
+
+        const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+        if (moved && maxScroll > 4 && Math.abs(velocityX) > 0.8) {
+          let v = -velocityX * 1.35;
+          const coast = () => {
+            if (Math.abs(v) < 0.45) {
+              el.classList.remove("is-grabbing");
+              onScrollSync?.(el);
+              return;
+            }
+            el.scrollLeft = Math.max(0, Math.min(maxScroll, el.scrollLeft + v));
+            v *= 0.92;
+            onScrollSync?.(el);
+            window.requestAnimationFrame(coast);
+          };
+          window.requestAnimationFrame(coast);
+        } else {
+          el.classList.remove("is-grabbing");
+        }
+
         if (moved) {
           window.setTimeout(() => {
             delete el.dataset.dragged;
-          }, 60);
+          }, 70);
         }
       };
 
@@ -3636,7 +3769,7 @@ export default function Home() {
       let stepped = false;
 
       el.classList.add("is-grabbing");
-      el.style.transition = "none";
+      el.style.transition = "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)";
       delete el.dataset.dragged;
 
       const onMouseMove = (ev: MouseEvent) => {
@@ -3648,15 +3781,16 @@ export default function Home() {
         }
         if (!moved) return;
 
-        const dragFollow = Math.max(-96, Math.min(96, dx * 0.38));
+        const dragFollow = Math.max(-96, Math.min(96, dx * 0.36));
         el.style.transform = `translate3d(${dragFollow.toFixed(1)}px, 0, 0)`;
 
-        if (Math.abs(dx) >= 72) {
+        if (Math.abs(dx) >= 74) {
           const dir: 1 | -1 = dx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
           onStep(dir);
           stepped = true;
           startX = ev.clientX;
           lastDx = 0;
+          el.style.transition = "transform 0.68s cubic-bezier(0.16, 1, 0.3, 1)";
           el.style.transform = "translate3d(0px, 0, 0)";
         }
       };
@@ -3665,16 +3799,16 @@ export default function Home() {
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
         el.classList.remove("is-grabbing");
-        if (!stepped && Math.abs(lastDx) >= 28) {
+        if (!stepped && Math.abs(lastDx) >= 26) {
           const dir: 1 | -1 = lastDx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
           onStep(dir);
         }
-        el.style.transition = "transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
+        el.style.transition = "transform 0.68s cubic-bezier(0.16, 1, 0.3, 1)";
         el.style.transform = "translate3d(0px, 0, 0)";
         if (moved) {
           window.setTimeout(() => {
             delete el.dataset.dragged;
-          }, 60);
+          }, 70);
         }
       };
 

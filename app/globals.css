@@ -6615,3 +6615,185 @@ html[dir="rtl"] .arc-folding-arrow svg {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================================
+   GLOBAL LUXURY SMOOTH MOTION & SILK EASING UPGRADE ACROSS ENTIRE WEBSITE
+   ============================================================================ */
+:root {
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes luxuryPageFadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes luxuryModalBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes luxuryModalCardIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Smooth page entry transitions when navigating between Home, Stay, Rooms, Dining, Café, Meeting & Offers */
+.atlantis-room-category-page,
+.atlantis-room-detail-page,
+.as-page-wrapper,
+.atlantis-wedding-page,
+.atlantis-offer-page,
+.atlantis-offer4-page,
+.atlantis-dining-page,
+.atlantis-cafe-page,
+.atlantis-meeting-page {
+  animation: luxuryPageFadeIn 0.65s var(--ease-luxury) both;
+}
+
+/* Silky Folding, Peeking & Split Carousels Across All Pages */
+.arc-folding-slide {
+  transition:
+    transform 0.88s var(--ease-luxury),
+    width 0.88s var(--ease-luxury),
+    opacity 0.68s var(--ease-luxury);
+  backface-visibility: hidden;
+}
+
+.arc-folding-card-media {
+  transition: height 0.88s var(--ease-luxury);
+}
+
+.arc-folding-card-desc {
+  transition:
+    opacity 0.62s var(--ease-luxury),
+    transform 0.62s var(--ease-luxury);
+}
+
+.arc-folding-progress-bar,
+.ac-folding-scrollbar-drag,
+.as-immersive-ink-bar {
+  transition:
+    inset-inline-start 0.68s var(--ease-luxury),
+    width 0.68s var(--ease-luxury);
+}
+
+.ac-folding-slide {
+  transition:
+    transform 0.92s var(--ease-luxury),
+    width 0.92s var(--ease-luxury),
+    opacity 0.68s var(--ease-luxury);
+  backface-visibility: hidden;
+}
+
+.ac-folding-card-motion {
+  transition:
+    height 0.92s var(--ease-luxury),
+    box-shadow 0.68s var(--ease-luxury);
+}
+
+.ac-folding-copy-reveal {
+  transition:
+    opacity 0.64s var(--ease-luxury),
+    transform 0.64s var(--ease-luxury);
+}
+
+.aw-folding-card,
+.ad-peeking-slide {
+  transition:
+    transform 0.86s var(--ease-luxury),
+    flex-basis 0.86s var(--ease-luxury),
+    width 0.86s var(--ease-luxury),
+    opacity 0.65s var(--ease-luxury),
+    box-shadow 0.65s var(--ease-luxury);
+  backface-visibility: hidden;
+}
+
+.as-immersive-text-slide {
+  transition:
+    opacity 0.75s var(--ease-luxury),
+    transform 0.75s var(--ease-luxury);
+}
+
+.as-immersive-media-slide,
+.as-immersive-left-bg-slide {
+  transition:
+    opacity 0.85s var(--ease-luxury),
+    transform 1.05s var(--ease-luxury);
+}
+
+/* Silky Card Media Hover Zoom Across All Cards & Bento Grids */
+.offer-card-image img,
+.offer-image-wrap img,
+.stay-card-image img,
+.arc-room-card-media img,
+.arc-folding-card-media img,
+.ard-bento-item img,
+.as-package-card-media img,
+.aw-package-img-wrap img,
+.aw-folding-img-box img,
+.ao-showcase-img-wrap img,
+.ao4-venue-img-wrap img,
+.ad-menu-img-wrap img,
+.ad-peeking-slide img,
+.ad-split-media img,
+.ac-folding-media-img {
+  transition: transform 0.95s var(--ease-luxury), filter 0.65s var(--ease-luxury);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Silky Button, Link & Accordion Transitions */
+button,
+a,
+.as-package-book-btn,
+.as-package-explore-link,
+.ard-hero-book-btn,
+.ard-view-gallery-btn,
+.arc-upgrade-btn,
+.ac-vcarousel-cta,
+.hero-book-btn,
+.book-link {
+  transition:
+    background-color 0.38s var(--ease-luxury),
+    color 0.38s var(--ease-luxury),
+    border-color 0.38s var(--ease-luxury),
+    transform 0.38s var(--ease-luxury),
+    opacity 0.38s var(--ease-luxury),
+    box-shadow 0.38s var(--ease-luxury);
+}
+
+.arc-accordion-chevron,
+.ao-accordion-chevron {
+  transition: transform 0.45s var(--ease-luxury);
+}
+
+.arc-accordion-panel,
+.ao-accordion-panel {
+  animation: luxuryPageFadeIn 0.42s var(--ease-luxury) both;
+}
+
+/* Silky Lightbox & Modal Entrances */
+.modal-backdrop,
+.ard-list-modal-backdrop,
+.aw-lightbox-backdrop {
+  animation: luxuryModalBackdropIn 0.35s var(--ease-luxury) both;
+}
+
+.modal-card,
+.ard-list-modal {
+  animation: luxuryModalCardIn 0.48s var(--ease-luxury) both;
+}
