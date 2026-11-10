@@ -168,6 +168,7 @@ export default function AdminDashboard({
   onOpenWebsiteHome,
   onOpenBookingPage,
   onOpenRoomPage,
+  onOpenCategoryPage,
 }: {
   language?: "ar" | "en";
   onToggleLanguage?: () => void;
@@ -177,6 +178,7 @@ export default function AdminDashboard({
   onOpenWebsiteHome: () => void;
   onOpenBookingPage: (roomSlug?: RoomSlug) => void;
   onOpenRoomPage: (roomSlug: RoomSlug) => void;
+  onOpenCategoryPage?: (catSlug: RoomCategorySlug) => void;
 }) {
   const [localLang, setLocalLang] = useState<"ar" | "en">(language);
   const activeLang = onToggleLanguage ? language : localLang;
@@ -752,6 +754,23 @@ export default function AdminDashboard({
           <div className="oz-admin-topbar-right">
             <button
               type="button"
+              className="oz-admin-save-top-btn"
+              onClick={() => {
+                onUpdateCmsState({
+                  ...cmsState,
+                  updatedAt: new Date().toISOString(),
+                });
+                triggerToast(
+                  isAr
+                    ? "✓ تم حفظ جميع التغييرات ونشرها على الموقع بنجاح"
+                    : "✓ All changes saved & published to website"
+                );
+              }}
+            >
+              {isAr ? "✓ حفظ التغييرات" : "✓ Save All Changes"}
+            </button>
+            <button
+              type="button"
               className="oz-admin-lang-switch-btn"
               onClick={handleSwitchLanguage}
               title={isAr ? "Switch to English" : "التبديل إلى العربية"}
@@ -982,7 +1001,7 @@ export default function AdminDashboard({
                     {rmDisplay.size} &bull; {rmDisplay.bed} &bull; {rmDisplay.view}
                   </p>
 
-                  {/* Instant Inline Price Editor */}
+                  {/* Instant Inline Price Editor + Explicit Save Button */}
                   <div className="oz-admin-price-box">
                     <div className="oz-admin-price-box-left">
                       <span className="oz-admin-price-label">
@@ -1004,7 +1023,43 @@ export default function AdminDashboard({
                         onChange={(e) => updateRoomRate(slug, Number(e.target.value))}
                         aria-label={`${rmDisplay.name} nightly rate in SAR`}
                       />
+                      <button
+                        type="button"
+                        className="oz-admin-inline-save-btn"
+                        onClick={() => {
+                          onUpdateCmsState({
+                            ...cmsState,
+                            updatedAt: new Date().toISOString(),
+                          });
+                          triggerToast(
+                            isAr
+                              ? `✓ تم حفظ سعر "${rmDisplay.name}" (${rate} ريال)`
+                              : `✓ Saved "${rmDisplay.name}" rate (SAR ${rate})`
+                          );
+                        }}
+                      >
+                        {isAr ? "حفظ" : "Save"}
+                      </button>
                     </div>
+                  </div>
+
+                  {/* Quick Links Showing Where This Room Appears Live */}
+                  <div className="oz-admin-live-places">
+                    <span>{isAr ? "يظهر في:" : "Live on:"}</span>
+                    {onOpenCategoryPage && (
+                      <button
+                        type="button"
+                        onClick={() => onOpenCategoryPage(rmEn.categorySlug)}
+                      >
+                        {isAr ? `صفحة ${catLabel} ↗` : `${catLabel} Page ↗`}
+                      </button>
+                    )}
+                    <button type="button" onClick={() => onOpenRoomPage(slug)}>
+                      {isAr ? "صفحة الغرفة ↗" : "Room Page ↗"}
+                    </button>
+                    <button type="button" onClick={() => onOpenBookingPage(slug)}>
+                      {isAr ? "صفحة الحجز ↗" : "Booking Engine ↗"}
+                    </button>
                   </div>
 
                   {/* Card Footer Actions */}

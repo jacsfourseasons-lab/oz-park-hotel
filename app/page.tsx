@@ -3152,7 +3152,7 @@ export default function Home() {
         window.scrollTo({ top: 0, behavior: "auto" });
       } else if (hash === "#booking" || hash.startsWith("#booking-")) {
         const maybeRoom = hash.replace("#booking-", "") as RoomSlug;
-        if (maybeRoom in specificRoomsData.en) {
+        if (maybeRoom && maybeRoom !== "#booking") {
           setBookingHighlightedRoom(maybeRoom);
           setSelectedBookingItem({ roomSlug: maybeRoom, ratePlan: "with-breakfast" });
         }
@@ -3167,9 +3167,8 @@ export default function Home() {
         }
       } else if (hash.startsWith("#room-")) {
         const rmSlug = hash.replace("#room-", "") as RoomSlug;
-        if (rmSlug in specificRoomsData.en) {
+        if (rmSlug) {
           setActiveRoomSlug(rmSlug);
-          setActiveCategorySlug(specificRoomsData.en[rmSlug].categorySlug);
           setActivePage("room-detail");
           window.scrollTo({ top: 0, behavior: "auto" });
         }
@@ -9083,6 +9082,7 @@ export default function Home() {
             openBookingPage(slug ? { roomSlug: slug } : undefined)
           }
           onOpenRoomPage={(slug) => openRoomDetailPage(slug)}
+          onOpenCategoryPage={(catSlug) => openRoomCategoryPage(catSlug)}
         />
       ) : null}
 

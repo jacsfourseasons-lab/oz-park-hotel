@@ -8592,6 +8592,73 @@ a,
   outline: none;
 }
 
+.oz-admin-inline-save-btn {
+  height: 34px;
+  padding: 0 11px;
+  background: #a8894d;
+  border: 1px solid #a8894d;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.oz-admin-inline-save-btn:hover {
+  background: #0f2442;
+  border-color: #0f2442;
+}
+
+.oz-admin-save-top-btn {
+  height: 36px;
+  padding: 0 15px;
+  background: #a8894d;
+  border: 1px solid #a8894d;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.oz-admin-save-top-btn:hover {
+  background: #c5a567;
+  border-color: #c5a567;
+  color: #0f2442;
+}
+
+.oz-admin-live-places {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.oz-admin-live-places button {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 3px 8px;
+  color: #0f2442;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.oz-admin-live-places button:hover {
+  background: #0f2442;
+  border-color: #0f2442;
+  color: #ffffff;
+}
+
 .oz-admin-card-actions {
   display: grid;
   grid-template-columns: 1fr auto auto;
