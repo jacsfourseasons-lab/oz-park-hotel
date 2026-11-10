@@ -41,6 +41,12 @@ for (const relPath of referencedPaths) {
   }
 }
 
+// 1b. Copy optimized room gallery subdirectories (public/images/ozpark/rooms/**)
+const srcRoomsDir = path.join(projectRoot, "public", "images", "ozpark", "rooms");
+if (fs.existsSync(srcRoomsDir)) {
+  fs.cpSync(srcRoomsDir, path.join(outImagesDir, "rooms"), { recursive: true });
+}
+
 // Convert large photo PNGs in outImagesDir to high-res 88% quality JPGs using .NET System.Drawing
 const psScript = `
 Add-Type -AssemblyName System.Drawing

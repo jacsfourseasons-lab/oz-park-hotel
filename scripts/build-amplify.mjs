@@ -43,6 +43,12 @@ for (const relPath of referencedPaths) {
   }
 }
 
+// 1b. Copy optimized room gallery subdirectories (public/images/ozpark/rooms/**)
+const srcRoomsDir = path.join(projectRoot, "public", "images", "ozpark", "rooms");
+if (fs.existsSync(srcRoomsDir)) {
+  fs.cpSync(srcRoomsDir, path.join(outImagesDir, "rooms"), { recursive: true });
+}
+
 // 2. Minify CSS from app/globals.css
 await esbuild.build({
   entryPoints: [path.join(projectRoot, "app", "globals.css")],

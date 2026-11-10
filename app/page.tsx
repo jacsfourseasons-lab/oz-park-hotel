@@ -1,9 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {
+  AtlantisRoomIcon,
+  type RoomCategorySlug,
+  type RoomSlug,
+  roomCategoriesPageData,
+  roomPrivilegesAccordionData,
+  roomPrivilegesCarouselData,
+  specificRoomsData,
+} from "./roomsData";
 
 type Language = "ar" | "en";
-type ActivePage = "home" | "wedding" | "offer2" | "offer3" | "offer4" | "dining" | "cafe" | "meeting" | "stay";
+type ActivePage =
+  | "home"
+  | "wedding"
+  | "offer2"
+  | "offer3"
+  | "offer4"
+  | "dining"
+  | "cafe"
+  | "meeting"
+  | "stay"
+  | "room-category"
+  | "room-detail";
 
 const signatureImages = [
   "/images/ozpark/slider-hotel.jpg",
@@ -2942,6 +2962,17 @@ export default function Home() {
   const [selectedCategoryModal, setSelectedCategoryModal] = useState<AccommodationCategoryData | null>(null);
   const [legalModal, setLegalModal] = useState<"privacy" | "terms" | null>(null);
 
+  // Room Category & Specific Room Detail page states
+  const [activeCategorySlug, setActiveCategorySlug] = useState<RoomCategorySlug>("rooms");
+  const [activeRoomSlug, setActiveRoomSlug] = useState<RoomSlug>("deluxe-room");
+  const [activePrivilegeSlide, setActivePrivilegeSlide] = useState(0);
+  const [roomPrivilegeAccordions, setRoomPrivilegeAccordions] = useState<Record<number, boolean>>({
+    0: true,
+    1: false,
+  });
+  const [roomAmenitiesModalOpen, setRoomAmenitiesModalOpen] = useState(false);
+  const [roomGalleryLightboxIndex, setRoomGalleryLightboxIndex] = useState<number | null>(null);
+
   const offersRef = useRef<HTMLDivElement>(null);
   const signatureRef = useRef<HTMLElement>(null);
   const cafeVerticalRef = useRef<HTMLElement>(null);
@@ -2974,44 +3005,50 @@ export default function Home() {
   const meetingPackageSlides = meetingPackageSlidesData[language];
   const isRtl = language === "ar";
 
-  // Sync URL hash with dedicated offer, dining, café & meeting room pages
+  // Sync URL hash with dedicated offer, dining, café, meeting room, category & room pages
   useEffect(() => {
     const syncFromHash = () => {
-      if (window.location.hash === "#wedding-packages") {
+      const hash = window.location.hash;
+      if (hash === "#wedding-packages") {
         setActivePage("wedding");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#offer-25-off") {
+      } else if (hash === "#offer-25-off") {
         setActivePage("offer2");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#offer-35-off") {
+      } else if (hash === "#offer-35-off") {
         setActivePage("offer3");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#offer-dining-cafe") {
+      } else if (hash === "#offer-dining-cafe") {
         setActivePage("offer4");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#diwan-mada-dining") {
+      } else if (hash === "#diwan-mada-dining") {
         setActivePage("dining");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#oz-park-cafe") {
+      } else if (hash === "#oz-park-cafe") {
         setActivePage("cafe");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#meeting-room") {
+      } else if (hash === "#meeting-room") {
         setActivePage("meeting");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (window.location.hash === "#stay-at-oz-park") {
+      } else if (hash === "#stay-at-oz-park") {
         setActivePage("stay");
         window.scrollTo({ top: 0, behavior: "auto" });
-      } else if (
-        window.location.hash &&
-        window.location.hash !== "#wedding-packages" &&
-        window.location.hash !== "#offer-25-off" &&
-        window.location.hash !== "#offer-35-off" &&
-        window.location.hash !== "#offer-dining-cafe" &&
-        window.location.hash !== "#diwan-mada-dining" &&
-        window.location.hash !== "#oz-park-cafe" &&
-        window.location.hash !== "#meeting-room" &&
-        window.location.hash !== "#stay-at-oz-park"
-      ) {
+      } else if (hash.startsWith("#stay-category-")) {
+        const catSlug = hash.replace("#stay-category-", "") as RoomCategorySlug;
+        if (catSlug === "rooms" || catSlug === "studios" || catSlug === "suites") {
+          setActiveCategorySlug(catSlug);
+          setActivePage("room-category");
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }
+      } else if (hash.startsWith("#room-")) {
+        const rmSlug = hash.replace("#room-", "") as RoomSlug;
+        if (rmSlug in specificRoomsData.en) {
+          setActiveRoomSlug(rmSlug);
+          setActiveCategorySlug(specificRoomsData.en[rmSlug].categorySlug);
+          setActivePage("room-detail");
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }
+      } else if (hash) {
         setActivePage("home");
       }
     };
@@ -3061,12 +3098,23 @@ export default function Home() {
       Boolean(selectedSlideModal) ||
       Boolean(selectedCategoryModal) ||
       Boolean(legalModal) ||
+      roomAmenitiesModalOpen ||
+      roomGalleryLightboxIndex !== null ||
       fullscreenPhotoIndex !== null;
     document.body.style.overflow = anyModal ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen, selectedOfferModal, selectedSlideModal, selectedCategoryModal, legalModal, fullscreenPhotoIndex]);
+  }, [
+    menuOpen,
+    selectedOfferModal,
+    selectedSlideModal,
+    selectedCategoryModal,
+    legalModal,
+    roomAmenitiesModalOpen,
+    roomGalleryLightboxIndex,
+    fullscreenPhotoIndex,
+  ]);
 
   useEffect(() => {
     if (activePage !== "home") return;
@@ -3324,12 +3372,71 @@ export default function Home() {
   const openStayPage = () => {
     setSelectedOfferModal(null);
     setSelectedSlideModal(null);
+    setSelectedCategoryModal(null);
     setMenuOpen(false);
     setActivePage("stay");
     if (typeof window !== "undefined") {
       window.history.pushState(null, "", "#stay-at-oz-park");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const openRoomCategoryPage = (slug: RoomCategorySlug) => {
+    setSelectedOfferModal(null);
+    setSelectedSlideModal(null);
+    setSelectedCategoryModal(null);
+    setRoomAmenitiesModalOpen(false);
+    setRoomGalleryLightboxIndex(null);
+    setMenuOpen(false);
+    setActiveCategorySlug(slug);
+    setActivePage("room-category");
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `#stay-category-${slug}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const openRoomDetailPage = (slug: RoomSlug) => {
+    setSelectedOfferModal(null);
+    setSelectedSlideModal(null);
+    setSelectedCategoryModal(null);
+    setRoomAmenitiesModalOpen(false);
+    setRoomGalleryLightboxIndex(null);
+    setMenuOpen(false);
+    setActiveRoomSlug(slug);
+    setActiveCategorySlug(specificRoomsData[language][slug].categorySlug);
+    setActivePage("room-detail");
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `#room-${slug}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const toggleRoomPrivilegeAccordion = (idx: number) => {
+    setRoomPrivilegeAccordions((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
+  const movePrivilegeCarousel = (direction: number) => {
+    const total = roomPrivilegesCarouselData[language].length;
+    setActivePrivilegeSlide((curr) => (curr + direction + total) % total);
+  };
+
+  const getPrivilegesCarouselWindow = () => {
+    const items = roomPrivilegesCarouselData[language];
+    const total = items.length;
+    const offsets = [-2, -1, 0, 1, 2];
+    return offsets.map((offset) => {
+      const idx = (activePrivilegeSlide + offset + total) % total;
+      return {
+        item: items[idx],
+        index: idx,
+        offset,
+        isCenter: offset === 0,
+      };
+    });
   };
 
   const moveDiningGallery = (direction: number) => {
@@ -3490,7 +3597,13 @@ export default function Home() {
   return (
     <main>
       {/* HEADER */}
-      <header className={`site-header ${scrolled || menuOpen || activePage === "stay" ? "is-solid" : ""}`}>
+      <header
+        className={`site-header ${
+          scrolled || menuOpen || activePage === "stay" || activePage === "room-category"
+            ? "is-solid"
+            : ""
+        }`}
+      >
         <div className="header-left-group">
           <button
             className="menu-trigger"
@@ -3506,9 +3619,20 @@ export default function Home() {
             <button
               type="button"
               className="header-back-btn"
-              onClick={() => navigateToHomeSection("top")}
+              onClick={() => {
+                if (activePage === "room-detail") {
+                  openRoomCategoryPage(activeCategorySlug);
+                } else {
+                  navigateToHomeSection("top");
+                }
+              }}
             >
-              <Arrow reverse rtl={isRtl} /> {t.backToHome}
+              <Arrow reverse rtl={isRtl} />{" "}
+              {activePage === "room-detail"
+                ? language === "ar"
+                  ? `العودة إلى ${roomCategoriesPageData[language][activeCategorySlug].shortTitle}`
+                  : `Back to ${roomCategoriesPageData[language][activeCategorySlug].shortTitle}`
+                : t.backToHome}
             </button>
           )}
         </div>
@@ -3734,31 +3858,43 @@ export default function Home() {
             </div>
 
             <div className="stay-cards-grid">
-              {categories.map((cat) => (
-                <article className="stay-card" key={`${language}-${cat.id}`}>
-                  <div
-                    className="stay-card-image"
-                    onClick={() => setSelectedCategoryModal(cat)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img src={cat.image} alt={cat.title} />
-                  </div>
-                  <div className="stay-card-body">
-                    <p className="eyebrow">{cat.category}</p>
-                    <h3>{cat.title}</h3>
-                    <p>{cat.description}</p>
-                    <div className="stay-card-actions">
-                      <button
-                        type="button"
-                        className="stay-explore-btn"
-                        onClick={() => setSelectedCategoryModal(cat)}
-                      >
-                        {cat.cta} <Arrow rtl={isRtl} />
-                      </button>
+              {categories.map((cat) => {
+                const catSlug = (cat.id === "rooms" || cat.id === "studios" || cat.id === "suites"
+                  ? cat.id
+                  : "rooms") as RoomCategorySlug;
+                return (
+                  <article className="stay-card" key={`${language}-${cat.id}`}>
+                    <div
+                      className="stay-card-image"
+                      onClick={() => openRoomCategoryPage(catSlug)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img src={cat.image} alt={cat.title} />
                     </div>
-                  </div>
-                </article>
-              ))}
+                    <div className="stay-card-body">
+                      <p className="eyebrow">{cat.category}</p>
+                      <h3>{cat.title}</h3>
+                      <p>{cat.description}</p>
+                      <div className="as-package-card-actions" style={{ marginTop: "20px" }}>
+                        <button
+                          type="button"
+                          className="as-package-book-btn"
+                          onClick={() => openWhatsAppBooking(cat.title)}
+                        >
+                          {language === "ar" ? "احجز" : "Book"}
+                        </button>
+                        <button
+                          type="button"
+                          className="as-package-explore-link"
+                          onClick={() => openRoomCategoryPage(catSlug)}
+                        >
+                          {language === "ar" ? "استكشف" : "Explore"}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
         </>
@@ -5919,7 +6055,15 @@ export default function Home() {
                                 <button
                                   type="button"
                                   className="as-immersive-tertiary-btn"
-                                  onClick={() => setSelectedCategoryModal(cat)}
+                                  onClick={() =>
+                                    openRoomCategoryPage(
+                                      (cat.id === "rooms" ||
+                                      cat.id === "studios" ||
+                                      cat.id === "suites"
+                                        ? cat.id
+                                        : "rooms") as RoomCategorySlug
+                                    )
+                                  }
                                 >
                                   <span>{t.stayPageAccomExploreBtns[idx]}</span>
                                   <Arrow rtl={isRtl} />
@@ -6332,6 +6476,658 @@ export default function Home() {
             </div>
           </section>
         </div>
+      ) : activePage === "room-category" ? (
+        /* ============================================================================
+           LEVEL 2 — DEDICATED ROOM CATEGORY PAGE (Rooms / Studios / Suites)
+           Modeled 1:1 on https://www.atlantis.com/dubai/atlantis-the-palm/stay/rooms-and-suites/deluxe-rooms
+           ============================================================================ */
+        (() => {
+          const catData = roomCategoriesPageData[language][activeCategorySlug];
+          const roomsMap = specificRoomsData[language];
+          const catRooms = catData.roomSlugs.map((slug) => roomsMap[slug]);
+          const privWindow = getPrivilegesCarouselWindow();
+          const privTotal = roomPrivilegesCarouselData[language].length;
+          const privAccordions = roomPrivilegesAccordionData[language];
+
+          return (
+            <div className="atlantis-room-category-page" id={`stay-category-${catData.slug}`}>
+              {/* SECTION 1 — CATEGORY HEADER & FULL-WIDTH BANNER (Atlantis section-banner--no-paddings) */}
+              <section className="arc-banner-section" aria-label={catData.title}>
+                <div className="arc-banner-header">
+                  <span className="as-breaker-overline">{catData.eyebrow}</span>
+                  <h1 className="arc-banner-h1">{catData.title}</h1>
+                  <p className="arc-banner-subtitle">{catData.heroSubtitle}</p>
+                </div>
+                <div className="arc-banner-media">
+                  <img src={catData.heroImage} alt={catData.title} />
+                  <div className="arc-banner-overlay" />
+                </div>
+              </section>
+
+              {/* SECTION 2 — DISCOVER YOUR IDEAL ROOM PORTRAIT CARDS (Atlantis card-carousel___DmDxBa) */}
+              <section className="arc-discover-section" id="category-rooms-list">
+                <div className="arc-discover-header">
+                  <span className="as-breaker-overline">{catData.discoverEyebrow}</span>
+                  <h2 className="as-breaker-h3">{catData.discoverTitle}</h2>
+                  <p className="as-breaker-body">{catData.discoverSubtitle}</p>
+                </div>
+
+                <div
+                  className={`arc-rooms-grid arc-rooms-grid--count-${Math.min(
+                    3,
+                    catRooms.length
+                  )}`}
+                >
+                  {catRooms.map((rm) => (
+                    <article key={rm.slug} className="arc-room-card">
+                      <div
+                        className="arc-room-card-media"
+                        onClick={() => openRoomDetailPage(rm.slug)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            openRoomDetailPage(rm.slug);
+                          }
+                        }}
+                      >
+                        <img src={rm.cardImage} alt={rm.name} />
+                      </div>
+                      <div className="arc-room-card-body">
+                        <h3 className="arc-room-card-title">{rm.name}</h3>
+                        <p className="arc-room-card-desc">{rm.cardDescription}</p>
+
+                        {/* 2 Exact Atlantis Spec Icons Row: Size (sqm) + Guests */}
+                        <div className="arc-room-card-specs">
+                          <span className="arc-room-spec-item">
+                            <AtlantisRoomIcon name="size" stroke="#2559a8" size={16} />
+                            <span>{rm.size}</span>
+                          </span>
+                          <span className="arc-room-spec-item">
+                            <AtlantisRoomIcon name="guests" stroke="#2559a8" size={16} />
+                            <span>{rm.occupancy}</span>
+                          </span>
+                        </div>
+
+                        <div className="as-package-card-actions">
+                          <button
+                            type="button"
+                            className="as-package-book-btn"
+                            onClick={() => openWhatsAppBooking(`${rm.name} (${catData.title})`)}
+                          >
+                            {language === "ar" ? "احجز" : "Book"}
+                          </button>
+                          <button
+                            type="button"
+                            className="as-package-explore-link"
+                            onClick={() => openRoomDetailPage(rm.slug)}
+                          >
+                            {language === "ar" ? "استكشف" : "Explore"}
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              {/* SECTION 3 — EXCLUSIVE PRIVILEGES FOLDING 5-CARD CAROUSEL (Atlantis folding-carousel-widget___9-S11q) */}
+              <section className="arc-folding-section" aria-label={catData.privilegesTitle}>
+                <div className="arc-discover-header">
+                  <span className="as-breaker-overline">
+                    {language === "ar" ? "مزايا حصرية" : "EXCLUSIVE PRIVILEGES"}
+                  </span>
+                  <h2 className="as-breaker-h3">{catData.privilegesTitle}</h2>
+                  <p className="as-breaker-body">
+                    {language === "ar"
+                      ? "غرفتك هي البداية فقط. إقامتك تمنحك عالماً من مزايا الضيافة في فندق أوز بارك."
+                      : "Your room is only the beginning. Your key unlocks a world of OZ Park Hotel benefits to explore."}
+                  </p>
+                </div>
+
+                <div className="arc-folding-stage">
+                  {privWindow.map(({ item, index, offset, isCenter }) => (
+                    <div
+                      key={`${item.id}-${offset}`}
+                      className={`arc-folding-slide arc-folding-offset-${offset} ${
+                        isCenter ? "is-center" : ""
+                      }`}
+                      onClick={() => setActivePrivilegeSlide(index)}
+                    >
+                      <div className="arc-folding-card-media">
+                        <img src={item.image} alt={item.title} />
+                      </div>
+                      <div className="arc-folding-card-caption">
+                        <h3 className="arc-folding-card-title">{item.title}</h3>
+                        {isCenter && (
+                          <p className="arc-folding-card-desc">{item.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="arc-folding-controls">
+                  <button
+                    type="button"
+                    className="arc-folding-arrow"
+                    onClick={() => movePrivilegeCarousel(-1)}
+                    aria-label={t.previousOffer}
+                  >
+                    <Arrow reverse rtl={isRtl} />
+                  </button>
+                  <div className="arc-folding-progress">
+                    <div
+                      className="arc-folding-progress-bar"
+                      style={{
+                        width: `${100 / privTotal}%`,
+                        insetInlineStart: `${(activePrivilegeSlide * 100) / privTotal}%`,
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="arc-folding-arrow"
+                    onClick={() => movePrivilegeCarousel(1)}
+                    aria-label={t.nextOffer}
+                  >
+                    <Arrow rtl={isRtl} />
+                  </button>
+                </div>
+              </section>
+
+              {/* SECTION 4 — EXCLUSIVE PRIVILEGES SPLIT 2-COLUMN ACCORDION (Atlantis card-with-accordion___s_Ttnq) */}
+              <section className="arc-accordion-section">
+                <div className="arc-accordion-container">
+                  <div className="arc-accordion-left">
+                    <span className="as-breaker-overline">
+                      {language === "ar" ? "مزايا حصرية" : "EXCLUSIVE PRIVILEGES"}
+                    </span>
+                    <h2 className="as-breaker-h3">{catData.privilegesTitle}</h2>
+                    <p className="as-breaker-body">
+                      {language === "ar"
+                        ? "غرفتك هي البداية فقط. إقامتك تمنحك عالماً من مزايا الضيافة في فندق أوز بارك."
+                        : "Your room is only the beginning. Your key unlocks a world of OZ Park Hotel benefits to explore."}
+                    </p>
+                  </div>
+                  <div className="arc-accordion-right">
+                    {privAccordions.map((acc, idx) => {
+                      const isOpen = Boolean(roomPrivilegeAccordions[idx]);
+                      return (
+                        <div
+                          key={acc.id}
+                          className={`arc-accordion-item ${isOpen ? "is-open" : ""}`}
+                        >
+                          <button
+                            type="button"
+                            className="arc-accordion-trigger"
+                            onClick={() => toggleRoomPrivilegeAccordion(idx)}
+                            aria-expanded={isOpen}
+                          >
+                            <span>{acc.title}</span>
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              className="arc-accordion-chevron"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M6 9l6 6 6-6"
+                                stroke="currentColor"
+                                strokeWidth="1.4"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                          {isOpen && (
+                            <div className="arc-accordion-panel">
+                              {acc.lines.map((line) => (
+                                <p key={line}>{line}</p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 5 — UPGRADE YOUR STAY FULL-WIDTH INSET BANNER (Atlantis section-banner___yVaB6G) */}
+              <section className="arc-upgrade-section">
+                <div className="arc-upgrade-banner">
+                  <img
+                    src={catData.upgradeBanner.image}
+                    alt={catData.upgradeBanner.title}
+                    className="arc-upgrade-img"
+                  />
+                  <div className="arc-upgrade-scrim" />
+                  <div className="arc-upgrade-content">
+                    <span className="arc-upgrade-overline">
+                      {catData.upgradeBanner.eyebrow}
+                    </span>
+                    <h2 className="arc-upgrade-title">{catData.upgradeBanner.title}</h2>
+                    <p className="arc-upgrade-subtitle">{catData.upgradeBanner.subtitle}</p>
+                    <button
+                      type="button"
+                      className="arc-upgrade-btn"
+                      onClick={() => {
+                        if (catData.upgradeBanner.targetRoomSlug) {
+                          openRoomDetailPage(catData.upgradeBanner.targetRoomSlug);
+                        } else if (catData.upgradeBanner.targetCategorySlug) {
+                          openRoomCategoryPage(catData.upgradeBanner.targetCategorySlug);
+                        }
+                      }}
+                    >
+                      {catData.upgradeBanner.buttonLabel}
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 6 — BOTTOM BREADCRUMBS */}
+              <nav className="arc-breadcrumbs" aria-label="Breadcrumb">
+                <button type="button" onClick={() => navigateToHomeSection("top")}>
+                  {language === "ar" ? "الرئيسية" : "Home"}
+                </button>
+                <span>›</span>
+                <button type="button" onClick={openStayPage}>
+                  {language === "ar" ? "الإقامة" : "Stay"}
+                </button>
+                <span>›</span>
+                <button type="button" onClick={() => navigateToHomeSection("stay")}>
+                  {language === "ar" ? "الغرف والأجنحة" : "Rooms And Suites"}
+                </button>
+                <span>›</span>
+                <span className="is-current">{catData.title}</span>
+              </nav>
+            </div>
+          );
+        })()
+      ) : activePage === "room-detail" ? (
+        /* ============================================================================
+           LEVEL 3 — DEDICATED SPECIFIC ROOM DETAIL PAGE (All 7 Rooms & Suites)
+           Modeled 1:1 on https://www.atlantis.com/dubai/atlantis-the-palm/stay/rooms-and-suites/deluxe-rooms/deluxe-king-room
+           ============================================================================ */
+        (() => {
+          const room = specificRoomsData[language][activeRoomSlug];
+          const parentCat = roomCategoriesPageData[language][room.categorySlug];
+          const privWindow = getPrivilegesCarouselWindow();
+          const privTotal = roomPrivilegesCarouselData[language].length;
+          const privAccordions = roomPrivilegesAccordionData[language];
+
+          return (
+            <div className="atlantis-room-detail-page" id={`room-${room.slug}`}>
+              {/* SECTION 1 — FULL-VIEWPORT 100VH PRODUCT HERO + 4 BOTTOM KEY-FACT ICONS (Atlantis product-hero___9ynMvW) */}
+              <section className="ard-product-hero" aria-label={room.name}>
+                <img src={room.heroImage} alt={room.name} className="ard-hero-bg" />
+                <div className="ard-hero-scrim" />
+
+                <div className="ard-hero-center">
+                  <span className="ard-hero-overline">{room.categoryEyebrow}</span>
+                  <h1 className="ard-hero-title">{room.name}</h1>
+                  <button
+                    type="button"
+                    className="ard-hero-book-btn"
+                    onClick={() => openWhatsAppBooking(`${room.name} (${parentCat.title})`)}
+                  >
+                    {language === "ar" ? "احجز" : "Book"}
+                  </button>
+                </div>
+
+                {/* Bottom Key-Facts Strip with the Exact 4 White Atlantis SVG Icons */}
+                <div className="ard-hero-facts-bar">
+                  <div className="ard-hero-fact">
+                    <AtlantisRoomIcon name="size" stroke="#ffffff" size={24} />
+                    <span>{room.size}</span>
+                  </div>
+                  <div className="ard-hero-fact">
+                    <AtlantisRoomIcon name="bed" stroke="#ffffff" size={24} />
+                    <span>{room.bed}</span>
+                  </div>
+                  <div className="ard-hero-fact">
+                    <AtlantisRoomIcon name="guests" stroke="#ffffff" size={24} />
+                    <span>{room.occupancy}</span>
+                  </div>
+                  <div className="ard-hero-fact">
+                    <AtlantisRoomIcon name="view" stroke="#ffffff" size={24} />
+                    <span>{room.view}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 2 — "WAKE UP TO FULL COLOUR" 5-PHOTO ASYMMETRICAL BENTO COLLAGE + VIEW GALLERY (Atlantis gallery___riaSya) */}
+              <section className="ard-collage-section" id="room-gallery">
+                <div className="ard-collage-header">
+                  <h2 className="as-breaker-h3">{room.collageHeading}</h2>
+                  <p className="as-breaker-body">{room.collageDescription}</p>
+                </div>
+
+                {/* Exact 1073px Asymmetrical 5-Photo Atlantis Bento Layout */}
+                <div className="ard-bento-grid">
+                  {/* Left Column (496px): Top (496x354) + Bottom (496x301) */}
+                  <div className="ard-bento-left-col">
+                    <div
+                      className="ard-bento-item ard-bento-tl"
+                      onClick={() => setRoomGalleryLightboxIndex(0)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <img src={room.collageImages[0]} alt={`${room.name} 1`} />
+                    </div>
+                    <div
+                      className="ard-bento-item ard-bento-bl"
+                      onClick={() => setRoomGalleryLightboxIndex(3)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <img src={room.collageImages[3]} alt={`${room.name} 4`} />
+                    </div>
+                  </div>
+
+                  {/* Right Column (561px): Top Row [Middle (321x255) + Right (224x255)] + Bottom Large (561x401) */}
+                  <div className="ard-bento-right-col">
+                    <div className="ard-bento-top-pair">
+                      <div
+                        className="ard-bento-item ard-bento-tm"
+                        onClick={() => setRoomGalleryLightboxIndex(1)}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <img src={room.collageImages[1]} alt={`${room.name} 2`} />
+                      </div>
+                      <div
+                        className="ard-bento-item ard-bento-tr"
+                        onClick={() => setRoomGalleryLightboxIndex(2)}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <img src={room.collageImages[2]} alt={`${room.name} 3`} />
+                      </div>
+                    </div>
+                    <div
+                      className="ard-bento-item ard-bento-br"
+                      onClick={() => setRoomGalleryLightboxIndex(4)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <img src={room.collageImages[4]} alt={`${room.name} 5`} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="ard-collage-actions">
+                  <button
+                    type="button"
+                    className="ard-view-gallery-btn"
+                    onClick={() => setRoomGalleryLightboxIndex(0)}
+                  >
+                    {language === "ar"
+                      ? `عرض معرض الصور (${room.allGalleryImages.length})`
+                      : "View Gallery"}
+                  </button>
+                </div>
+              </section>
+
+              {/* SECTION 3A — EXCLUSIVE PRIVILEGES FOLDING 5-CARD CAROUSEL */}
+              <section className="arc-folding-section" aria-label={room.privilegesTitle}>
+                <div className="arc-discover-header">
+                  <span className="as-breaker-overline">
+                    {language === "ar" ? "مزايا حصرية" : "EXCLUSIVE PRIVILEGES"}
+                  </span>
+                  <h2 className="as-breaker-h3">{room.privilegesTitle}</h2>
+                  <p className="as-breaker-body">
+                    {language === "ar"
+                      ? "غرفتك هي البداية فقط. إقامتك تمنحك عالماً من مزايا الضيافة في فندق أوز بارك."
+                      : "Your room is only the beginning. Your key unlocks a world of OZ Park Hotel benefits to explore."}
+                  </p>
+                </div>
+
+                <div className="arc-folding-stage">
+                  {privWindow.map(({ item, index, offset, isCenter }) => (
+                    <div
+                      key={`${item.id}-${offset}`}
+                      className={`arc-folding-slide arc-folding-offset-${offset} ${
+                        isCenter ? "is-center" : ""
+                      }`}
+                      onClick={() => setActivePrivilegeSlide(index)}
+                    >
+                      <div className="arc-folding-card-media">
+                        <img src={item.image} alt={item.title} />
+                      </div>
+                      <div className="arc-folding-card-caption">
+                        <h3 className="arc-folding-card-title">{item.title}</h3>
+                        {isCenter && (
+                          <p className="arc-folding-card-desc">{item.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="arc-folding-controls">
+                  <button
+                    type="button"
+                    className="arc-folding-arrow"
+                    onClick={() => movePrivilegeCarousel(-1)}
+                    aria-label={t.previousOffer}
+                  >
+                    <Arrow reverse rtl={isRtl} />
+                  </button>
+                  <div className="arc-folding-progress">
+                    <div
+                      className="arc-folding-progress-bar"
+                      style={{
+                        width: `${100 / privTotal}%`,
+                        insetInlineStart: `${(activePrivilegeSlide * 100) / privTotal}%`,
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="arc-folding-arrow"
+                    onClick={() => movePrivilegeCarousel(1)}
+                    aria-label={t.nextOffer}
+                  >
+                    <Arrow rtl={isRtl} />
+                  </button>
+                </div>
+              </section>
+
+              {/* SECTION 3B — EXCLUSIVE PRIVILEGES SPLIT 2-COLUMN ACCORDION (Atlantis card-with-accordion___s_Ttnq) */}
+              <section className="arc-accordion-section">
+                <div className="arc-accordion-container">
+                  <div className="arc-accordion-left">
+                    <span className="as-breaker-overline">
+                      {language === "ar" ? "مزايا حصرية" : "EXCLUSIVE PRIVILEGES"}
+                    </span>
+                    <h2 className="as-breaker-h3">{room.privilegesTitle}</h2>
+                    <p className="as-breaker-body">
+                      {language === "ar"
+                        ? "غرفتك هي البداية فقط. إقامتك تمنحك عالماً من مزايا الضيافة في فندق أوز بارك."
+                        : "Your room is only the beginning. Your key unlocks a world of OZ Park Hotel benefits to explore."}
+                    </p>
+                  </div>
+                  <div className="arc-accordion-right">
+                    {privAccordions.map((acc, idx) => {
+                      const isOpen = Boolean(roomPrivilegeAccordions[idx]);
+                      return (
+                        <div
+                          key={acc.id}
+                          className={`arc-accordion-item ${isOpen ? "is-open" : ""}`}
+                        >
+                          <button
+                            type="button"
+                            className="arc-accordion-trigger"
+                            onClick={() => toggleRoomPrivilegeAccordion(idx)}
+                            aria-expanded={isOpen}
+                          >
+                            <span>{acc.title}</span>
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              className="arc-accordion-chevron"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M6 9l6 6 6-6"
+                                stroke="currentColor"
+                                strokeWidth="1.4"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                          {isOpen && (
+                            <div className="arc-accordion-panel">
+                              {acc.lines.map((line) => (
+                                <p key={line}>{line}</p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 4 — SERVICES & AMENITIES 5-ICON STRIP + "VIEW ALL" MODAL BUTTON (Atlantis service-icons-widget___KXjeNW) */}
+              <section className="ard-amenities-section" id="room-amenities">
+                <div className="ard-amenities-header">
+                  <span className="as-breaker-overline">
+                    {language === "ar" ? "الخدمات ووسائل الراحة" : "SERVICES & AMENITIES"}
+                  </span>
+                  <h2 className="as-breaker-h3">
+                    {language === "ar" ? "كل ما تحتاجه وأكثر" : "Everything you need & more"}
+                  </h2>
+                </div>
+
+                <div className="ard-amenities-strip">
+                  <div className="ard-amenities-icons-row">
+                    {room.featuredAmenities.map((am) => (
+                      <div key={am.label} className="ard-amenity-icon-card">
+                        <div className="ard-amenity-svg-wrap">
+                          <AtlantisRoomIcon name={am.icon} stroke="#2559a8" size={40} />
+                        </div>
+                        <p className="ard-amenity-label">{am.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="ard-amenities-divider" aria-hidden="true" />
+
+                  <button
+                    type="button"
+                    className="ard-view-all-btn"
+                    onClick={() => setRoomAmenitiesModalOpen(true)}
+                  >
+                    <div className="ard-amenity-svg-wrap">
+                      <AtlantisRoomIcon name="view-all" stroke="#2559a8" size={40} />
+                    </div>
+                    <span className="ard-view-all-text">
+                      {language === "ar" ? "عرض الكل" : "View all"}
+                    </span>
+                  </button>
+                </div>
+              </section>
+
+              {/* SECTION 5 — UPGRADE YOUR STAY FULL-WIDTH INSET BANNER */}
+              <section className="arc-upgrade-section">
+                <div className="arc-upgrade-banner">
+                  <img
+                    src={room.upgradeBanner.image}
+                    alt={room.upgradeBanner.title}
+                    className="arc-upgrade-img"
+                  />
+                  <div className="arc-upgrade-scrim" />
+                  <div className="arc-upgrade-content">
+                    <span className="arc-upgrade-overline">
+                      {room.upgradeBanner.eyebrow}
+                    </span>
+                    <h2 className="arc-upgrade-title">{room.upgradeBanner.title}</h2>
+                    <p className="arc-upgrade-subtitle">{room.upgradeBanner.subtitle}</p>
+                    <button
+                      type="button"
+                      className="arc-upgrade-btn"
+                      onClick={() => openRoomDetailPage(room.upgradeBanner.targetRoomSlug)}
+                    >
+                      {room.upgradeBanner.buttonLabel}
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 6 — "BOOK DIRECT" SPLIT PROMOTIONAL BANNER CARD (Atlantis promotional-banner___yyQQcq) */}
+              <section className="ard-promo-section">
+                <div className="ard-promo-card">
+                  <div className="ard-promo-card-left">
+                    <span className="as-breaker-overline">
+                      {language === "ar" ? "مزايا حصرية" : "EXCLUSIVE PRIVILEGES"}
+                    </span>
+                    <h3 className="ard-promo-card-title">
+                      {language === "ar" ? "احجز مباشرة" : "Book direct"}
+                    </h3>
+                    <p className="ard-promo-card-desc">
+                      {language === "ar"
+                        ? "احجز مباشرة مع فندق أوز بارك للاستمتاع بمزايا حصرية تشمل خصم 10% في مطعم ديوان مدى ومقهى أوز بارك، وأولوية اختيار الغرف، وخصم يصل إلى 35% على الإقامات الطويلة."
+                        : "Book direct to enjoy exclusive privileges, including 10% off at Diwan Mada Restaurant and OZ Park Café, priority room selection, and up to 35% off extended stays."}
+                    </p>
+                    <div className="as-package-card-actions">
+                      <button
+                        type="button"
+                        className="as-package-book-btn"
+                        onClick={() => openWhatsAppBooking(`${room.name} — Direct Booking`)}
+                      >
+                        {language === "ar" ? "احجز" : "Book"}
+                      </button>
+                      <button
+                        type="button"
+                        className="as-package-explore-link"
+                        onClick={openOffer3Page}
+                      >
+                        {language === "ar" ? "استكشف" : "Explore"}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="ard-promo-card-right">
+                    <img
+                      src="/images/ozpark/tour-south-corniche-sunset.png"
+                      alt="OZ Park Hotel Al Qunfudhah"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 7 — BOTTOM BREADCRUMBS */}
+              <nav className="arc-breadcrumbs" aria-label="Breadcrumb">
+                <button type="button" onClick={() => navigateToHomeSection("top")}>
+                  {language === "ar" ? "الرئيسية" : "Home"}
+                </button>
+                <span>›</span>
+                <button type="button" onClick={openStayPage}>
+                  {language === "ar" ? "الإقامة" : "Stay"}
+                </button>
+                <span>›</span>
+                <button type="button" onClick={() => navigateToHomeSection("stay")}>
+                  {language === "ar" ? "الغرف والأجنحة" : "Rooms And Suites"}
+                </button>
+                <span>›</span>
+                <button type="button" onClick={() => openRoomCategoryPage(room.categorySlug)}>
+                  {parentCat.title}
+                </button>
+                <span>›</span>
+                <span className="is-current">{room.name}</span>
+              </nav>
+            </div>
+          );
+        })()
       ) : null}
 
       {/* SECTION 7 (HOMEPAGE SECTION 5) — STANDARD OZ PARK HOTEL WEBSITE FOOTER */}
@@ -6691,6 +7487,103 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* ROOM SERVICES & AMENITIES "VIEW ALL" 2-COLUMN MODAL (Atlantis list-modal___H6CaxG) */}
+      {roomAmenitiesModalOpen && (
+        <div
+          className="ard-list-modal-backdrop"
+          onClick={() => setRoomAmenitiesModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="ard-list-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="ard-list-modal-close"
+              onClick={() => setRoomAmenitiesModalOpen(false)}
+              aria-label={t.modalClose}
+            >
+              ✕
+            </button>
+            <span className="as-breaker-overline">
+              {language === "ar" ? "الخدمات ووسائل الراحة" : "SERVICES & AMENITIES"}
+            </span>
+            <h3 className="ard-list-modal-title">
+              {language === "ar" ? "كل ما تحتاجه وأكثر" : "Everything you need & more"}
+            </h3>
+
+            <div className="ard-list-modal-grid">
+              {specificRoomsData[language][activeRoomSlug].allAmenities.map((am) => (
+                <div key={am.label} className="ard-list-modal-item">
+                  <AtlantisRoomIcon name={am.icon} stroke="#2559a8" size={24} />
+                  <span>{am.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FULL-SCREEN LIGHTBOX FOR SPECIFIC ROOM PHOTO GALLERY */}
+      {roomGalleryLightboxIndex !== null &&
+        (() => {
+          const room = specificRoomsData[language][activeRoomSlug];
+          const imgs = room.allGalleryImages;
+          const safeIdx = ((roomGalleryLightboxIndex % imgs.length) + imgs.length) % imgs.length;
+          return (
+            <div
+              className="aw-lightbox-backdrop"
+              onClick={() => setRoomGalleryLightboxIndex(null)}
+              role="dialog"
+              aria-modal="true"
+            >
+              <button
+                type="button"
+                className="aw-lightbox-close"
+                onClick={() => setRoomGalleryLightboxIndex(null)}
+              >
+                {t.modalClose}
+              </button>
+
+              <button
+                type="button"
+                className="aw-lightbox-arrow aw-lightbox-prev"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRoomGalleryLightboxIndex((safeIdx - 1 + imgs.length) % imgs.length);
+                }}
+                aria-label={t.weddingGalleryPrev}
+              >
+                <Arrow reverse rtl={isRtl} />
+              </button>
+
+              <div className="aw-lightbox-content" onClick={(e) => e.stopPropagation()}>
+                <img src={imgs[safeIdx]} alt={`${room.name} ${safeIdx + 1}`} />
+                <div className="aw-lightbox-meta">
+                  <span>
+                    {safeIdx + 1} / {imgs.length}
+                  </span>
+                  <h3>{room.name}</h3>
+                  <p>
+                    {room.size} • {room.bed} • {room.occupancy} • {room.view}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="aw-lightbox-arrow aw-lightbox-next"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRoomGalleryLightboxIndex((safeIdx + 1) % imgs.length);
+                }}
+                aria-label={t.weddingGalleryNext}
+              >
+                <Arrow rtl={isRtl} />
+              </button>
+            </div>
+          );
+        })()}
     </main>
   );
 }

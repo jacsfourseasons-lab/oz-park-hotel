@@ -5167,3 +5167,1256 @@ html[dir="rtl"] .header-left-group {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ============================================================================
+   HOMEPAGE STAY SECTION — ATLANTIS BOOK + EXPLORE ACTIONS
+   ============================================================================ */
+.stay-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 22px;
+}
+
+.stay-card-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  min-height: 44px;
+  padding: 0 24px;
+  background: transparent;
+  border: 1px solid rgb(0, 87, 183);
+  color: rgb(0, 87, 183);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.stay-card-book-btn:hover {
+  background: rgb(0, 87, 183);
+  color: #ffffff;
+}
+
+.stay-card-explore-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
+  background: transparent;
+  border: 0;
+  color: rgb(0, 87, 183);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.stay-card-explore-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgb(0, 87, 183);
+  transition: transform 0.28s ease;
+  transform-origin: left center;
+}
+
+.stay-card-explore-link:hover::after {
+  transform: scaleX(0.65);
+}
+
+/* ============================================================================
+   LEVEL 2: ATLANTIS ROOM CATEGORY PAGE (Rooms | Studios | Suites)
+   ============================================================================ */
+.atlantis-room-category-page {
+  background: #ffffff;
+  color: rgb(52, 58, 64);
+  padding-top: 86px;
+}
+
+/* 1. Editorial Banner Section (banner-v2) */
+.arc-banner-section {
+  padding: 64px 0 48px;
+  background: #ffffff;
+}
+
+.arc-banner-header {
+  max-width: 780px;
+  margin: 0 auto 44px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.arc-banner-h1 {
+  margin: 0 0 18px;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(0, 32, 92);
+}
+
+.arc-banner-subtitle {
+  margin: 0 auto;
+  max-width: 660px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
+  letter-spacing: 0.02em;
+  color: rgb(52, 58, 64);
+}
+
+.arc-banner-media {
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: 0 36px;
+}
+
+.arc-banner-img {
+  display: block;
+  width: 100%;
+  height: clamp(340px, 46vw, 680px);
+  object-fit: cover;
+}
+
+/* 2. Discover Our Rooms Grid Section */
+.arc-discover-section {
+  padding: 72px 36px 96px;
+  max-width: 1420px;
+  margin: 0 auto;
+}
+
+.arc-discover-header {
+  max-width: 720px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.arc-section-h2 {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(0, 32, 92);
+}
+
+.arc-section-sub {
+  margin: 0 auto;
+  max-width: 620px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
+  letter-spacing: 0.02em;
+  color: rgb(52, 58, 64);
+}
+
+.arc-rooms-grid {
+  display: grid;
+  gap: 28px;
+  align-items: start;
+}
+
+.arc-rooms-grid.cols-1 {
+  grid-template-columns: minmax(0, 520px);
+  justify-content: center;
+}
+
+.arc-rooms-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 520px));
+  justify-content: center;
+}
+
+.arc-rooms-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.arc-rooms-grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.arc-room-card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.arc-room-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 422 / 527;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f4f1ec;
+}
+
+.arc-room-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.arc-room-card:hover .arc-room-card-img {
+  transform: scale(1.04);
+}
+
+.arc-room-card-body {
+  padding: 22px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.arc-room-card-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  color: rgb(0, 32, 92);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.arc-room-card-title:hover {
+  color: rgb(0, 87, 183);
+}
+
+.arc-room-card-desc {
+  margin: 0 0 18px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 23px;
+  color: rgb(52, 58, 64);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.arc-room-card-specs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding-top: 4px;
+}
+
+.arc-room-spec-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 20px;
+  color: rgb(52, 58, 64);
+}
+
+.arc-room-spec-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: rgb(0, 87, 183);
+  flex-shrink: 0;
+}
+
+.arc-room-spec-icon .atlantis-room-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.arc-room-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.arc-btn-book {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  min-height: 44px;
+  padding: 0 24px;
+  background: transparent;
+  border: 1px solid rgb(0, 87, 183);
+  color: rgb(0, 87, 183);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.arc-btn-book:hover {
+  background: rgb(0, 87, 183);
+  color: #ffffff;
+}
+
+.arc-link-explore {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
+  background: transparent;
+  border: 0;
+  color: rgb(0, 87, 183);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.arc-link-explore::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgb(0, 87, 183);
+  transition: transform 0.25s ease;
+  transform-origin: left center;
+}
+
+.arc-link-explore:hover::after {
+  transform: scaleX(0.65);
+}
+
+/* 3. Folding Privileges Carousel Section (folding-carousel-widget) */
+.arc-folding-section {
+  padding: 84px 0 92px;
+  background: #faf8f5;
+  overflow: hidden;
+}
+
+.arc-folding-header {
+  max-width: 720px;
+  margin: 0 auto 52px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.arc-folding-stage {
+  position: relative;
+  max-width: 1440px;
+  height: 670px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.arc-folding-slide {
+  position: absolute;
+  top: 0;
+  width: 392px;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+  cursor: pointer;
+}
+
+.arc-folding-slide.arc-folding-offset-0 {
+  transform: translate3d(0, 0, 0) scale(1);
+  z-index: 5;
+  opacity: 1;
+}
+
+.arc-folding-slide.arc-folding-offset--1 {
+  transform: translate3d(-412px, 34px, 0) scale(0.92);
+  z-index: 4;
+  opacity: 0.92;
+}
+
+.arc-folding-slide.arc-folding-offset-1 {
+  transform: translate3d(412px, 34px, 0) scale(0.92);
+  z-index: 4;
+  opacity: 0.92;
+}
+
+.arc-folding-slide.arc-folding-offset--2 {
+  transform: translate3d(-790px, 68px, 0) scale(0.84);
+  z-index: 3;
+  opacity: 0.65;
+}
+
+.arc-folding-slide.arc-folding-offset-2 {
+  transform: translate3d(790px, 68px, 0) scale(0.84);
+  z-index: 3;
+  opacity: 0.65;
+}
+
+.arc-folding-card-media {
+  width: 100%;
+  height: 490px;
+  overflow: hidden;
+  background: #e9e4dc;
+}
+
+.arc-folding-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.arc-folding-slide:hover .arc-folding-card-img {
+  transform: scale(1.03);
+}
+
+.arc-folding-card-caption {
+  padding-top: 24px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.arc-folding-slide.is-center .arc-folding-card-caption {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.arc-folding-card-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  color: rgb(0, 32, 92);
+}
+
+.arc-folding-card-desc {
+  margin: 0 auto;
+  max-width: 360px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 23px;
+  color: rgb(52, 58, 64);
+}
+
+.arc-folding-controls {
+  max-width: 420px;
+  margin: 18px auto 0;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.arc-folding-arrow {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 32, 92, 0.22);
+  background: #ffffff;
+  color: rgb(0, 32, 92);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.arc-folding-arrow:hover {
+  border-color: rgb(0, 87, 183);
+  background: rgb(0, 87, 183);
+  color: #ffffff;
+}
+
+.arc-folding-arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+.arc-folding-progress {
+  flex: 1;
+  height: 2px;
+  background: rgba(0, 32, 92, 0.14);
+  position: relative;
+  overflow: hidden;
+}
+
+.arc-folding-progress-bar {
+  height: 100%;
+  background: rgb(0, 32, 92);
+  transition: width 0.35s ease;
+}
+
+/* 4. Split 2-Column Accordion Section (card-with-accordion) */
+.arc-accordion-section {
+  padding: 92px 36px;
+  background: #ffffff;
+}
+
+.arc-accordion-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(280px, 5fr) minmax(380px, 7fr);
+  gap: 72px;
+  align-items: start;
+}
+
+.arc-accordion-title {
+  margin: 0 0 18px;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.8vw, 36px);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(0, 32, 92);
+}
+
+.arc-accordion-intro {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
+  color: rgb(52, 58, 64);
+}
+
+.arc-accordion-item {
+  border-bottom: 1px solid rgba(0, 32, 92, 0.14);
+}
+
+.arc-accordion-item:first-child {
+  border-top: 1px solid rgba(0, 32, 92, 0.14);
+}
+
+.arc-accordion-trigger {
+  width: 100%;
+  padding: 24px 0;
+  background: transparent;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: start;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 30px;
+  color: rgb(0, 32, 92);
+  cursor: pointer;
+}
+
+.arc-accordion-chevron {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(0, 87, 183);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.arc-accordion-chevron svg {
+  width: 18px;
+  height: 18px;
+}
+
+.arc-accordion-item.is-open .arc-accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.arc-accordion-panel {
+  padding: 0 0 24px;
+}
+
+.arc-accordion-panel p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 24px;
+  color: rgb(52, 58, 64);
+}
+
+/* 5. Full-Bleed Upgrade Banner (section-banner) */
+.arc-upgrade-section {
+  padding: 16px 36px 72px;
+  background: #ffffff;
+}
+
+.arc-upgrade-banner {
+  position: relative;
+  max-width: 1766px;
+  height: clamp(420px, 44vw, 640px);
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arc-upgrade-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.arc-upgrade-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 20, 48, 0.38) 0%,
+    rgba(0, 20, 48, 0.56) 100%
+  );
+}
+
+.arc-upgrade-content {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+  padding: 0 24px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.arc-upgrade-overline {
+  margin: 0 0 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.arc-upgrade-title {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.arc-upgrade-subtitle {
+  margin: 0 auto 28px;
+  max-width: 560px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.arc-upgrade-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 190px;
+  min-height: 46px;
+  padding: 0 28px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.arc-upgrade-btn:hover {
+  background: #ffffff;
+  color: rgb(0, 32, 92);
+}
+
+/* Breadcrumbs bar */
+.arc-breadcrumbs {
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: 18px 36px 36px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: rgb(108, 117, 125);
+  border-top: 1px solid rgba(0, 32, 92, 0.1);
+}
+
+.arc-breadcrumbs button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: rgb(0, 32, 92);
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.arc-breadcrumbs .is-current {
+  color: rgb(108, 117, 125);
+}
+
+/* ============================================================================
+   LEVEL 3: ATLANTIS SPECIFIC ROOM DETAIL PAGE
+   ============================================================================ */
+.atlantis-room-detail-page {
+  background: #ffffff;
+  color: rgb(52, 58, 64);
+}
+
+/* 1. Full-Viewport Product Hero (product-hero-banner) */
+.ard-product-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  max-height: 1080px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ard-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ard-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 18, 44, 0.35) 0%,
+    rgba(0, 18, 44, 0.25) 45%,
+    rgba(0, 18, 44, 0.72) 100%
+  );
+}
+
+.ard-hero-center {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+  color: #ffffff;
+  margin-top: 32px;
+}
+
+.ard-hero-overline {
+  margin: 0 0 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.ard-hero-title {
+  margin: 0 0 26px;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.5vw, 56px);
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.ard-hero-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0 32px;
+  background: rgb(0, 87, 183);
+  border: 1px solid rgb(0, 87, 183);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.ard-hero-book-btn:hover {
+  background: rgb(0, 68, 148);
+  border-color: rgb(0, 68, 148);
+}
+
+/* Bottom Glass Facts Bar */
+.ard-hero-facts-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  background: rgba(0, 20, 48, 0.55);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 20px 36px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 28px 48px;
+}
+
+.ard-hero-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.ard-hero-fact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ard-hero-fact-icon .atlantis-room-svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* 2. 5-Photo Asymmetrical Bento Collage Section (image-collage) */
+.ard-collage-section {
+  padding: 88px 24px 72px;
+  background: #ffffff;
+}
+
+.ard-collage-header {
+  max-width: 720px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+/* Exact Atlantis 1073px Bento layout: Left col 496px + Right col 561px + 16px gap */
+.ard-bento-grid {
+  max-width: 1073px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 496fr 561fr;
+  gap: 16px;
+}
+
+.ard-bento-left-col,
+.ard-bento-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ard-bento-top-pair {
+  display: grid;
+  grid-template-columns: 321fr 224fr;
+  gap: 16px;
+}
+
+.ard-bento-item {
+  position: relative;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: #f2efe9;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+.ard-bento-tl {
+  height: 354px;
+}
+
+.ard-bento-bl {
+  height: 301px;
+}
+
+.ard-bento-tm,
+.ard-bento-tr {
+  height: 255px;
+}
+
+.ard-bento-br {
+  height: 401px;
+}
+
+.ard-bento-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ard-bento-item:hover img {
+  transform: scale(1.04);
+}
+
+.ard-collage-actions {
+  margin-top: 36px;
+  text-align: center;
+}
+
+.ard-view-gallery-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 168px;
+  min-height: 44px;
+  padding: 0 28px;
+  background: transparent;
+  border: 1px solid rgb(0, 87, 183);
+  color: rgb(0, 87, 183);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.ard-view-gallery-btn:hover {
+  background: rgb(0, 87, 183);
+  color: #ffffff;
+}
+
+/* 3. Services & Amenities Strip (room-amenities) */
+.ard-amenities-section {
+  padding: 56px 24px 84px;
+  background: #ffffff;
+}
+
+.ard-amenities-header {
+  max-width: 720px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+
+.ard-amenities-strip {
+  max-width: 1074px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ard-amenities-icons-row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.ard-amenity-icon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 8px;
+}
+
+.ard-amenity-svg-wrap {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(0, 87, 183);
+}
+
+.ard-amenity-svg-wrap .atlantis-room-svg {
+  width: 44px;
+  height: 44px;
+}
+
+.ard-amenity-label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 20px;
+  color: rgb(52, 58, 64);
+}
+
+.ard-amenities-divider {
+  width: 1px;
+  background: rgba(0, 32, 92, 0.14);
+  margin: 8px 12px;
+}
+
+.ard-view-all-btn {
+  min-width: 140px;
+  padding: 12px 16px;
+  background: transparent;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgb(0, 87, 183);
+}
+
+.ard-view-all-text {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: rgb(0, 87, 183);
+}
+
+/* 4. Promotional "Book Direct" Split Card (promotional-banner) */
+.ard-promo-section {
+  padding: 72px 24px 88px;
+  background: #f6f4f0;
+}
+
+.ard-promo-card {
+  max-width: 1074px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid rgba(0, 32, 92, 0.1);
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+}
+
+.ard-promo-card-left {
+  max-width: 680px;
+}
+
+.ard-promo-card-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  color: rgb(0, 32, 92);
+}
+
+.ard-promo-card-desc {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 23px;
+  color: rgb(52, 58, 64);
+}
+
+.ard-promo-card-right {
+  flex-shrink: 0;
+}
+
+/* 5. Services & Amenities "View all" 2-Column Modal (list-modal) */
+.ard-list-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 18, 44, 0.58);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ard-list-modal {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 48px 52px;
+  box-shadow: 0 24px 64px rgba(0, 18, 44, 0.24);
+}
+
+.ard-list-modal-close {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 20px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  color: rgb(0, 32, 92);
+  cursor: pointer;
+}
+
+.ard-list-modal-title {
+  margin: 0 0 28px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(0, 32, 92);
+}
+
+.ard-list-modal-grid {
+  list-style: disc;
+  padding-inline-start: 20px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 36px;
+}
+
+.ard-list-modal-item {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 22px;
+  color: rgb(52, 58, 64);
+}
+
+/* RTL Support for Folding Carousel & Room Pages */
+html[dir="rtl"] .arc-folding-arrow svg {
+  transform: scaleX(-1);
+}
+
+/* Responsive Breakpoints for Room Category & Room Detail Pages */
+@media (max-width: 1024px) {
+  .arc-rooms-grid.cols-3,
+  .arc-rooms-grid.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .arc-accordion-container {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .ard-bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .ard-bento-tl,
+  .ard-bento-bl,
+  .ard-bento-tm,
+  .ard-bento-tr,
+  .ard-bento-br {
+    height: 280px;
+  }
+  .ard-amenities-strip {
+    flex-direction: column;
+    align-items: center;
+  }
+  .ard-amenities-divider {
+    width: 100%;
+    height: 1px;
+    margin: 8px 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .atlantis-room-category-page {
+    padding-top: 72px;
+  }
+  .arc-banner-media,
+  .arc-discover-section,
+  .arc-accordion-section,
+  .arc-upgrade-section,
+  .arc-breadcrumbs {
+    padding-inline: 20px;
+  }
+  .arc-rooms-grid.cols-2,
+  .arc-rooms-grid.cols-3,
+  .arc-rooms-grid.cols-4 {
+    grid-template-columns: 1fr;
+  }
+  .arc-folding-stage {
+    height: 580px;
+  }
+  .arc-folding-slide {
+    width: 84vw;
+  }
+  .arc-folding-card-media {
+    height: 380px;
+  }
+  .arc-folding-slide.arc-folding-offset--1,
+  .arc-folding-slide.arc-folding-offset-1,
+  .arc-folding-slide.arc-folding-offset--2,
+  .arc-folding-slide.arc-folding-offset-2 {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ard-hero-facts-bar {
+    padding: 14px 16px;
+    gap: 12px 20px;
+  }
+  .ard-hero-fact {
+    font-size: 12px;
+  }
+  .ard-bento-top-pair {
+    grid-template-columns: 1fr;
+  }
+  .ard-amenities-icons-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ard-promo-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+  }
+  .ard-list-modal {
+    padding: 32px 24px;
+  }
+  .ard-list-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
