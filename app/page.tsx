@@ -3548,12 +3548,174 @@ export default function Home() {
   const moveOffers = (direction: number) => {
     const next = (activeOffer + direction + offers.length) % offers.length;
     setActiveOffer(next);
-    offersRef.current?.querySelectorAll<HTMLElement>(".offer-card")[next]?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
+    const track = offersRef.current;
+    const card = track?.querySelectorAll<HTMLElement>(".offer-card")[next];
+    if (track && card) {
+      const targetLeft = card.offsetLeft - track.offsetLeft;
+      track.scrollTo({ left: targetLeft, behavior: "smooth" });
+    }
   };
+
+  // Universal Mouse Grab-and-Drag for Horizontal Card Tracks & Grids
+  const createTrackDragProps = (onScrollSync?: (el: HTMLElement) => void) => ({
+    onMouseDown: (e: React.MouseEvent<HTMLElement>) => {
+      if (e.button !== 0) return;
+      const target = e.target as HTMLElement;
+      if (target.closest("button, a, input, select")) return;
+      const el = e.currentTarget;
+      const startX = e.clientX;
+      const startScrollLeft = el.scrollLeft;
+      let moved = false;
+
+      el.classList.add("is-grabbing");
+      el.style.transition = "none";
+      delete el.dataset.dragged;
+
+      const onMouseMove = (ev: MouseEvent) => {
+        const dx = ev.clientX - startX;
+        if (Math.abs(dx) > 5) {
+          moved = true;
+          el.dataset.dragged = "true";
+        }
+        if (!moved) return;
+
+        const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+        if (maxScroll > 4) {
+          const desired = startScrollLeft - dx * 1.2;
+          if (desired < 0) {
+            el.scrollLeft = 0;
+            el.style.transform = `translate3d(${Math.min(110, -desired * 0.35).toFixed(1)}px, 0, 0)`;
+          } else if (desired > maxScroll) {
+            el.scrollLeft = maxScroll;
+            el.style.transform = `translate3d(${Math.max(-110, -(desired - maxScroll) * 0.35).toFixed(1)}px, 0, 0)`;
+          } else {
+            el.scrollLeft = desired;
+            el.style.transform = "translate3d(0px, 0, 0)";
+          }
+          onScrollSync?.(el);
+        } else {
+          const rubberX = Math.max(-130, Math.min(130, dx * 0.42));
+          el.style.transform = `translate3d(${rubberX.toFixed(1)}px, 0, 0)`;
+        }
+      };
+
+      const onMouseUp = () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+        el.classList.remove("is-grabbing");
+        el.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
+        el.style.transform = "translate3d(0px, 0, 0)";
+        if (moved) {
+          window.setTimeout(() => {
+            delete el.dataset.dragged;
+          }, 60);
+        }
+      };
+
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    },
+    onClickCapture: (e: React.MouseEvent<HTMLElement>) => {
+      if (e.currentTarget.dataset.dragged === "true") {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+  });
+
+  // Universal Mouse/Touch Grab-and-Swipe for State-Driven Carousels & Folding Sliders
+  const createCarouselDragProps = (onStep: (dir: 1 | -1) => void) => ({
+    onMouseDown: (e: React.MouseEvent<HTMLElement>) => {
+      if (e.button !== 0) return;
+      const target = e.target as HTMLElement;
+      if (target.closest("button, a, input, select")) return;
+      const el = e.currentTarget;
+      let startX = e.clientX;
+      let lastDx = 0;
+      let moved = false;
+      let stepped = false;
+
+      el.classList.add("is-grabbing");
+      el.style.transition = "none";
+      delete el.dataset.dragged;
+
+      const onMouseMove = (ev: MouseEvent) => {
+        const dx = ev.clientX - startX;
+        lastDx = dx;
+        if (Math.abs(dx) > 5) {
+          moved = true;
+          el.dataset.dragged = "true";
+        }
+        if (!moved) return;
+
+        const dragFollow = Math.max(-96, Math.min(96, dx * 0.38));
+        el.style.transform = `translate3d(${dragFollow.toFixed(1)}px, 0, 0)`;
+
+        if (Math.abs(dx) >= 72) {
+          const dir: 1 | -1 = dx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
+          onStep(dir);
+          stepped = true;
+          startX = ev.clientX;
+          lastDx = 0;
+          el.style.transform = "translate3d(0px, 0, 0)";
+        }
+      };
+
+      const onMouseUp = () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+        el.classList.remove("is-grabbing");
+        if (!stepped && Math.abs(lastDx) >= 28) {
+          const dir: 1 | -1 = lastDx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
+          onStep(dir);
+        }
+        el.style.transition = "transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
+        el.style.transform = "translate3d(0px, 0, 0)";
+        if (moved) {
+          window.setTimeout(() => {
+            delete el.dataset.dragged;
+          }, 60);
+        }
+      };
+
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    },
+    onTouchStart: (e: React.TouchEvent<HTMLElement>) => {
+      if (e.touches.length !== 1) return;
+      const el = e.currentTarget;
+      const startX = e.touches[0].clientX;
+      const startY = e.touches[0].clientY;
+      let lastDx = 0;
+
+      const onTouchMove = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return;
+        const dx = ev.touches[0].clientX - startX;
+        const dy = ev.touches[0].clientY - startY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          lastDx = dx;
+        }
+      };
+
+      const onTouchEnd = () => {
+        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("touchend", onTouchEnd);
+        if (Math.abs(lastDx) >= 34) {
+          const dir: 1 | -1 = lastDx < 0 ? (isRtl ? -1 : 1) : isRtl ? 1 : -1;
+          onStep(dir);
+        }
+      };
+
+      window.addEventListener("touchmove", onTouchMove, { passive: true });
+      window.addEventListener("touchend", onTouchEnd);
+    },
+    onClickCapture: (e: React.MouseEvent<HTMLElement>) => {
+      if (e.currentTarget.dataset.dragged === "true") {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+  });
 
   const moveWeddingGallery = (direction: number) => {
     setActiveWeddingGallery((curr) => (curr + direction + weddingGallery.length) % weddingGallery.length);
@@ -3761,7 +3923,25 @@ export default function Home() {
               </div>
             </div>
             <div className="offers-viewport">
-              <div className="offers-track" ref={offersRef}>
+              <div
+                className="offers-track js-draggable-track"
+                ref={offersRef}
+                {...createTrackDragProps((el) => {
+                  const cards = Array.from(el.querySelectorAll<HTMLElement>(".offer-card"));
+                  if (!cards.length) return;
+                  const baseLeft = cards[0].offsetLeft;
+                  let bestIdx = 0;
+                  let bestDist = Infinity;
+                  cards.forEach((card, i) => {
+                    const dist = Math.abs(card.offsetLeft - baseLeft - Math.abs(el.scrollLeft));
+                    if (dist < bestDist) {
+                      bestDist = dist;
+                      bestIdx = i;
+                    }
+                  });
+                  setActiveOffer(bestIdx);
+                })}
+              >
                 {offers.map((offer, index) => (
                   <article
                     className="offer-card"
@@ -3983,7 +4163,7 @@ export default function Home() {
               <p className="stay-intro-copy">{t.stayCopy}</p>
             </div>
 
-            <div className="stay-cards-grid">
+            <div className="stay-cards-grid js-draggable-track" {...createTrackDragProps()}>
               {categories.map((cat) => {
                 const catSlug = (cat.id === "rooms" || cat.id === "studios" || cat.id === "suites"
                   ? cat.id
@@ -4088,7 +4268,11 @@ export default function Home() {
               <p className="aw-centered-lead">{t.weddingPackagesIntro}</p>
             </div>
 
-            <div className="aw-packages-grid" ref={weddingPackagesTrackRef}>
+            <div
+              className="aw-packages-grid js-draggable-track"
+              ref={weddingPackagesTrackRef}
+              {...createTrackDragProps()}
+            >
               {weddingPackages.map((pkg) => (
                 <article className="aw-package-card" key={`${language}-${pkg.id}`}>
                   <div className="aw-package-img-wrap">
@@ -4187,7 +4371,10 @@ export default function Home() {
                 <Arrow reverse rtl={isRtl} />
               </button>
 
-              <div className="aw-folding-track">
+              <div
+                className="aw-folding-track js-draggable-carousel"
+                {...createCarouselDragProps(moveWeddingGallery)}
+              >
                 {getFoldingGalleryWindow().map(({ item, index, offset, isCenter }) => (
                   <article
                     key={item.src}
@@ -4325,7 +4512,7 @@ export default function Home() {
               </div>
 
               {/* 4-CARD HIGH-RESOLUTION GROUND-FLOOR ROOMS & SEA-VIEW SHOWCASE */}
-              <div className="ao-showcase-grid">
+              <div className="ao-showcase-grid js-draggable-track" {...createTrackDragProps()}>
                 {offer2Showcase.map((card) => (
                   <article
                     key={card.src}
@@ -4480,7 +4667,7 @@ export default function Home() {
               </div>
 
               {/* 4-CARD HIGH-RESOLUTION EXTENDED-STAY SHOWCASE (SUITES, STUDIOS, ROOMS & WATERFRONT) */}
-              <div className="ao-showcase-grid">
+              <div className="ao-showcase-grid js-draggable-track" {...createTrackDragProps()}>
                 {offer3Showcase.map((card) => (
                   <article
                     key={card.src}
@@ -4621,7 +4808,7 @@ export default function Home() {
               <p className="aw-centered-lead">{t.offer4DiningSubtitle}</p>
             </div>
 
-            <div className="ao4-dining-grid">
+            <div className="ao4-dining-grid js-draggable-track" {...createTrackDragProps()}>
               {/* CARD 01 — DIWAN MADA RESTAURANT */}
               <article className="ao4-venue-card">
                 <div
@@ -4825,7 +5012,7 @@ export default function Home() {
               <p className="aw-centered-lead ad-lead-secondary">{t.diningMenuDesc2}</p>
             </div>
 
-            <div className="ad-menu-grid">
+            <div className="ad-menu-grid js-draggable-track" {...createTrackDragProps()}>
               {diningMenuCategories.map((cat) => (
                 <article className="ad-menu-card" key={`${language}-${cat.id}`}>
                   <div
@@ -4886,7 +5073,10 @@ export default function Home() {
                 <Arrow reverse rtl={isRtl} />
               </button>
 
-              <div className="ad-peeking-track">
+              <div
+                className="ad-peeking-track js-draggable-carousel"
+                {...createCarouselDragProps(moveDiningGallery)}
+              >
                 {getDiningGalleryWindow().map(({ item, index, offset, isCenter }) => (
                   <div
                     key={item.src}
@@ -4940,7 +5130,16 @@ export default function Home() {
                   : currentSlide.image;
               return (
                 <div className="ad-split-container">
-                  <div className="ad-split-main">
+                  <div
+                    className="ad-split-main js-draggable-carousel"
+                    {...createCarouselDragProps((dir) =>
+                      setActiveDiningExpTab(
+                        (curr) =>
+                          (curr + dir + diningExperiencesSlides.length) %
+                          diningExperiencesSlides.length
+                      )
+                    )}
+                  >
                     <div className="ad-split-copy">
                       <span className="aw-overline">{currentSlide.smallHeading}</span>
                       <h2 className="ad-split-title">{currentSlide.mainHeading}</h2>
@@ -5334,7 +5533,14 @@ export default function Home() {
 
             {/* Atlantis Landscape Folding Carousel (Center active card 1074x604 at Y=0, adjacent cards 880x495 folded down at Y=48px) */}
             <div className="ac-folding-carousel">
-              <div className="ac-folding-stage">
+              <div
+                className="ac-folding-stage js-draggable-carousel"
+                {...createCarouselDragProps((dir) =>
+                  setActiveCafeSlide(
+                    (curr) => (curr + dir + cafeMenuSlides.length) % cafeMenuSlides.length
+                  )
+                )}
+              >
                 {cafeMenuSlides.map((slide, idx) => {
                   const total = cafeMenuSlides.length;
                   let diff = idx - activeCafeSlide;
@@ -5795,7 +6001,14 @@ export default function Home() {
 
             {/* Atlantis Landscape Folding Carousel (Center active package 1074x604 at Y=0, adjacent package 880x495 folded down at Y=48px) */}
             <div className="ac-folding-carousel am-folding-carousel">
-              <div className="ac-folding-stage am-folding-stage">
+              <div
+                className="ac-folding-stage am-folding-stage js-draggable-carousel"
+                {...createCarouselDragProps((dir) =>
+                  setActiveMeetingSlide(
+                    (curr) => (curr + dir + meetingPackageSlides.length) % meetingPackageSlides.length
+                  )
+                )}
+              >
                 {meetingPackageSlides.map((slide, idx) => {
                   const diff = idx - activeMeetingSlide;
                   const dirSign = isRtl ? -1 : 1;
@@ -6111,7 +6324,14 @@ export default function Home() {
                   : Math.max(0, 1 - (stayAccomIntroProgress - 0.78) / 0.22);
 
               return (
-                <div className="as-immersive-dsk-layout">
+                <div
+                  className="as-immersive-dsk-layout js-draggable-carousel"
+                  {...createCarouselDragProps((dir) =>
+                    setActiveStayAccomSlide(
+                      (curr) => (curr + dir + categories.length) % categories.length
+                    )
+                  )}
+                >
                   {/* Atlantis Scroll-Shrinking Intro Screen Curtain (100% width -> 589px left column width -> fade out) */}
                   <div
                     className="as-immersive-intro-screen"
@@ -6535,7 +6755,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="as-packages-grid">
+            <div className="as-packages-grid js-draggable-track" {...createTrackDragProps()}>
               {[
                 {
                   id: offers[0].id,
@@ -6642,7 +6862,8 @@ export default function Home() {
                   className={`arc-rooms-grid arc-rooms-grid--count-${Math.min(
                     3,
                     catRooms.length
-                  )}`}
+                  )} js-draggable-track`}
+                  {...createTrackDragProps()}
                 >
                   {catRooms.map((rm) => (
                     <article key={rm.slug} className="arc-room-card">
@@ -6712,7 +6933,10 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="arc-folding-stage">
+                <div
+                  className="arc-folding-stage js-draggable-carousel"
+                  {...createCarouselDragProps(movePrivilegeCarousel)}
+                >
                   {privWindow.map(({ item, index, offset, isCenter }) => (
                     <div
                       key={item.id}
@@ -7013,7 +7237,10 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="arc-folding-stage">
+                <div
+                  className="arc-folding-stage js-draggable-carousel"
+                  {...createCarouselDragProps(movePrivilegeCarousel)}
+                >
                   {privWindow.map(({ item, index, offset, isCenter }) => (
                     <div
                       key={item.id}

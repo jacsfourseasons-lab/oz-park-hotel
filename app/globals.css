@@ -220,15 +220,13 @@ img { display: block; width: 100%; }
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(11, 23, 42, 0.38) 0%, transparent 24%),
-    linear-gradient(90deg, rgba(11, 23, 42, 0.52), rgba(11, 23, 42, 0.10) 65%),
-    linear-gradient(0deg, rgba(11, 23, 42, 0.56), transparent 52%);
+    linear-gradient(180deg, rgba(6, 14, 28, 0.52) 0%, rgba(6, 14, 28, 0.34) 45%, rgba(6, 14, 28, 0.62) 100%),
+    radial-gradient(circle at 50% 52%, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.14) 65%, transparent 100%);
 }
 html[dir="rtl"] .hero-shade {
   background:
-    linear-gradient(180deg, rgba(11, 23, 42, 0.38) 0%, transparent 24%),
-    linear-gradient(270deg, rgba(11, 23, 42, 0.52), rgba(11, 23, 42, 0.10) 65%),
-    linear-gradient(0deg, rgba(11, 23, 42, 0.56), transparent 52%);
+    linear-gradient(180deg, rgba(6, 14, 28, 0.52) 0%, rgba(6, 14, 28, 0.34) 45%, rgba(6, 14, 28, 0.62) 100%),
+    radial-gradient(circle at 50% 52%, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.14) 65%, transparent 100%);
 }
 .hero-copy { position: absolute; left: 8vw; bottom: 13vh; max-width: 780px; }
 .hero-copy.hero-copy-centered {
@@ -906,12 +904,45 @@ html[dir="rtl"] .about-intro-heading {
 .offers-track {
   display: flex;
   gap: clamp(18px, 1.8vw, 30px);
-  padding: 0 5.5vw 14px 0;
+  padding: 0 clamp(180px, 34vw, 620px) 14px 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+  will-change: transform, scroll-position;
+}
+html[dir="rtl"] .offers-track {
+  padding: 0 0 14px clamp(180px, 34vw, 620px);
+}
+.offers-track.is-grabbing {
+  cursor: grabbing !important;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
 }
 .offers-track::-webkit-scrollbar { display: none; }
+
+/* Universal Mouse Grab-and-Drag Cursors & Selection Lock for Card Tracks & Carousels */
+.js-draggable-track,
+.js-draggable-carousel {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+}
+.js-draggable-track img,
+.js-draggable-carousel img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+.js-draggable-track.is-grabbing,
+.js-draggable-track.is-grabbing *,
+.js-draggable-carousel.is-grabbing,
+.js-draggable-carousel.is-grabbing * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
 .offer-card {
   flex: 0 0 min(30vw, 405px);
   min-width: 285px;
