@@ -13,8 +13,13 @@ fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(assetsDir, { recursive: true });
 fs.mkdirSync(outImagesDir, { recursive: true });
 
-// 1. Find all referenced images/videos in app/page.tsx + oz-park-icon.png
-const pageSource = fs.readFileSync(path.join(projectRoot, "app", "page.tsx"), "utf8");
+// 1. Find all referenced images/videos in app/page.tsx + app/roomsData.tsx + oz-park-icon.png
+const pageSource =
+  fs.readFileSync(path.join(projectRoot, "app", "page.tsx"), "utf8") +
+  "\n" +
+  (fs.existsSync(path.join(projectRoot, "app", "roomsData.tsx"))
+    ? fs.readFileSync(path.join(projectRoot, "app", "roomsData.tsx"), "utf8")
+    : "");
 const referencedPaths = new Set([
   ...(pageSource.match(/\/images\/ozpark\/[a-zA-Z0-9._-]+/g) || []),
   "/images/ozpark/oz-park-icon.png",
@@ -38,7 +43,7 @@ for (const relPath of referencedPaths) {
     }
   }
 
-  if (fs.existsSync(srcFile)) {
+  if (fs.existsSync(srcFile) && fs.statSync(srcFile).isFile()) {
     fs.copyFileSync(srcFile, path.join(outImagesDir, fileName));
   }
 }

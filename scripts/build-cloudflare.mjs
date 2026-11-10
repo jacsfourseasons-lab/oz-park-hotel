@@ -15,8 +15,13 @@ fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(assetsDir, { recursive: true });
 fs.mkdirSync(outImagesDir, { recursive: true });
 
-// 1. Find all referenced images in app/page.tsx + oz-park-icon.png
-const pageSource = fs.readFileSync(path.join(projectRoot, "app", "page.tsx"), "utf8");
+// 1. Find all referenced images in app/page.tsx + app/roomsData.tsx + oz-park-icon.png
+const pageSource =
+  fs.readFileSync(path.join(projectRoot, "app", "page.tsx"), "utf8") +
+  "\n" +
+  (fs.existsSync(path.join(projectRoot, "app", "roomsData.tsx"))
+    ? fs.readFileSync(path.join(projectRoot, "app", "roomsData.tsx"), "utf8")
+    : "");
 const referencedPaths = new Set([
   ...(pageSource.match(/\/images\/ozpark\/[a-zA-Z0-9._-]+/g) || []),
   "/images/ozpark/oz-park-icon.png",
@@ -28,7 +33,7 @@ const pngToJpgMap = new Map();
 for (const relPath of referencedPaths) {
   const fileName = path.basename(relPath);
   const srcFile = path.join(projectRoot, "public", "images", "ozpark", fileName);
-  if (!fs.existsSync(srcFile)) continue;
+  if (!fs.existsSync(srcFile) || !fs.statSync(srcFile).isFile()) continue;
 
   if (fileName.endsWith(".png") && fileName !== "oz-park-icon.png") {
     const jpgName = fileName.replace(/\.png$/i, ".jpg");

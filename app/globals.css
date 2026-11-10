@@ -5277,16 +5277,26 @@ html[dir="rtl"] .header-left-group {
 }
 
 .arc-banner-media {
+  position: relative;
   max-width: 1420px;
   margin: 0 auto;
   padding: 0 36px;
 }
 
+.arc-banner-media img,
 .arc-banner-img {
   display: block;
   width: 100%;
   height: clamp(340px, 46vw, 680px);
   object-fit: cover;
+  object-position: center;
+}
+
+.arc-banner-overlay {
+  position: absolute;
+  inset: 0 36px;
+  background: linear-gradient(180deg, rgba(0, 18, 44, 0.08) 0%, rgba(0, 18, 44, 0.22) 100%);
+  pointer-events: none;
 }
 
 /* 2. Discover Our Rooms Grid Section */
@@ -5330,20 +5340,24 @@ html[dir="rtl"] .header-left-group {
   align-items: start;
 }
 
+.arc-rooms-grid--count-1,
 .arc-rooms-grid.cols-1 {
-  grid-template-columns: minmax(0, 520px);
+  grid-template-columns: minmax(0, 480px);
   justify-content: center;
 }
 
+.arc-rooms-grid--count-2,
 .arc-rooms-grid.cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 520px));
+  grid-template-columns: repeat(2, minmax(0, 480px));
   justify-content: center;
 }
 
+.arc-rooms-grid--count-3,
 .arc-rooms-grid.cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.arc-rooms-grid--count-4,
 .arc-rooms-grid.cols-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -5363,13 +5377,17 @@ html[dir="rtl"] .header-left-group {
   background: #f4f1ec;
 }
 
+.arc-room-card-media img,
 .arc-room-card-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.arc-room-card:hover .arc-room-card-media img,
 .arc-room-card:hover .arc-room-card-img {
   transform: scale(1.04);
 }
@@ -5572,13 +5590,17 @@ html[dir="rtl"] .header-left-group {
   background: #e9e4dc;
 }
 
+.arc-folding-card-media img,
 .arc-folding-card-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.6s ease;
 }
 
+.arc-folding-slide:hover .arc-folding-card-media img,
 .arc-folding-slide:hover .arc-folding-card-img {
   transform: scale(1.03);
 }
@@ -5661,9 +5683,12 @@ html[dir="rtl"] .header-left-group {
 }
 
 .arc-folding-progress-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   height: 100%;
   background: rgb(0, 32, 92);
-  transition: width 0.35s ease;
+  transition: inset-inline-start 0.35s ease, width 0.35s ease;
 }
 
 /* 4. Split 2-Column Accordion Section (card-with-accordion) */
@@ -5679,6 +5704,21 @@ html[dir="rtl"] .header-left-group {
   grid-template-columns: minmax(280px, 5fr) minmax(380px, 7fr);
   gap: 72px;
   align-items: start;
+}
+
+.arc-accordion-left {
+  text-align: start;
+}
+
+.arc-accordion-left .as-breaker-overline,
+.arc-accordion-left .as-breaker-h3,
+.arc-accordion-left .as-breaker-body {
+  text-align: start;
+  margin-inline: 0;
+}
+
+.arc-accordion-left .as-breaker-h3 {
+  margin-bottom: 16px;
 }
 
 .arc-accordion-title {
@@ -6230,28 +6270,37 @@ html[dir="rtl"] .header-left-group {
   margin: 0 auto;
   background: #ffffff;
   border: 1px solid rgba(0, 32, 92, 0.1);
-  padding: 40px 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 36px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: stretch;
+  overflow: hidden;
 }
 
 .ard-promo-card-left {
-  max-width: 680px;
+  padding: 44px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: start;
+}
+
+.ard-promo-card-left .as-breaker-overline {
+  text-align: start;
+  margin-inline: 0;
+  margin-bottom: 10px;
 }
 
 .ard-promo-card-title {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 400;
-  line-height: 32px;
+  line-height: 36px;
   color: rgb(0, 32, 92);
 }
 
 .ard-promo-card-desc {
-  margin: 0;
+  margin: 0 0 24px;
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 300;
@@ -6260,7 +6309,18 @@ html[dir="rtl"] .header-left-group {
 }
 
 .ard-promo-card-right {
-  flex-shrink: 0;
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+  background: #e9e4dc;
+}
+
+.ard-promo-card-right img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* 5. Services & Amenities "View all" 2-Column Modal (list-modal) */
@@ -6287,6 +6347,13 @@ html[dir="rtl"] .header-left-group {
   box-shadow: 0 24px 64px rgba(0, 18, 44, 0.24);
 }
 
+.ard-list-modal .as-breaker-overline {
+  text-align: start;
+  margin-inline: 0;
+  margin-bottom: 8px;
+  display: block;
+}
+
 .ard-list-modal-close {
   position: absolute;
   top: 20px;
@@ -6311,20 +6378,25 @@ html[dir="rtl"] .header-left-group {
 }
 
 .ard-list-modal-grid {
-  list-style: disc;
-  padding-inline-start: 20px;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 36px;
+  gap: 18px 36px;
 }
 
 .ard-list-modal-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 300;
   line-height: 22px;
   color: rgb(52, 58, 64);
+}
+
+.ard-list-modal-item svg {
+  flex-shrink: 0;
 }
 
 /* RTL Support for Folding Carousel & Room Pages */
@@ -6334,6 +6406,8 @@ html[dir="rtl"] .arc-folding-arrow svg {
 
 /* Responsive Breakpoints for Room Category & Room Detail Pages */
 @media (max-width: 1024px) {
+  .arc-rooms-grid--count-3,
+  .arc-rooms-grid--count-4,
   .arc-rooms-grid.cols-3,
   .arc-rooms-grid.cols-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6361,6 +6435,9 @@ html[dir="rtl"] .arc-folding-arrow svg {
     height: 1px;
     margin: 8px 0;
   }
+  .ard-promo-card {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 680px) {
@@ -6374,6 +6451,9 @@ html[dir="rtl"] .arc-folding-arrow svg {
   .arc-breadcrumbs {
     padding-inline: 20px;
   }
+  .arc-rooms-grid--count-2,
+  .arc-rooms-grid--count-3,
+  .arc-rooms-grid--count-4,
   .arc-rooms-grid.cols-2,
   .arc-rooms-grid.cols-3,
   .arc-rooms-grid.cols-4 {
@@ -6408,9 +6488,7 @@ html[dir="rtl"] .arc-folding-arrow svg {
   .ard-amenities-icons-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .ard-promo-card {
-    flex-direction: column;
-    align-items: flex-start;
+  .ard-promo-card-left {
     padding: 28px 24px;
   }
   .ard-list-modal {
